@@ -1,0 +1,219 @@
+{
+  "Uuid": "a09cbf03f7074a019a3e06d479e25039",
+  "IsCustomNode": false,
+  "Description": "Massing Studio -> Revit MVP receiver. Point the top String at your exported massing.json, set the Boolean to True, Run.",
+  "Name": "Massing-Import",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "# massing_to_revit.py  \u2014  Dynamo Python Script node\n# Revit MVP receiver for the Massing Studio.\n# Reads a \"massing-interchange/v1\" JSON (from the Studio's Export JSON button) and builds:\n#   1. Levels from site.storeys\n#   2. one MassBox family instance per volume (conceptual mass), on the right level\n#   3. Mass Floors at each level a mass passes through  -> native GFA schedule\n#\n# Compatible with IronPython 2.7 (Revit 2020-2022) AND CPython3 (Revit 2023+).\n#   - no f-strings (IronPython 2.7 doesn't support them) -> uses .format()\n#   - metres->feet done by hand (no version-specific UnitUtils call)\n#\n# Dynamo node ports (right-click node -> add inputs to match):\n#   IN[0]  jsonPath     : full path to the exported massing json (string)\n#   IN[1]  familyName   : mass family type name, default \"MassBox\" (string)\n#   IN[2]  run          : Boolean toggle so the graph only writes when you flip it True\n# OUT     : a text log of what was created / skipped\n\nimport clr\nimport json\nimport os\n\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import (\n    FilteredElementCollector, Level, XYZ, FamilySymbol,\n    Structure, MassInstanceUtils\n)\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# ---------- inputs ----------\njsonPath   = IN[0]\nfamilyName = IN[1] if (len(IN) > 1 and IN[1]) else \"MassBox\"\nrun        = IN[2] if (len(IN) > 2) else True\n\nFT = 0.3048                      # 1 foot = 0.3048 m\ndef m2ft(v): return float(v) / FT\n\nlog = []\ndef note(msg): log.append(msg)\n\nif not run:\n    OUT = \"run = False. Flip the Boolean to True to write to the model.\"\nelse:\n    # ---------- read interchange ----------\n    if not jsonPath or not os.path.isfile(jsonPath):\n        OUT = \"ERROR: jsonPath not found: {0}\".format(jsonPath)\n    else:\n        f = open(jsonPath, 'r')\n        data = json.load(f)\n        f.close()\n\n        volumes = data.get(\"volumes\", [])\n        storeys = data.get(\"site\", {}).get(\"storeys\", [])\n        note(\"Loaded {0} ({1}), {2} volumes.\".format(\n            data.get(\"project\", \"?\"), data.get(\"schemeName\", data.get(\"scheme\", \"?\")), len(volumes)))\n\n        # ---------- find the mass family symbol ----------\n        symbol = None\n        for fs in FilteredElementCollector(doc).OfClass(FamilySymbol):\n            try:\n                if fs.Family.Name == familyName:\n                    symbol = fs\n                    break\n            except:\n                pass\n\n        if symbol is None:\n            OUT = (\"ERROR: family '{0}' not loaded. Build/load MassBox.rfa first \"\n                   \"(see 00_MassBox-family-recipe.md), then re-run.\").format(familyName)\n        else:\n            TransactionManager.Instance.EnsureInTransaction(doc)\n\n            if not symbol.IsActive:\n                symbol.Activate()\n                doc.Regenerate()\n\n            # ---------- levels from storeys (create if missing) ----------\n            def get_or_create_level(elev_ft, name):\n                for lv in FilteredElementCollector(doc).OfClass(Level):\n                    if abs(lv.Elevation - elev_ft) < 1e-6:\n                        return lv\n                lv = Level.Create(doc, elev_ft)\n                try:\n                    lv.Name = name\n                except:\n                    pass\n                return lv\n\n            levels = []   # (elev_ft, Level)\n            if storeys:\n                for s in storeys:\n                    e_ft = m2ft(s.get(\"elev\", 0))\n                    lv = get_or_create_level(e_ft, s.get(\"name\", \"L\"))\n                    levels.append((e_ft, lv))\n            else:\n                levels.append((0.0, get_or_create_level(0.0, \"L1\")))\n            note(\"Levels ready: {0}\".format(\", \".join(\n                [\"{0}@{1:.2f}m\".format(l[1].Name, l[0]*FT) for l in levels])))\n\n            # ---------- helpers ----------\n            def set_p(inst, name, val):\n                p = inst.LookupParameter(name)\n                if p is not None and not p.IsReadOnly:\n                    try:\n                        p.Set(val)\n                        return True\n                    except:\n                        return False\n                return False\n\n            made = 0\n            for v in volumes:\n                w  = float(v[\"w\"]); d = float(v[\"d\"]); h = float(v[\"h\"])\n                x  = float(v[\"x\"]); z = float(v[\"z\"]); base = float(v.get(\"base\", 0))\n                # axis map: interchange x=East -> Revit +X ; z=South -> Revit -Y ; y=up -> +Z\n                px = m2ft(x + w / 2.0)\n                py = m2ft(-(z + d / 2.0))\n                pz = m2ft(base)\n                pt = XYZ(px, py, pz)\n\n                inst = doc.Create.NewFamilyInstance(pt, symbol, Structure.StructuralType.NonStructural)\n\n                # dimensions (family params drive extents; see recipe for names)\n                set_p(inst, \"Length\", m2ft(w))     # X / East extent\n                set_p(inst, \"Width\",  m2ft(d))     # Y / North extent\n                set_p(inst, \"Height\", m2ft(h))     # Z / up\n                # metadata\n                set_p(inst, \"Glazing_%\", float(v.get(\"glaz\", 0)))\n                mk = inst.LookupParameter(\"Mark\")\n                if mk is not None and not mk.IsReadOnly:\n                    try: mk.Set(str(v.get(\"id\", \"\")))\n                    except: pass\n                cm = inst.LookupParameter(\"Comments\")\n                if cm is not None and not cm.IsReadOnly:\n                    try: cm.Set(\"{0} | glaz {1}%\".format(v.get(\"type\", \"\"), v.get(\"glaz\", 0)))\n                    except: pass\n\n                # ---------- mass floors at every level the mass spans ----------\n                top = base + h\n                for (e_ft, lv) in levels:\n                    e_m = e_ft * FT\n                    if (e_m >= base - 1e-4) and (e_m < top - 1e-4):\n                        try:\n                            MassInstanceUtils.AddMassLevelDataToMassInstance(doc, inst.Id, lv.Id)\n                        except Exception as ex:\n                            note(\"  mass-floor skip on {0}@{1}: {2}\".format(v.get(\"id\"), lv.Name, ex))\n                made += 1\n\n            TransactionManager.Instance.ForceCloseTransaction()\n            note(\"Created {0} mass instances of '{1}'.\".format(made, familyName))\n            note(\"Add a 'Mass Floors (Gross Area)' schedule to read GFA natively; \"\n                 \"cross-check against interchange metrics.dwelling = {0} m2.\".format(\n                     data.get(\"metrics\", {}).get(\"dwelling\", \"?\")))\n            OUT = \"\\n\".join(log)\n",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "2c0684a2db804a7085adb296dc8c8bac",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "fec35812384e433f9c561f8c0ea3e29c",
+          "Name": "IN[0]",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0ac23239607548a3a85d1bbaa339921c",
+          "Name": "IN[1]",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1344d1abf96241a88df81b5593f98ba6",
+          "Name": "IN[2]",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e455cc4a31354b05bee160a26998d4aa",
+          "Name": "OUT",
+          "Description": "result",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Massing Studio -> Revit conceptual masses. Runs the embedded engine."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "C:\\\\Users\\\\BHackman\\\\Downloads\\\\nonimuss-massing-B.json",
+      "Id": "566d96bd126c4c4e99770bd63757734d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "59b04a390b4746bfb59f951176f18601",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ]
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "MassBox",
+      "Id": "47afc40be247494c82bfce1320413706",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "936f91e3d0f54094989cfcdbb1723f50",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ]
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "21231a3f9f3c48fa9b0600338dd7d282",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c6af127bbabd44338dc00d5c3dbc8c46",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ]
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "59b04a390b4746bfb59f951176f18601",
+      "End": "fec35812384e433f9c561f8c0ea3e29c",
+      "Id": "f2ac95612a724ed8b4d45ca854248961",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "936f91e3d0f54094989cfcdbb1723f50",
+      "End": "0ac23239607548a3a85d1bbaa339921c",
+      "Id": "8619d6960ee94fca87ac863b6fb41bd7",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c6af127bbabd44338dc00d5c3dbc8c46",
+      "End": "1344d1abf96241a88df81b5593f98ba6",
+      "Id": "0508e5ff3b9c4ed2aa85c4ae8785238b",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [],
+  "Author": "",
+  "Linter": {
+    "Uuid": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "Name": "None",
+    "Version": "1.0.0.0"
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.19.0.5742",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "2c0684a2db804a7085adb296dc8c8bac",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 420.0,
+        "Y": 80.0
+      },
+      {
+        "Id": "566d96bd126c4c4e99770bd63757734d",
+        "Name": "massing.json path",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 40.0,
+        "Y": 40.0
+      },
+      {
+        "Id": "47afc40be247494c82bfce1320413706",
+        "Name": "family name",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 40.0,
+        "Y": 220.0
+      },
+      {
+        "Id": "21231a3f9f3c48fa9b0600338dd7d282",
+        "Name": "run",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 40.0,
+        "Y": 360.0
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

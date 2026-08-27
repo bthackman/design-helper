@@ -1,0 +1,13 @@
+# Project instances stay local — only the reusable tool ships in this repo.
+# Projects/README.md (the folder's own explainer) is kept; everything under
+# an actual project folder is not.
+Projects/*/
+!Projects/README.md
+
+# Python bytecode from the export receivers
+__pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
+Thumbs.db

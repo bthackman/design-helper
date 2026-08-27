@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="940" viewBox="0 0 1560 940" font-family="Segoe UI, Arial, sans-serif">
+<rect x="0" y="0" width="1560" height="940" rx="0" fill="#f5f2ea"/>
+<text x="40" y="46" font-size="26" fill="#1c1a17" font-weight="bold" text-anchor="start">Design Process Tool — Strategy Map</text>
+<text x="40" y="70" font-size="13" fill="#6b6459" font-weight="normal" text-anchor="start">A design copilot: client → site → drivers → precedents → massing → space → materiality, held by a per-project spine.   Restructured 2026-07-25.</text>
+<circle cx="1200" cy="26" r="6" fill="#4c9a5a"/>
+<text x="1214" y="30" font-size="12" fill="#4a463f" font-weight="normal" text-anchor="start">Built &amp; proven</text>
+<circle cx="1200" cy="46" r="6" fill="#d99a2b"/>
+<text x="1214" y="50" font-size="12" fill="#4a463f" font-weight="normal" text-anchor="start">Designed — skill fold-in pending</text>
+<circle cx="1200" cy="66" r="6" fill="#9d9482"/>
+<text x="1214" y="70" font-size="12" fill="#4a463f" font-weight="normal" text-anchor="start">Not started / future</text>
+<text x="40" y="112" font-size="13" fill="#8a8272" font-weight="bold" text-anchor="start">THE METHOD  —  process flow in true run order</text>
+<text x="470" y="112" font-size="11" fill="#a89e86" font-weight="normal" text-anchor="start">◇  phase-gate critic between phases — “does this still serve the drivers?”</text>
+<rect x="40" y="148" width="222.0" height="44" rx="10" fill="#d99a2b"/>
+<text x="151.0" y="176" font-size="15" fill="#ffffff" font-weight="bold" text-anchor="middle">Client discovery</text>
+<rect x="40" y="192" width="222.0" height="36" rx="7" fill="#fbf1dd" stroke="#d99a2b" stroke-width="1.2"/>
+<rect x="40" y="192" width="5" height="36" rx="2.5" fill="#d99a2b"/>
+<text x="55" y="215" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Household / organization fork</text>
+<rect x="40" y="235" width="222.0" height="36" rx="7" fill="#fbf1dd" stroke="#d99a2b" stroke-width="1.2"/>
+<rect x="40" y="235" width="5" height="36" rx="2.5" fill="#d99a2b"/>
+<text x="55" y="251" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">School mode (invent) ·</text>
+<text x="55" y="265" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">work mode (interview)</text>
+<rect x="276.0" y="148" width="222.0" height="44" rx="10" fill="#4c9a5a"/>
+<text x="387.0" y="176" font-size="15" fill="#ffffff" font-weight="bold" text-anchor="middle">Site</text>
+<rect x="276.0" y="192" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="276.0" y="192" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="291.0" y="215" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Site search + site details</text>
+<rect x="276.0" y="235" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="276.0" y="235" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="291.0" y="251" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Open-data pipeline</text>
+<text x="291.0" y="265" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">(parcel · bylaw · CDEM)</text>
+<rect x="276.0" y="278" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="276.0" y="278" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="291.0" y="294" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Battery: sun · wind ·</text>
+<text x="291.0" y="308" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">acoustic · context</text>
+<rect x="590.0" y="148" width="222.0" height="44" rx="10" fill="#4c9a5a"/>
+<text x="701.0" y="176" font-size="15" fill="#ffffff" font-weight="bold" text-anchor="middle">Precedents</text>
+<rect x="590.0" y="192" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="590.0" y="192" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="605.0" y="208" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">2-layer search:</text>
+<text x="605.0" y="222" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">campaigns + scorecard</text>
+<rect x="590.0" y="235" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="590.0" y="235" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="605.0" y="251" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Roles: Anchor / Lesson /</text>
+<text x="605.0" y="265" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Evidence</text>
+<rect x="590.0" y="278" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="590.0" y="278" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="605.0" y="294" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Fetch-before-cite +</text>
+<text x="605.0" y="308" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Sources register</text>
+<rect x="826.0" y="148" width="222.0" height="44" rx="10" fill="#4c9a5a"/>
+<text x="937.0" y="176" font-size="15" fill="#ffffff" font-weight="bold" text-anchor="middle">Massing</text>
+<rect x="826.0" y="192" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="826.0" y="192" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="841.0" y="208" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">3+ options · numbers ·</text>
+<text x="841.0" y="222" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">scorecards</text>
+<rect x="826.0" y="235" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="826.0" y="235" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="841.0" y="251" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Massing Studio</text>
+<text x="841.0" y="265" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">(interactive)</text>
+<rect x="826.0" y="278" width="222.0" height="36" rx="7" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.2"/>
+<rect x="826.0" y="278" width="5" height="36" rx="2.5" fill="#4c9a5a"/>
+<text x="841.0" y="301" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Cap-argument drafting</text>
+<rect x="1062.0" y="148" width="222.0" height="44" rx="10" fill="#d99a2b"/>
+<text x="1173.0" y="176" font-size="15" fill="#ffffff" font-weight="bold" text-anchor="middle">Space planning</text>
+<rect x="1062.0" y="192" width="222.0" height="36" rx="7" fill="#efece4" stroke="#9d9482" stroke-width="1.2"/>
+<rect x="1062.0" y="192" width="5" height="36" rx="2.5" fill="#9d9482"/>
+<text x="1077.0" y="215" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Program test-fit vs GFA</text>
+<rect x="1062.0" y="235" width="222.0" height="36" rx="7" fill="#efece4" stroke="#9d9482" stroke-width="1.2"/>
+<rect x="1062.0" y="235" width="5" height="36" rx="2.5" fill="#9d9482"/>
+<text x="1077.0" y="251" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Adjacency matrix +</text>
+<text x="1077.0" y="265" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">grossing</text>
+<rect x="1062.0" y="278" width="222.0" height="36" rx="7" fill="#efece4" stroke="#9d9482" stroke-width="1.2"/>
+<rect x="1062.0" y="278" width="5" height="36" rx="2.5" fill="#9d9482"/>
+<text x="1077.0" y="301" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Step-free / zero-corridor</text>
+<rect x="1298.0" y="148" width="222.0" height="44" rx="10" fill="#9d9482"/>
+<text x="1409.0" y="176" font-size="15" fill="#ffffff" font-weight="bold" text-anchor="middle">Materiality</text>
+<rect x="1298.0" y="192" width="222.0" height="36" rx="7" fill="#efece4" stroke="#9d9482" stroke-width="1.2"/>
+<rect x="1298.0" y="192" width="5" height="36" rx="2.5" fill="#9d9482"/>
+<text x="1313.0" y="215" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Material palette by system</text>
+<rect x="1298.0" y="235" width="222.0" height="36" rx="7" fill="#efece4" stroke="#9d9482" stroke-width="1.2"/>
+<rect x="1298.0" y="235" width="5" height="36" rx="2.5" fill="#9d9482"/>
+<text x="1313.0" y="251" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Envelope · pool-humidity</text>
+<text x="1313.0" y="265" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">specs</text>
+<rect x="1298.0" y="278" width="222.0" height="36" rx="7" fill="#efece4" stroke="#9d9482" stroke-width="1.2"/>
+<rect x="1298.0" y="278" width="5" height="36" rx="2.5" fill="#9d9482"/>
+<text x="1313.0" y="301" font-size="11.5" fill="#3a362f" font-weight="normal" text-anchor="start">Local-trades detailing</text>
+<rect x="512.0" y="148" width="64" height="166" rx="10" fill="#3f7d4c"/>
+<rect x="535.0" y="164" width="18" height="14" rx="2" fill="#ffffff"/>
+<path d="M 538.0 164 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+<circle cx="544.0" cy="171" r="2.2" fill="#3f7d4c"/>
+<text x="544.0" y="252.0" font-size="14" fill="#ffffff" font-weight="bold" text-anchor="middle" transform="rotate(-90 544.0 252.0)">DRIVERS LOCK</text>
+<line x1="264.0" y1="170.0" x2="272.0" y2="170.0" stroke="#b3ab98" stroke-width="2.5"/>
+<polygon points="272.0,165.0 272.0,175.0 279.0,170.0" fill="#b3ab98"/>
+<line x1="500.0" y1="170.0" x2="508.0" y2="170.0" stroke="#b3ab98" stroke-width="2.5"/>
+<polygon points="508.0,165.0 508.0,175.0 515.0,170.0" fill="#b3ab98"/>
+<line x1="578.0" y1="170.0" x2="586.0" y2="170.0" stroke="#b3ab98" stroke-width="2.5"/>
+<polygon points="586.0,165.0 586.0,175.0 593.0,170.0" fill="#b3ab98"/>
+<line x1="814.0" y1="170.0" x2="822.0" y2="170.0" stroke="#b3ab98" stroke-width="2.5"/>
+<polygon points="822.0,165.0 822.0,175.0 829.0,170.0" fill="#b3ab98"/>
+<polygon points="1055.0,162.0 1062.0,170.0 1055.0,178.0 1048.0,170.0" fill="#f5f2ea" stroke="#9d9482" stroke-width="1.4"/>
+<polygon points="1291.0,162.0 1298.0,170.0 1291.0,178.0 1284.0,170.0" fill="#f5f2ea" stroke="#9d9482" stroke-width="1.4"/>
+<path d="M 1409.0 142 C 1409.0 98, 701.0 98, 701.0 142" fill="none" stroke="#c9bfa8" stroke-width="1.6" stroke-dasharray="5 4"/>
+<polygon points="696.0,142 706.0,142 701.0,150" fill="#c9bfa8"/>
+<text x="1055.0" y="90" font-size="10.5" fill="#a89e86" font-weight="normal" text-anchor="middle">phases loop — the spine keeps looping safe</text>
+<rect x="40" y="336" width="1480" height="60" rx="12" fill="#e7e0cd" stroke="#b0a68c" stroke-width="2"/>
+<rect x="40" y="336" width="6" height="60" rx="3.0" fill="#4c9a5a"/>
+<text x="60" y="362" font-size="14.5" fill="#1c1a17" font-weight="bold" text-anchor="start">PROJECT SPINE   (read ↑ before every phase · write ↓ after)</text>
+<text x="60" y="382" font-size="12.5" fill="#5a544a" font-weight="normal" text-anchor="start">brief   ·   design drivers   ·   decision log   ·   open questions   ·   client profile      — the memory that keeps early insight alive to late phases</text>
+<line x1="151.0" y1="314" x2="151.0" y2="336" stroke="#cdc4ad" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="387.0" y1="314" x2="387.0" y2="336" stroke="#cdc4ad" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="701.0" y1="314" x2="701.0" y2="336" stroke="#cdc4ad" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="937.0" y1="314" x2="937.0" y2="336" stroke="#cdc4ad" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="1173.0" y1="314" x2="1173.0" y2="336" stroke="#cdc4ad" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="1409.0" y1="314" x2="1409.0" y2="336" stroke="#cdc4ad" stroke-width="1.1" stroke-dasharray="3 3"/>
+<text x="40" y="430" font-size="13" fill="#8a8272" font-weight="bold" text-anchor="start">THE TOOLING  —  reusable machinery, grouped by type</text>
+<rect x="40.0" y="444" width="359.5" height="100" rx="8" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.5"/>
+<rect x="40.0" y="444" width="6" height="100" rx="3.0" fill="#4c9a5a"/>
+<circle cx="384.5" cy="458" r="5" fill="#4c9a5a"/>
+<text x="55.0" y="466" font-size="13.5" fill="#1c1a17" font-weight="bold" text-anchor="start">Interactive tools (client-side)</text>
+<text x="55.0" y="486" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">Massing Studio ✓ — steer volumes,</text>
+<text x="55.0" y="501" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">cap meter, sun-section</text>
+<text x="55.0" y="516" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">Test-fit tool — next</text>
+<text x="55.0" y="531" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">principle: build once, then free</text>
+<rect x="413.5" y="444" width="359.5" height="100" rx="8" fill="#fbf1dd" stroke="#d99a2b" stroke-width="1.5"/>
+<rect x="413.5" y="444" width="6" height="100" rx="3.0" fill="#d99a2b"/>
+<circle cx="758.0" cy="458" r="5" fill="#d99a2b"/>
+<text x="428.5" y="466" font-size="13.5" fill="#1c1a17" font-weight="bold" text-anchor="start">Reasoning skills</text>
+<text x="428.5" y="486" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">Collaborator Roster ✓ (3 voices)</text>
+<text x="428.5" y="501" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">design-process skill — P1+P3 folded in ✓</text>
+<text x="428.5" y="516" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">P4/P5 fold-in as each completes</text>
+<text x="428.5" y="531" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">run in-session; token-metered</text>
+<rect x="787.0" y="444" width="359.5" height="100" rx="8" fill="#fbf1dd" stroke="#d99a2b" stroke-width="1.5"/>
+<rect x="787.0" y="444" width="6" height="100" rx="3.0" fill="#d99a2b"/>
+<circle cx="1131.5" cy="458" r="5" fill="#d99a2b"/>
+<text x="802.0" y="466" font-size="13.5" fill="#1c1a17" font-weight="bold" text-anchor="start">Knowledge (cross-project)</text>
+<text x="802.0" y="486" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">Library: precedents · site moves ·</text>
+<text x="802.0" y="501" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">materials</text>
+<text x="802.0" y="516" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">Sources register (live / dead / paywall)</text>
+<text x="802.0" y="531" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">promotion not yet exercised</text>
+<rect x="1160.5" y="444" width="359.5" height="100" rx="8" fill="#efece4" stroke="#9d9482" stroke-width="1.5"/>
+<rect x="1160.5" y="444" width="6" height="100" rx="3.0" fill="#9d9482"/>
+<circle cx="1505.0" cy="458" r="5" fill="#9d9482"/>
+<text x="1175.5" y="466" font-size="13.5" fill="#1c1a17" font-weight="bold" text-anchor="start">Exports (on demand)</text>
+<text x="1175.5" y="486" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">program → xlsx (Revit)</text>
+<text x="1175.5" y="501" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">brief / drivers → docx</text>
+<text x="1175.5" y="516" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">boards / log → pdf</text>
+<text x="40" y="578" font-size="13" fill="#8a8272" font-weight="bold" text-anchor="start">THE ROADMAP  —  how the tool evolves</text>
+<rect x="40.0" y="592" width="341.5" height="80" rx="8" fill="#eaf5ec" stroke="#4c9a5a" stroke-width="1.5"/>
+<rect x="40.0" y="592" width="6" height="80" rx="3.0" fill="#4c9a5a"/>
+<circle cx="366.5" cy="606" r="5" fill="#4c9a5a"/>
+<text x="55.0" y="614" font-size="13" fill="#1c1a17" font-weight="bold" text-anchor="start">v0 — Claude project</text>
+<text x="55.0" y="632" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">folder + templates +</text>
+<text x="55.0" y="647" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">design-process skill</text>
+<text x="55.0" y="662" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">in use now</text>
+<line x1="385.5" y1="632.0" x2="411.5" y2="632.0" stroke="#b3ab98" stroke-width="2.5"/>
+<polygon points="411.5,627.0 411.5,637.0 418.5,632.0" fill="#b3ab98"/>
+<rect x="419.5" y="592" width="341.5" height="80" rx="8" fill="#fbf1dd" stroke="#d99a2b" stroke-width="1.5"/>
+<rect x="419.5" y="592" width="6" height="80" rx="3.0" fill="#d99a2b"/>
+<circle cx="746.0" cy="606" r="5" fill="#d99a2b"/>
+<text x="434.5" y="614" font-size="13" fill="#1c1a17" font-weight="bold" text-anchor="start">Continuous re-package + tool kit</text>
+<text x="434.5" y="632" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">fold each phase&#x27;s method into</text>
+<text x="434.5" y="647" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">SKILL.md as it completes</text>
+<text x="434.5" y="662" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">the active work</text>
+<line x1="765.0" y1="632.0" x2="791.0" y2="632.0" stroke="#b3ab98" stroke-width="2.5"/>
+<polygon points="791.0,627.0 791.0,637.0 798.0,632.0" fill="#b3ab98"/>
+<rect x="799.0" y="592" width="341.5" height="80" rx="8" fill="#efece4" stroke="#9d9482" stroke-width="1.5"/>
+<rect x="799.0" y="592" width="6" height="80" rx="3.0" fill="#9d9482"/>
+<circle cx="1125.5" cy="606" r="5" fill="#9d9482"/>
+<text x="814.0" y="614" font-size="13" fill="#1c1a17" font-weight="bold" text-anchor="start">Library-at-scale → optional DB</text>
+<text x="814.0" y="632" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">only if cross-project reuse</text>
+<text x="814.0" y="647" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">demands it</text>
+<text x="814.0" y="662" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">conditional</text>
+<line x1="1144.5" y1="632.0" x2="1170.5" y2="632.0" stroke="#b3ab98" stroke-width="2.5"/>
+<polygon points="1170.5,627.0 1170.5,637.0 1177.5,632.0" fill="#b3ab98"/>
+<rect x="1178.5" y="592" width="341.5" height="80" rx="8" fill="#efece4" stroke="#9d9482" stroke-width="1.5"/>
+<rect x="1178.5" y="592" width="6" height="80" rx="3.0" fill="#9d9482"/>
+<circle cx="1505.0" cy="606" r="5" fill="#9d9482"/>
+<text x="1193.5" y="614" font-size="13" fill="#1c1a17" font-weight="bold" text-anchor="start">v2 — web app</text>
+<text x="1193.5" y="632" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">custom UI per phase ·</text>
+<text x="1193.5" y="647" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">Rhino / Revit exchange</text>
+<text x="1193.5" y="662" font-size="10.6" fill="#4a463f" font-weight="normal" text-anchor="start">long-term destination</text>
+<rect x="40" y="690" width="1480" height="170" rx="12" fill="#fffdf8" stroke="#c9b06a" stroke-width="2"/>
+<text x="60" y="716" font-size="14" fill="#7a5b1e" font-weight="bold" text-anchor="start">WHERE TO GO NEXT   (priority order)</text>
+<text x="60" y="740" font-size="12.3" fill="#6b6459" font-weight="normal" text-anchor="start">✓  DONE 2026-07-25 — Re-packaged Phase 1 · Precedents &amp; Phase 3 · Massing into SKILL.md (true run order); skill rebuilt with the 2 missing references.</text>
+<text x="60" y="763" font-size="12.3" fill="#3a362f" font-weight="bold" text-anchor="start">1.  Decide OQ-18 (single- vs two-storey) → close Phase 4 — pilot space planning tested + PAUSED; verify areas, loop winner to Massing Studio, then fold P4 into SKILL.md.</text>
+<text x="60" y="786" font-size="12.3" fill="#3a362f" font-weight="normal" text-anchor="start">2.  Build Phase 5 · Materiality — palette + pool-humidity / envelope specs + local-trades detailing.</text>
+<text x="60" y="809" font-size="12.3" fill="#3a362f" font-weight="normal" text-anchor="start">3.  Exports (xlsx program · docx brief+drivers · pdf boards) and exercise Library promotion.</text>
+<text x="60" y="832" font-size="12.3" fill="#3a362f" font-weight="normal" text-anchor="start">4.  Optional upload modes — sketch → option, real-drawing precedent overlay (token-taxing, on-request).</text>
+</svg>
