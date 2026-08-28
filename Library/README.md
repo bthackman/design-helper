@@ -3,7 +3,11 @@
 Cross-project knowledge base. When a project wraps a phase, promote the keepers here:
 
 - **Site-Strategies/** — moves that worked, tagged by site condition (corner lot, north-facing slope, tight urban infill...)
-- **Materials/** — materials you'd use again, tagged by system, climate, cost tier
+- **Materials/** — materials you'd use again, tagged by system, climate, cost tier. Seeded
+  2026-08-28 with a starter set per system (`Envelope.md`, `Structure.md`, `Interior.md`) so phase
+  5 has something real to sweep on a first run — drafted from general knowledge, not fetched specs,
+  flagged `[proxy, unverified]` in each file. Promote a project's actual, built-and-known-to-work
+  choice into the matching file the same way precedent cards get promoted after verification.
 
 Tag consistently; tags are how future projects find things.
 

@@ -145,21 +145,33 @@ function cardsBeyondTemplate(cards, tplCards) {
 
 // ---------- spine readers ----------
 
+// The template's columns are '# | Driver | Why it matters here | How we'll know
+// it's working'. A real project is free to rename or drop those two — Nonimuss
+// uses '# | Driver | Test | Origin' — so only 'Driver' is required to find the
+// table; the rest is matched by heuristic, and anything left over (like 'Origin')
+// is kept in `extra` rather than silently dropped.
 function readDrivers(md) {
   const tables = parseTables(md);
-  const main = tables.find(t => t.columns.some(c => /^driver$/i.test(c)) &&
-                                t.columns.some(c => /how we'?ll know/i.test(c)));
+  const main = tables.find(t => t.columns.some(c => /^driver$/i.test(c)));
   const parked = tables.find(t => /parked/i.test(t.heading || ''));
-  const lock = (md || '').match(/\*\*Locked\s+(\d{4}-\d{2}-\d{2})\*\*/i);
+  const lock = (md || '').match(/\*\*(?:Status:\s*)?LOCKED\s+(\d{4}-\d{2}-\d{2})\*\*/i);
+  const testCol = main && main.columns.find(c => /how we'?ll know|^test$/i.test(c));
+  const whyCol = main && main.columns.find(c => /why/i.test(c));
   return {
     locked: !!lock,
     lockedDate: lock ? lock[1] : null,
-    drivers: main ? realRows(main).map(r => ({
-      n: r['#'] || '',
-      driver: r['Driver'] || '',
-      why: r['Why it matters here'] || '',
-      test: (Object.entries(r).find(([k]) => /how we'?ll know/i.test(k)) || [])[1] || ''
-    })) : [],
+    drivers: main ? realRows(main).map(r => {
+      const known = new Set(['#', 'Driver', testCol, whyCol].filter(Boolean));
+      const extra = {};
+      main.columns.forEach(c => { if (!known.has(c)) extra[c] = r[c] || ''; });
+      return {
+        n: r['#'] || '',
+        driver: r['Driver'] || '',
+        why: whyCol ? (r[whyCol] || '') : '',
+        test: testCol ? (r[testCol] || '') : '',
+        extra
+      };
+    }) : [],
     parked: parked ? realRows(parked) : []
   };
 }
@@ -188,7 +200,7 @@ const openOnly = qs => qs.filter(q => q.status !== 'resolved' && q.status !== 'c
 // ---------- state inference (fallback when state.json is missing) ----------
 
 const PHASES = [
-  { key: 'client-discovery', dir: '0_Spine',          probe: /^04[ab]_Client-Profile/ },
+  { key: 'client-discovery', dir: '0_Spine',          probe: /^04[ab]?_Client-Profile/ },
   { key: 'site',             dir: '2_Site',           probe: /^Site-Details/ },
   { key: 'precedents',       dir: '1_Precedents',     probe: /^Precedent-Board/ },
   { key: 'massing',          dir: '3_Massing',        probe: /^Massing-Options/ },
@@ -256,8 +268,16 @@ function reconcile(stateJson, stateMtime, files) {
   return { ...stateJson, inferred: false, stale: !!(newest && stateMtime && newest > stateMtime), newestFile: newest };
 }
 
-module.exports = {
-  splitRow, parseTables, parseCards, filledCards, cardsBeyondTemplate, realRows, rowsBeyondTemplate, looksWorked, normalize,
-  templateKeyFor, readDrivers, readDecisions, readOpenQuestions, openOnly,
-  inferState, reconcile, PHASES, ORDER
-};
+// Dual-mode: Node (test suites, require()) and plain <script> in the Window.
+// IIFE so the export object's name never leaks into the shared global scope —
+// spine-parse.js and audit.js are both loaded as classic <script> tags in the
+// Window and would otherwise collide on a top-level `const` of the same name.
+(function () {
+  const exported = {
+    splitRow, parseTables, parseCards, filledCards, cardsBeyondTemplate, realRows, rowsBeyondTemplate, looksWorked, normalize,
+    templateKeyFor, readDrivers, readDecisions, readOpenQuestions, openOnly,
+    inferState, reconcile, PHASES, ORDER
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = exported;
+  else window.SpineParse = exported;
+})();

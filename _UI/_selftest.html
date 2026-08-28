@@ -1,0 +1,170 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>selftest</title></head>
+<body>
+<script src="spine-parse.js"></script>
+<script src="audit.js"></script>
+<script>
+const PROJECT_BASE = '../Projects/Nonimuss-Residence/';
+const TEMPLATE_BASE = '../_templates/';
+
+const files = [
+  '0_Spine/00_Brief.md','0_Spine/01_Design-Drivers.md','0_Spine/02_Decision-Log.md',
+  '0_Spine/03_Open-Questions.md','0_Spine/04_Client-Profile.md','0_Spine/state.json',
+  '1_Precedents/Precedent-Board.md','1_Precedents/Search-Plan.md',
+  '2_Site/Site-Details_6831-Livingstone-Dr-SW.md','2_Site/Site-Shortlist.md',
+  '3_Massing/Massing-Options.md',
+  '4_Space-Planning/Program-Test-Fit.md',
+  '5_Materiality/Material-Palette.md'
+];
+const templateFiles = [
+  '0_Spine/00_Brief.md','0_Spine/01_Design-Drivers.md','0_Spine/02_Decision-Log.md','0_Spine/03_Open-Questions.md',
+  '0_Spine/04a_Client-Profile-Household.md','0_Spine/04b_Client-Profile-Organization.md',
+  '1_Precedents/Precedent-Board.md','1_Precedents/Search-Plan.md',
+  '2_Site/Site-Details.md','2_Site/Site-Search.md',
+  '3_Massing/Massing-Options.md','4_Space-Planning/Program-Test-Fit.md','5_Materiality/Material-Palette.md'
+];
+
+async function run() {
+  try {
+    console.log('SpineParse present:', typeof SpineParse !== 'undefined');
+    console.log('Audit present:', typeof Audit !== 'undefined');
+
+    const now = new Date().toISOString();
+    const fileObjs = [];
+    for (const p of files) {
+      const res = await fetch(PROJECT_BASE + p);
+      if (!res.ok) { console.error('FETCH FAIL', p, res.status); continue; }
+      const text = await res.text();
+      fileObjs.push({ path: p, mtime: now, text });
+    }
+    const templates = {};
+    for (const p of templateFiles) {
+      const res = await fetch(TEMPLATE_BASE + p);
+      if (!res.ok) { console.error('TEMPLATE FETCH FAIL', p, res.status); continue; }
+      templates[p] = await res.text();
+    }
+
+    const byPath = Object.fromEntries(fileObjs.map(f => [f.path, f]));
+
+    const sf = byPath['0_Spine/state.json'];
+    let state;
+    if (sf) {
+      const parsed0 = JSON.parse(sf.text);
+      state = SpineParse.reconcile(parsed0, sf.mtime, fileObjs);
+    } else {
+      state = SpineParse.inferState(fileObjs, templates);
+    }
+    console.log('STATE', JSON.stringify(state));
+
+    const drivers = SpineParse.readDrivers((byPath['0_Spine/01_Design-Drivers.md']||{}).text || '');
+    console.log('DRIVERS_LOCKED', drivers.locked, drivers.lockedDate);
+    console.log('DRIVERS_COUNT', drivers.drivers.length);
+    drivers.drivers.forEach(d => console.log('DRIVER', d.n, d.driver, '| test:', d.test, '| extra:', JSON.stringify(d.extra)));
+
+    const decisions = SpineParse.readDecisions((byPath['0_Spine/02_Decision-Log.md']||{}).text || '');
+    console.log('DECISIONS_COUNT', decisions.length);
+
+    const questions = SpineParse.readOpenQuestions((byPath['0_Spine/03_Open-Questions.md']||{}).text || '');
+    console.log('QUESTIONS_COUNT', questions.length, 'OPEN', SpineParse.openOnly(questions).length);
+
+    const boardText = (byPath['1_Precedents/Precedent-Board.md']||{}).text || '';
+    const massingText = (byPath['3_Massing/Massing-Options.md']||{}).text || '';
+
+    const phaseTexts = {};
+    for (const p of SpineParse.PHASES) {
+      phaseTexts[p.key] = fileObjs.filter(f => f.path.startsWith(p.dir+'/') && f.path.endsWith('.md')).map(f=>f.text).join('\n\n');
+    }
+    const templatesByPhaseDir = {};
+    for (const p of SpineParse.PHASES) {
+      templatesByPhaseDir[p.key] = Object.entries(templates).filter(([k])=>k.startsWith(p.dir+'/')).map(([,v])=>v).join('\n\n');
+    }
+
+    const findings = Audit.audit({ drivers, decisions, questions, state, files: fileObjs, phaseTexts, templatesFor: templatesByPhaseDir, boardText, massingText });
+    console.log('FINDINGS_COUNT', findings.length);
+    findings.forEach(f => console.log('FINDING', f.severity, f.kind, '-', f.text));
+
+    // ---- markdown renderer check (verbatim copy of Project-Window.html's function) ----
+    const projectName = 'Nonimuss-Residence';
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+    function renderMarkdown(md, docPath) {
+      const baseDir = docPath ? docPath.slice(0, docPath.lastIndexOf('/') + 1) : '';
+      const imgBase = '../Projects/' + encodeURIComponent(projectName) + '/' + baseDir;
+      const inline = (text) => {
+        let s = esc(text);
+        s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, src) =>
+          '<img alt="' + alt + '" src="' + (/^(https?:|data:)/i.test(src) ? src : imgBase + src) + '">');
+        s = s.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (m, t, href) =>
+          '<a href="' + href + '" target="_blank" rel="noopener">' + t + '</a>');
+        s = s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+        s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+        s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<i>$2</i>');
+        return s;
+      };
+      const lines = (md || '').split(/\r?\n/);
+      let html = '', inList = null, i = 0;
+      const closeList = () => { if (inList) { html += '</' + inList + '>'; inList = null; } };
+      while (i < lines.length) {
+        const line = lines[i];
+        if (line.includes('|') && lines[i + 1] && /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/.test(lines[i + 1]) && lines[i + 1].includes('-')) {
+          closeList();
+          const head = SpineParse.splitRow(line);
+          html += '<table><thead><tr>' + head.map(c => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>';
+          i += 2;
+          while (i < lines.length && lines[i].includes('|') && lines[i].trim()) {
+            html += '<tr>' + SpineParse.splitRow(lines[i]).map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>';
+            i++;
+          }
+          html += '</tbody></table>';
+          continue;
+        }
+        const h = line.match(/^(#{1,6})\s+(.*)$/);
+        if (h) { closeList(); html += '<h' + h[1].length + '>' + inline(h[2]) + '</h' + h[1].length + '>'; i++; continue; }
+        if (/^\s*(-{3,}|\*{3,})\s*$/.test(line)) { closeList(); html += '<hr>'; i++; continue; }
+        const bq = line.match(/^>\s?(.*)$/);
+        if (bq) { closeList(); html += '<blockquote>' + inline(bq[1]) + '</blockquote>'; i++; continue; }
+        const ul = line.match(/^\s*[-*]\s+(.*)$/);
+        if (ul) { if (inList !== 'ul') { closeList(); html += '<ul>'; inList = 'ul'; } html += '<li>' + inline(ul[1]) + '</li>'; i++; continue; }
+        const ol = line.match(/^\s*\d+\.\s+(.*)$/);
+        if (ol) { if (inList !== 'ol') { closeList(); html += '<ol>'; inList = 'ol'; } html += '<li>' + inline(ol[1]) + '</li>'; i++; continue; }
+        if (!line.trim()) { closeList(); i++; continue; }
+        closeList();
+        html += '<p>' + inline(line) + '</p>';
+        i++;
+      }
+      closeList();
+      return html || '<p class="empty">(empty)</p>';
+    }
+
+    for (const p of ['3_Massing/Massing-Options.md', '1_Precedents/Precedent-Board.md', '0_Spine/00_Brief.md',
+                      '4_Space-Planning/Program-Test-Fit.md', '5_Materiality/Material-Palette.md',
+                      '2_Site/Site-Details_6831-Livingstone-Dr-SW.md', '2_Site/Site-Shortlist.md']) {
+      const text = byPath[p].text;
+      const out = renderMarkdown(text, p);
+      const tables = (out.match(/<table>/g) || []).length;
+      const imgs = (out.match(/<img /g) || []).length;
+      const headers = (out.match(/<h[1-6]>/g) || []).length;
+      const opens = (out.match(/<(table|thead|tbody|tr|ul|ol|li|blockquote|h[1-6]|p)>/g) || []).length;
+      const closes = (out.match(/<\/(table|thead|tbody|tr|ul|ol|li|blockquote|h[1-6]|p)>/g) || []).length;
+      console.log('MD_RENDER', p, 'tables=' + tables, 'imgs=' + imgs, 'headers=' + headers,
+        'opens=' + opens, 'closes=' + closes, 'balanced=' + (opens === closes));
+
+      // Actually fetch every rewritten image src to confirm the file is reachable there.
+      const srcs = [...out.matchAll(/<img alt="[^"]*" src="([^"]+)">/g)].map(m => m[1]);
+      for (const src of srcs) {
+        try {
+          const r = await fetch(src);
+          console.log('MD_IMG_FETCH', p, src, r.ok ? 'OK ' + r.status : 'FAIL ' + r.status);
+        } catch (e) {
+          console.error('MD_IMG_FETCH_ERROR', p, src, e.message);
+        }
+      }
+    }
+
+    console.log('SELFTEST_OK');
+  } catch (e) {
+    console.error('SELFTEST_EXCEPTION', e.message, e.stack);
+  }
+}
+run();
+</script>
+</body></html>

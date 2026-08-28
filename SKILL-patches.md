@@ -177,3 +177,62 @@ Add to Phase 1, alongside the campaign list:
 >
 > **Restricting it is the user's call, not the tool's.** Narrow the open slot only on explicit
 > instruction. Default is wide.
+
+## 11. Flag model-judgment-only content the same way an unfetched source gets flagged
+
+Drafted 2026-08-28, from a whole-corpus review done alongside the Project Window work. Every
+hardened rule in this skill so far was earned reactively — fetch-before-cite exists because a
+dead link got cited; the parcel-adjacency check exists because a corner lot got described as
+backing onto forest. That pattern is sound, but it means the same failure mode — the model's own
+memory or invention doing the work while the output *looks* like it was derived or verified — is
+still live, unflagged, in at least three places that haven't yet had their own incident:
+
+- **School-mode client invention** (Phase 0) — positions are invented from brief evidence and
+  checked only against internal coherence, never against anything external.
+- **Massing driver proxies** — a geometric heuristic invented fresh per project, with no
+  fetch-before-cite equivalent keeping it honest against a real thermal or daylight number.
+- **Collaborator Roster calibration** — the Design Collaborator and Studio Critic voices are
+  tuned to specific reference architects. Reusing the same calibration project after project is
+  exactly the taste-groupthink pattern patch 8 diagnosed and fixed for precedent search, just not
+  generalized past that one phase.
+
+Add to **Common rules, every phase**, near the fetch-before-cite rule:
+
+> - **Say when a phase is running on judgment, not evidence.** If a claim, proxy, or invented
+>   position isn't traceable to something fetched, measured, or client-stated, label it as such in
+>   the doc (a bracketed `[invented]` / `[proxy, unverified]` tag is enough). This isn't a ban on
+>   judgment — most of this tool runs on it — it's making sure judgment-heavy output doesn't read
+>   with the same authority as a verified one.
+
+## 12. Point the Phase Gate at the Collaborator Roster
+
+Drafted 2026-08-28, same review as patch 11. The mandatory Phase Gate is three fixed, cheap
+questions (`SKILL.md`'s skeptic pass). The Collaborator Roster's Studio Critic voice — the one
+piece of this tool explicitly tuned to code, zoning, and review-panel scrutiny — is optional and
+easy to forget to invoke. A project can pass every mandatory gate in a row without that voice ever
+weighing in, because the sharp check and the cheap check aren't the same instrument and only the
+cheap one is mandatory.
+
+Add a fourth, conditional question to the Phase Gate for site, massing, and space-planning (the
+phases where statutory/code exposure is real):
+
+> - **Would the Studio Critic voice change this?** If the roster hasn't been run this phase, ask
+>   the question it exists to ask — what would a reviewer skeptical of code/zoning compliance
+>   flag here — before logging the gate as passed.
+
+## 13. Reconcile the client-profile filename — `SKILL.md` disagrees with itself
+
+Found 2026-08-28 while fixing the Project Window's parser against the real Nonimuss files.
+`SKILL.md`'s own declared project structure says the file is `04a_Client-Profile-Household.md`
+**or** `04b_Client-Profile-Organization.md`. But `design-collaborator-roster/SKILL.md` and
+`references/collaborator-voices.md` — part of the same packaged skill — already reference
+`0_Spine/04_Client-Profile.md`, no fork suffix. Nonimuss's real file matches the *roster's*
+convention, not `SKILL.md`'s own structure block, meaning the skill has been internally
+inconsistent independent of anything a real project did.
+
+Fix in `SKILL.md`'s project structure and intake instructions: the `04a`/`04b` templates remain
+two starting points to pick between, but the file gets **saved as `0_Spine/04_Client-Profile.md`
+regardless of which fork was used** — the household/organization distinction lives in the
+document's own H1 title, not the filename. Update the `04a`/`04b` template files' own header
+comments to say so explicitly, so copying one and not renaming it correctly is the obvious next
+step rather than a guess.

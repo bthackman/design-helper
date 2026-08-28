@@ -1,5 +1,8 @@
 # Client profile (organization) — [Project name]
 
+**Save as `0_Spine/04_Client-Profile.md`** regardless of fork — the household/organization
+distinction lives in this H1 title, not the filename.
+
 **Fork first:** is the client a *person/household* (use 04a) or an *organization* — corporation, school board, institution, developer (this file). The core difference from a household: **the client is not the user.** The person who signs the contract, the committee that approves the design, and the people who occupy the building are different groups with different interests. Discovering an organizational client means mapping all three — and the gaps between them.
 
 **Two modes.** School/competition: invent answers, traced to brief evidence. Real project: unanswered rows are the stakeholder interview plan — note *who* in the organization can answer each row, because no single person can.

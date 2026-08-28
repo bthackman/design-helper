@@ -1,5 +1,8 @@
 # Client profile (household) — [Project name]
 
+**Save as `0_Spine/04_Client-Profile.md`** regardless of fork — the household/organization
+distinction lives in this H1 title, not the filename.
+
 **Fork first:** is the client a *person/household* (this file) or an *organization* (use 04b). The difference isn't cosmetic — households are discovered through daily life and ritual; organizations through operations, politics, and the gap between who decides and who occupies.
 
 Who the client *is*, not just what they asked for. The brief lists wants; this matrix builds the person/organization behind them, so design moves can be argued from character.

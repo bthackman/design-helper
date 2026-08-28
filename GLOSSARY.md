@@ -8,7 +8,7 @@ unfinished, read `HANDOFF.md`.
 name, the term lands here in the same session. A vocabulary that lags the tool is worse than
 none, because it teaches you the wrong thing confidently.
 
-Last updated: 2026-08-27.
+Last updated: 2026-08-28.
 
 
 ### The three surfaces
@@ -81,7 +81,8 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | **Fit check** | Total NSF × grossing factor vs. massing GFA, stated as a number. The heart of the phase. |
 | **Grossing factor** | The multiplier from net usable area to gross floor area. Differs by massing type. |
 | **Circulation-first furnishing** | Mark openings and swings, draw desire lines, reserve keep-clear bands, and only then furnish the residual pockets. |
-| **Materiality** | Palette by system, with performance, cost and carbon. Never yet run. |
+| **Materiality** | 2–3 candidate palettes (each a coherent argument, not a shopping list) scored against drivers and tested against a 10% value-engineering cut, one locked, then stamped as a palette by system with performance, cost and carbon. Protocol drafted 2026-08-28, from method rather than an earned failure — still never run against a real project. |
+| **Palette candidate** | One coherent materiality argument (e.g. "heavy civic base, light warm upper body") covering envelope, structure and interior together. Three swatches of the same argument are one candidate, not three — same rule as a massing parti. |
 | **Phase gate (◇)** | The short critique between phases: score against drivers, ask the hardest questions, review open questions, log the direction. |
 | **Collaborator roster** | The optional three voices — Design Collaborator, Client, Studio Critic. Always ends generative. |
 | **Library** | Cross-project knowledge: site strategies, materials, `Sources.md`. |

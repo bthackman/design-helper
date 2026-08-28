@@ -3,9 +3,15 @@
 // on every open. This is the thing a window can do that a terminal cannot: hold up
 // what is unfinished without being asked.
 
-const P = require('./spine-parse.js');
+// Dual-mode: Node (test suites, require()) and plain <script> in the Window
+// (spine-parse.js loaded first, exposing window.SpineParse).
+const P = (typeof module !== 'undefined' && module.exports) ? require('./spine-parse.js') : window.SpineParse;
 
-const ORDER = P.ORDER;
+// Named distinctly from spine-parse.js's own top-level `ORDER` — both files are
+// loaded as classic <script> tags in the Window and share one global scope, so a
+// second top-level `const ORDER` here is a SyntaxError that silently kills this
+// whole file (and, before this fix, the finding that this comment now prevents).
+const AUDIT_PHASE_ORDER = P.ORDER;
 const norm = s => (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 const STOP = new Set(['the','a','an','to','of','and','or','in','on','for','with','every','all','each','is','be','at','by','from','as','it','its']);
 const keywords = s => norm(s).split(' ').filter(w => w.length > 3 && !STOP.has(w));
@@ -46,9 +52,9 @@ function blockingNow(questions, currentPhase) {
 
 // Questions carried more than two phases past where they were raised.
 function staleQuestions(questions, currentPhase) {
-  const ci = ORDER.indexOf(currentPhase);
+  const ci = AUDIT_PHASE_ORDER.indexOf(currentPhase);
   return P.openOnly(questions).map(q => {
-    const ri = ORDER.findIndex(p => norm(p).startsWith(norm(q.raisedIn).split(' ')[0] || '\u0000'));
+    const ri = AUDIT_PHASE_ORDER.findIndex(p => norm(p).startsWith(norm(q.raisedIn).split(' ')[0] || '\u0000'));
     if (ri < 0 || ci - ri < 2) return null;
     return { kind: 'stale-question', severity: 'medium',
              text: `Q${q.n} has been open since ${q.raisedIn}, ${ci - ri} phases ago: ${q.question}` };
@@ -70,10 +76,16 @@ function changedSinceLock(lockedDate, files) {
             text: `${hits.length} upstream file${hits.length > 1 ? 's' : ''} changed after the drivers locked (${lockedDate}) — do the drivers still follow from them? (${hits.join(', ')})` }];
 }
 
-// Cards that don't declare which driver they serve.
+// Cards that don't declare which driver they serve. Three real shapes: a labelled
+// field ('Speaks to driver(s):', the template's own format); a massing option's
+// driver scorecard, a nested sub-list where each driver is its own field keyed
+// 'D1 ...' rather than a value under a 'driver' key; and a precedent board's actual
+// practice, which scores drivers right in the heading ('P1 · Poole — ANCHOR (D1 ● ·
+// D2 ● · D3 ●)') and never fills a dedicated field at all. Any of the three counts.
 function orphanCards(text, label, driverField) {
   return P.filledCards(P.parseCards(text || '', 3))
-    .filter(c => !Object.entries(c.fields).some(([k, v]) => new RegExp(driverField, 'i').test(k) && v))
+    .filter(c => !(/D\d/.test(c.title) || Object.entries(c.fields).some(([k, v]) =>
+      (new RegExp(driverField, 'i').test(k) && v) || /^D\d/.test(k))))
     .map(c => ({ kind: 'orphan-card', severity: 'low',
                  text: `${label} "${c.title}" names no driver it serves.` }));
 }
@@ -109,4 +121,8 @@ function sinceLastOpen(files, lastOpenedISO) {
     .map(f => ({ path: f.path, mtime: f.mtime }));
 }
 
-module.exports = { audit, sinceLastOpen, untestedDrivers, blockingNow, staleQuestions, changedSinceLock, missingGates, orphanCards };
+(function () {
+  const exported = { audit, sinceLastOpen, untestedDrivers, blockingNow, staleQuestions, changedSinceLock, missingGates, orphanCards };
+  if (typeof module !== 'undefined' && module.exports) module.exports = exported;
+  else window.Audit = exported;
+})();
