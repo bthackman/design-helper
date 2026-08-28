@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Window — capability probe</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 15px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+         max-width: 46rem; margin: 3rem auto; padding: 0 1.5rem; }
+  h1 { font-size: 1.1rem; letter-spacing: .02em; margin-bottom: .2rem; }
+  p.sub { opacity: .65; margin-top: 0; }
+  button { font: inherit; padding: .6rem 1.1rem; cursor: pointer; margin: .3rem .3rem .3rem 0; }
+  #log { white-space: pre-wrap; margin-top: 1.5rem; border-top: 1px solid currentColor;
+         border-color: color-mix(in srgb, currentColor 25%, transparent); padding-top: 1rem; }
+  .ok   { color: #1a7f37; } .bad { color: #cf222e; } .warn { color: #9a6700; }
+  .verdict { font-weight: 700; margin-top: 1.2rem; display: block; }
+</style>
+</head>
+<body>
+<h1>Project Window — capability probe</h1>
+<p class="sub">Answers the one question the plan can't: does folder access work here?</p>
+
+<button id="pick">Pick the repo folder</button>
+<button id="write" disabled>Test writing a file</button>
+
+<div id="log"></div>
+
+<script>
+const log = document.getElementById('log');
+const say = (msg, cls) => {
+  const s = document.createElement('span');
+  if (cls) s.className = cls;
+  s.textContent = msg + '\n';
+  log.appendChild(s);
+};
+
+say('protocol            ' + location.protocol);
+say('secure context      ' + window.isSecureContext);
+say('showDirectoryPicker ' + ('showDirectoryPicker' in window ? 'present' : 'ABSENT'));
+say('user agent          ' + navigator.userAgent.slice(0, 90));
+
+if (location.protocol === 'file:') {
+  say('\nOpened as file:// — this is exactly the case in question. Click "Pick the repo folder".', 'warn');
+}
+if (!('showDirectoryPicker' in window)) {
+  say('\nVERDICT: API not available in this browser at all. Use Chrome or Edge.', 'bad');
+}
+
+let dir = null;
+
+document.getElementById('pick').onclick = async () => {
+  try {
+    dir = await window.showDirectoryPicker({ mode: 'readwrite' });
+    say('\n✓ Picker opened and returned a handle: ' + dir.name, 'ok');
+
+    let count = 0, names = [];
+    for await (const [name, h] of dir.entries()) { count++; if (names.length < 8) names.push(name + (h.kind === 'directory' ? '/' : '')); }
+    say('✓ Read ' + count + ' entries: ' + names.join('  '), 'ok');
+
+    const perm = await dir.queryPermission({ mode: 'readwrite' });
+    say('  readwrite permission: ' + perm);
+
+    // Does the repo look right?
+    const want = ['_templates', '_skill-source', 'Projects'];
+    const found = [];
+    for (const w of want) { try { await dir.getDirectoryHandle(w); found.push(w); } catch {} }
+    say(found.length === want.length
+      ? '✓ Looks like the design-helper repo root (' + found.join(', ') + ')'
+      : '! Missing ' + want.filter(w => !found.includes(w)).join(', ') + ' — is this the repo root?',
+      found.length === want.length ? 'ok' : 'warn');
+
+    document.getElementById('write').disabled = false;
+    say('\nNow click "Test writing a file".');
+  } catch (e) {
+    say('\n✗ Picker failed: ' + e.name + ' — ' + e.message, 'bad');
+    say('\nVERDICT: folder access does not work from ' + location.protocol, 'bad');
+    say('Fallback: from the repo root run\n    python -m http.server 8000\nthen open  http://localhost:8000/_UI/probe.html  and try again.', 'warn');
+  }
+};
+
+document.getElementById('write').onclick = async () => {
+  try {
+    const ui = await dir.getDirectoryHandle('_UI', { create: true });
+    const fh = await ui.getFileHandle('probe-write-test.txt', { create: true });
+    const w = await fh.createWritable();
+    await w.write('written by probe.html at ' + new Date().toISOString() + '\n');
+    await w.close();
+    const back = await (await fh.getFile()).text();
+    say('\n✓ Wrote and read back: ' + back.trim(), 'ok');
+    await ui.removeEntry('probe-write-test.txt');
+    say('✓ Deleted the test file again.', 'ok');
+    say('\nVERDICT: the Project Window can be a plain file you open. Build it as planned.', 'ok');
+    log.lastChild.classList.add('verdict');
+  } catch (e) {
+    say('\n✗ Write failed: ' + e.name + ' — ' + e.message, 'bad');
+    say('VERDICT: reading works, writing does not. The Window becomes read-only,', 'bad');
+    say('or runs behind  python -m http.server 8000  instead.', 'warn');
+  }
+};
+</script>
+</body>
+</html>

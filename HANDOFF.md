@@ -38,6 +38,14 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-08-27 (UI work)
+
+A plan for a **Project Window** (a visual shell around a project), a tested parsing/audit layer in
+`_UI/`, a new `GLOSSARY.md`, and **ten drafted-but-unapplied edits** to `SKILL.md` in
+`SKILL-patches.md`. Nothing is built and nothing is applied. Read
+**`SESSION-HANDOFF-2026-08-27.md`** for the running order — it starts with a two-minute browser
+test that decides whether the whole approach works.
+
 ## Where to look for more detail
 
 - **`00_Tool-Concept-Spec.md`** — the full improvement backlog: every method decision, numbered, dated,
