@@ -14,9 +14,14 @@ memory-biased toward international canon rather than actually searched).
 
 ## What's genuinely unfinished
 
-1. **Materiality has never been run.** `_skill-source/references/phase-5-materiality.md` is still generic
-   — no mandatory battery, no protocol earned from a real failure the way every other phase has one.
-   Expect the first real run to surface gaps the reference doesn't cover yet.
+1. **Materiality has a protocol now, run once, on an academic project.** `phase-5-materiality.md`
+   was rewritten 2026-08-28 (candidate palettes, driver scorecard, value-engineering test, lock) and
+   run for real on Nonimuss — see `Projects/Nonimuss-Residence/5_Materiality/Material-Palette.md`.
+   Real finding from that run: the protocol's "promote back to the library" step assumes a built
+   project confirms a material choice held up; an academic/hypothetical project never reaches that
+   gate, so nothing has actually been promoted into `Library/Materials/` yet, and the starter set
+   seeded that day is still exactly as drafted — `[proxy, unverified]`, not yet earned by a real
+   failure the way every other phase's reference has been.
 2. **Space planning has no interactive tool.** Massing got a full client-side Studio (live cap meter,
    sun-section, trade-space plot); space planning is still hand-drawn diagrams + prose. A "Test-Fit
    Studio" (place → steer, with a live doorway/clearance collision check) is the named next tooling
@@ -38,13 +43,31 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
-## Session handoff — 2026-08-27 (UI work)
+## Session handoff — 2026-08-28 (Project Window built; materiality run once)
 
-A plan for a **Project Window** (a visual shell around a project), a tested parsing/audit layer in
-`_UI/`, a new `GLOSSARY.md`, and **ten drafted-but-unapplied edits** to `SKILL.md` in
-`SKILL-patches.md`. Nothing is built and nothing is applied. Read
-**`SESSION-HANDOFF-2026-08-27.md`** for the running order — it starts with a two-minute browser
-test that decides whether the whole approach works.
+The Project Window planned 2026-08-27 is now **built and working**: `_UI/Project-Window.html`,
+a `file://`-openable page (verified — `showDirectoryPicker` works with no server) with a folder
+picker, phase rail with the drivers-lock gate, pinned driver cards, open questions/decisions
+panels, a collapsible/resizable conscience panel, a dependency-free markdown renderer, raw-doc
+editing, decision-log append, and a Massing Studio iframe. `_UI/_selftest.html` is a repeatable
+headless-Chrome regression check against the real Nonimuss files — rerun it after any change to
+`spine-parse.js`/`audit.js` rather than trusting a manual click-through alone.
+
+Building it against the real pilot (not a synthetic fixture) surfaced real bugs the synthetic test
+suite hadn't: the client-discovery file probe and the drivers-table column matching both silently
+failed against Nonimuss's actual files (the real drivers table uses `Test`/`Origin`, not the
+template's `Why it matters here`/`How we'll know it's working`); a top-level `ORDER`/`API`
+identifier collision between `spine-parse.js` and `audit.js` (both load as classic `<script>` tags
+sharing one global scope) silently killed `audit.js` entirely; precedent cards encode driver
+coverage in the heading text, not a field, so orphan-card detection false-flagged every card.
+Templates were updated to match what real practice already does rather than what the schema still
+claimed. `SKILL-patches.md` gained three more drafted (still unapplied) patches from a whole-corpus
+synthesis pass — generalizing fetch-before-cite to judgment-only content, pointing the Phase Gate
+at the Collaborator Roster, and fixing an internal disagreement in `SKILL.md` about the
+client-profile filename.
+
+Read **`SESSION-HANDOFF-2026-08-27.md`** for the original plan and the reasoning behind it — still
+accurate for *why* the Window is shaped the way it is, just no longer accurate about build status.
 
 ## Where to look for more detail
 
