@@ -7,7 +7,7 @@ Minimum three genuinely different options before converging. If two options are 
 - **Parti in one sentence:**
 - **Metrics:** GFA · storeys · footprint · efficiency
 - **Zoning check:** fits envelope? FAR? height?
-- **Driver scorecard:** (score each driver ✓ / ~ / ✗ with one line why)
+- **Driver scorecard:** (score each driver ✓ / ~ / ✗ with one line why; tag `[proxy, unverified]` where the line is judgment, not a computed number)
 - **Pros / cons:**
 - **Status:** active / parked / dead
 

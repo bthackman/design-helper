@@ -1,6 +1,9 @@
 # Project Window — Plan
 
-Status: **plan; parsing and audit layers built and tested** (2026-08-27).
+Status: **superseded by the build.** Written 2026-08-27 as a plan; the Project Window it describes
+is now built and working (`_UI/Project-Window.html`) — see `HANDOFF.md` for current state. Kept
+here for the reasoning: the layout, the artifact-viewer-per-phase mapping, and the editing spec
+below are still the design rationale, just no longer the status.
 Author: Ben Hackman + Claude.
 
 ## What this is for

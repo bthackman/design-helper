@@ -11,7 +11,7 @@ Every candidate from every campaign — vault and fresh search pooled together, 
 regard to origin — before culling to the board below. This is the visible cull: score first,
 then decide what makes the cut, not the other way around.
 
-Glyphs: ● strong · ○ weak/partial · ✗ fails this driver.
+Glyphs: ● strong · ○ weak/partial · ✗ fails this driver. Flag a cell `[proxy, unverified]` where the score is assumed rather than a fetched fact about the precedent.
 
 | # | Project | From | D1 | D2 | D3 | D4 | D5 | Doc | Proposed role |
 |---|---|---|---|---|---|---|---|---|---|

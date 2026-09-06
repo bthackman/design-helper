@@ -43,6 +43,29 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (judgment flag extended to scorecard cells)
+
+Small follow-on the same day, from two Fable-model reviews (one researching MASIV, a Calgary
+housing-developer proptech company, for portable ideas; one an outside expert review of the tool
+against the ambition of it becoming a design assistant other architects could use). Of the ranked
+list that came out of that, the one actionable without a new pilot project: the existing
+judgment-flag convention (`[invented]` / `[proxy, unverified]`) covered prose claims but not
+scorecard cells, so a driver score resting on assumption could sit next to one resting on a
+fetched fact with no visible difference. Extended the rule in `SKILL.md`'s common-rules list, the
+`GLOSSARY.md` entry, all three phase references that define a scorecard (`phase-1-precedents.md`,
+`phase-3-massing.md`, `phase-5-materiality.md`), and the three templates whose scorecard line
+already carried inline instructions (`Precedent-Board.md`, `Massing-Options.md`,
+`Material-Palette.md`). `design-process.skill` repackaged — note the repackage script now goes
+through Python's `zipfile` rather than PowerShell's `Compress-Archive`, which had silently written
+backslash path separators into the archive (`design-process\SKILL.md` instead of
+`design-process/SKILL.md`) — harmless on Windows, but would break extraction on Mac/Linux.
+
+Full rest of that ranked list (not yet actioned): pilot-test the 13 patches below, get a real
+client engagement running, decide the Claude-Code-vs-GUI product-shape question, a site-search
+driver-weighted scorecard ported from the precedent phase's pattern, making the vault/regional
+coupling explicit config, and a cheap per-project close-out/calibration log. Also logged as
+backlog rows #22/#23 in `00_Tool-Concept-Spec.md`.
+
 ## Session handoff — 2026-09-06 (all 13 pending SKILL-patches applied)
 
 All 13 patches drafted in `SKILL-patches.md` on 2026-08-27/28 are now applied to

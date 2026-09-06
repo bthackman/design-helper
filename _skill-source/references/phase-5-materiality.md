@@ -36,7 +36,8 @@ driver or a precedent card, not just "it looks right" — cost tier, and perform
 
 ## Score against drivers, and test with value engineering
 Score each candidate against the locked drivers the same way massing options do (a scorecard, not
-a paragraph). Then stress it: **if value engineering cuts 10%, what goes first, and does the
+a paragraph) — same convention as massing: a score resting on taste or assumption rather than a
+spec sheet or precedent link carries `[proxy, unverified]` in its rationale. Then stress it: **if value engineering cuts 10%, what goes first, and does the
 argument survive losing it?** A palette that collapses under its cheapest material was never
 actually a coherent argument — it was a shopping list wearing one. Which material in each candidate
 is doing driver work, and which is just taste that happened to be defensible until the budget

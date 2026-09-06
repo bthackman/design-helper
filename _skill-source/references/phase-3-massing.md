@@ -9,7 +9,7 @@ Propose massing partis for the user to react to — bar, courtyard, tower-on-pod
 Footprint × storeys → GFA; compare to required GSF from the brief (with grossing factor); check against envelope (setbacks, height, FAR). Compute, don't estimate. An option that doesn't fit the program or the envelope is either dead or requires a logged decision to change the brief/seek variance.
 
 ## Score against drivers
-Each option gets a driver scorecard (✓ / ~ / ✗ with one line of why per driver). This is where drivers earn their keep — if every option scores identically, the drivers are too vague, and that's worth surfacing.
+Each option gets a driver scorecard (✓ / ~ / ✗ with one line of why per driver). This is where drivers earn their keep — if every option scores identically, the drivers are too vague, and that's worth surfacing. Where a score rests on the geometric proxy rather than a real test — the same honesty already required of the Studio's driver proxies — the rationale line carries `[proxy, unverified]` too, so the scorecard doesn't look more certain than the proxy behind it.
 
 ## Converge
 Recommend a direction (an option or a named hybrid) with rationale. The user decides; the decision — including rejected options and why — goes to the decision log. Park, don't delete, the losers: mark status parked/dead so they're recoverable when the client asks "did you consider...?"

@@ -20,7 +20,7 @@ one idea.
 - **Envelope:** material — why (driver/precedent link) — cost tier — performance/carbon note
 - **Structure:** material — why — cost tier — performance/carbon note
 - **Interior:** material — why — cost tier — performance/carbon note
-- **Driver scorecard:** D1 ○ · D2 ○ · D3 ○ · D4 ○ · D5 ○
+- **Driver scorecard:** D1 ○ · D2 ○ · D3 ○ · D4 ○ · D5 ○ (flag `[proxy, unverified]` where taste, not a spec sheet, drove the score)
 - **Survives value engineering?** if budget cuts 10%, what goes first, and does the argument still hold together without it
 - **Status:** active / parked / locked
 
