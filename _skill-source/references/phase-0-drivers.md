@@ -59,6 +59,6 @@ Never silently drop either side. A contradiction resolved without a decision-log
 - **Non-redundant** — overlaps allowed only with a stated distinction (orientation vs. event); otherwise merge.
 - **Able to say no** — a driver that never rejects an option is decoration. Ask of each: what would this driver kill?
 - **Traceable** — origin cited: which evidence tier, which site fact, which decision.
-- **Full disposition** — every parked candidate's fate is recorded (locked / reframed-into / demoted-to / dropped-because). Nothing vanishes silently.
+- **Full disposition** — every parked candidate's fate is recorded (locked / reframed-into / demoted-to / dropped-because). Nothing vanishes silently. Every non-locked disposition also gets a row in `Library/Parked-Ideas.md` (project, what it was, why it didn't lock, tags, reconsider-if) — the project's own decision log has the reasoning; the register is what makes it findable from a different project.
 
 After locking: write the set to `01_Design-Drivers.md` with tests and origins, log the lock in the decision log (including the rejected framings), and update the project README next-step.

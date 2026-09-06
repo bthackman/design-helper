@@ -43,6 +43,34 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (three ideas from a Fable "dream" pass, built same-day)
+
+Fourth pass the same day — this one deliberately not a structured review. A Fable-model agent was
+asked to free-associate on the tool's own texture (its vocabulary, rituals, and honesty conventions)
+rather than audit it, landed on reading the whole thing as a hospital chart (spine = chart,
+drivers-lock = anesthesia induction, judgment flags = patient-reported vs. lab-confirmed, parking a
+rejected option = differential-diagnosis discipline), and used that lens to surface three backlog
+items (now #24, #25, #26 in `00_Tool-Concept-Spec.md`) plus a fourth roster voice, all actioned the
+same session on the user's go-ahead:
+
+- **`Library/Parked-Ideas.md`** (#25) — a new cross-project register for demoted drivers, dead
+  massing options, and cut site candidates, so "has this been tried before, anywhere" is answerable
+  outside the one project that rejected the idea. Wired into the phase-gate promotion step in
+  `phase-0-drivers.md`, `phase-2-site.md`, and `phase-3-massing.md`.
+- **`state.json`'s new `status` field** (#24) — `active`/`dormant`/`complete` at the project level,
+  with a one-line reason when dormant, closing the gap where a stalled project looked identical to a
+  finished one.
+- **The Archive, a fourth collaborator-roster voice** (#26) — retrieves the user's own cross-project
+  decision-log patterns rather than arguing an opinion, added to both `collaborator-voices.md` and the
+  standalone `design-collaborator-roster` skill. Both `.skill` packages repackaged.
+
+The dream also flagged one gap it called non-speculative — `Projects/*/` is gitignored, so every real
+project's spine has no version history, and the corpus already records one silent-corruption incident
+(the OneDrive brief v0.3 loss) — but the user chose not to action that one this session, only the
+three speculative ideas plus the Archive voice out of curiosity. **None of the four are exercised
+against real project data yet** — same honesty caveat as the site-search scorecard: drafted from the
+dream's reasoning, not from an earned failure.
+
 ## Session handoff — 2026-09-06 (SITE SEARCH scorecard drafted)
 
 Third pass the same day, from a third Fable-model review specifically scoped to "what's workable on

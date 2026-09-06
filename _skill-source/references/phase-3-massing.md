@@ -12,7 +12,7 @@ Footprint × storeys → GFA; compare to required GSF from the brief (with gross
 Each option gets a driver scorecard (✓ / ~ / ✗ with one line of why per driver). This is where drivers earn their keep — if every option scores identically, the drivers are too vague, and that's worth surfacing. Where a score rests on the geometric proxy rather than a real test — the same honesty already required of the Studio's driver proxies — the rationale line carries `[proxy, unverified]` too, so the scorecard doesn't look more certain than the proxy behind it.
 
 ## Converge
-Recommend a direction (an option or a named hybrid) with rationale. The user decides; the decision — including rejected options and why — goes to the decision log. Park, don't delete, the losers: mark status parked/dead so they're recoverable when the client asks "did you consider...?"
+Recommend a direction (an option or a named hybrid) with rationale. The user decides; the decision — including rejected options and why — goes to the decision log. Park, don't delete, the losers: mark status parked/dead so they're recoverable when the client asks "did you consider...?" Log the same call to `Library/Parked-Ideas.md` (project, option, why it died, reconsider-if) — that's what makes "have we tried this anywhere before" answerable across projects, not just within one.
 
 ## The Massing Studio (interactive instrument) — evolves the phase from *pick* to *steer*
 

@@ -49,7 +49,8 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | Term | What it means here |
 |---|---|
 | **Spine** | The six living docs in `0_Spine/` — brief, drivers, decision log, open questions, client profile, `state.json`. Read before every phase, written after. The project's memory. |
-| **`state.json`** | The spine's machine-readable pointer: `currentPhase`, `driversLocked`, a status per phase. Never the source of truth — the other five spine docs are — just a cheap index for external tools like the Project Window. |
+| **`state.json`** | The spine's machine-readable pointer: `currentPhase`, `driversLocked`, a status per phase, and a project-level `status` (`active` / `dormant` / `complete`, with a one-line reason when dormant). Never the source of truth — the other five spine docs are — just a cheap index for external tools like the Project Window. |
+| **Dormant** | A project's `state.json` status when it goes quiet without finishing — set deliberately, with a reason and what would restart it, rather than left to look indistinguishable from `complete`. Same anti-silent-drop discipline the tool already applies to open questions, at the scope of a whole project. |
 | **Brief** | The program as understood *now*: spaces, areas, adjacencies, constraints. Versioned; the version bumps whenever the program changes. |
 | **Client discovery** | First phase. Household or organization fork, then the evidence → reading → position → implication matrix. Produces *motives*, not yet drivers. |
 | **Motives** | What the client's reading implies about how a site should be chosen or judged. Upstream of drivers. |
@@ -60,7 +61,7 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | **Drivers** | The 3–5 project-scale ideas everything downstream is tested against. Each must be testable, traceable to evidence, and able to say no. **Always project-specific** — the template ships an empty table; a driver portable to another project isn't project-scale enough to have passed the gate. |
 | **Drivers lock** | The gate. Drivers freeze only after client *and* site, so the site can argue back. Everything before feeds the drivers; everything after is tested against them. |
 | **Site argues back** | The workshop at the gate: each candidate driver gets confirm / specify / reframe / demote, and the site may volunteer drivers of its own. |
-| **Parked** | A demoted driver or a rejected massing option kept on record rather than deleted, so it stays recoverable. |
+| **Parked** | A demoted driver, a rejected massing option, or a cut site zone/parcel kept on record rather than deleted, so it stays recoverable. Also logged to `Library/Parked-Ideas.md` so it's findable across projects, not just within the one that parked it. |
 | **Precedents** | Buildings studied to answer a named problem. |
 | **Search plan** | The pre-search document. Reviewed and signed off *before* any query runs. |
 | **Campaign** | One search line built on a rare, retrievable discriminator. Only rare terms belong in queries. |
@@ -89,6 +90,7 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | **Palette candidate** | One coherent materiality argument (e.g. "heavy civic base, light warm upper body") covering envelope, structure and interior together. Three swatches of the same argument are one candidate, not three — same rule as a massing parti. |
 | **Phase gate (◇)** | The short critique between phases: score against drivers, ask the hardest questions, review open questions, log the direction. For site, massing, and space-planning, also asks whether the Studio Critic voice would change the answer. |
 | **Judgment flag** | A bracketed `[invented]` / `[proxy, unverified]` tag on any claim, proxy, or invented position that isn't traceable to something fetched, measured, or client-stated — so judgment-heavy output never reads with the authority of a verified one. Applies inside scorecard cells as well as prose: a driver score resting on assumption carries the flag in its rationale, not just narrative claims. |
-| **Collaborator roster** | The optional three voices — Design Collaborator, Client, Studio Critic. Always ends generative. |
+| **Collaborator roster** | The optional four voices — Design Collaborator, Client, Studio Critic, the Archive. Always ends generative. |
+| **The Archive** | The roster's fourth voice — retrieves the user's own prior decisions and patterns from cross-project history (decision logs, `Library/Parked-Ideas.md`) rather than arguing an opinion of its own. Says "nothing on record" plainly when there's nothing real to retrieve, rather than inventing a pattern. The only voice that interrogates the designer's own recurring judgment rather than the design. |
 | **Library** | Cross-project knowledge: site strategies, materials, `Sources.md`. |
 | **Vault** | The personal Obsidian precedent collection. Source of truth for precedents; `Library/Precedents/` is retired. |

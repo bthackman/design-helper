@@ -26,7 +26,7 @@ Six living documents in `0_Spine/`:
 - `02_Decision-Log.md` — every significant decision: statement, rationale, rejected alternatives, phase, date.
 - `03_Open-Questions.md` — unresolved items that carry between phases so nothing is silently dropped.
 - `04_Client-Profile.md` — the client reading. Start from whichever fork template fits (`04a_Client-Profile-Household.md` or `04b_Client-Profile-Organization.md`), but always save as `04_Client-Profile.md` — the household/organization distinction lives in the document's own H1 title, not the filename.
-- `state.json` — `currentPhase`, `driversLocked`, and a status per phase. Update it on phase entry, phase exit, drivers lock, and whenever a phase loops back. A pointer for external tools, never the source of truth — the other five files are. Store only what can't be derived from them.
+- `state.json` — `currentPhase`, `driversLocked`, a status per phase, and a project-level `status` (`active` / `dormant` / `complete`) with a one-line reason when dormant. Update it on phase entry, phase exit, drivers lock, whenever a phase loops back, and whenever the project itself goes quiet or wraps. A pointer for external tools, never the source of truth — the other five files are. Store only what can't be derived from them.
 
 ## Project structure
 
@@ -73,12 +73,13 @@ Before any phase: read all spine files, skim prior phases' output docs, check bl
 - `references/phase-3-massing.md` — building massing + Massing Studio
 - `references/phase-4-space-planning.md` — program test-fit
 - `references/phase-5-materiality.md` — material palette
-- `references/collaborator-voices.md` — the optional three-voice roster (any phase)
+- `references/collaborator-voices.md` — the optional four-voice roster (any phase)
 
 **Common rules, every phase:**
 
 - **Write as you go.** Findings go into the phase's `.md` when discovered, not summarized at session end. Chat is scratch; files are the record.
-- **Keep `state.json` current.** `0_Spine/state.json` records `currentPhase`, `driversLocked`, and a status per phase. Update it on phase entry, phase exit, drivers lock, and whenever a phase loops back. It is a pointer for external tools, never the source of truth — the files are. Store only what can't be derived from them.
+- **Keep `state.json` current.** `0_Spine/state.json` records `currentPhase`, `driversLocked`, a status per phase, and a project-level `status`. Update it on phase entry, phase exit, drivers lock, and whenever a phase loops back. It is a pointer for external tools, never the source of truth — the files are. Store only what can't be derived from them.
+- **Don't let a project go quiet without saying so.** The tool already refuses to let a decision or an open question vanish silently between phases — the same discipline applies to a whole project stalling. If a session ends with the user pausing, moving to another project without finishing this one, or the project otherwise stalling, ask why in one line and set `state.json`'s project-level `status` to `dormant` with that reason and what would restart it. Set it to `complete` when the project actually wraps. A project that's simply quiet with no status update is indistinguishable from one that's finished — that's the failure mode this rule exists to close.
 - **Tie everything to drivers.** A precedent, site move, massing option, or material that serves no driver needs a stated reason to exist — or it prompts a conversation about whether the drivers are wrong.
 - **Say when a phase is running on judgment, not evidence.** If a claim, proxy, or invented position isn't traceable to something fetched, measured, or client-stated, label it as such in the doc (a bracketed `[invented]` / `[proxy, unverified]` tag is enough). This isn't a ban on judgment — most of this tool runs on it — it's making sure judgment-heavy output doesn't read with the same authority as a verified one. This applies inside scorecards too, not just prose: a driver score resting on an assumption rather than a fetched fact or a computed number carries the same tag in its rationale line, so a grid of ✓/~/✗ glyphs never reads as more verified than the judgment behind it.
 - **Check the math.** Areas, FAR, envelope, grossing, cap: compute and show the numbers; flag misfits early. Run real calculations, don't estimate.
@@ -144,13 +145,13 @@ Full depth in `references/phase-3-massing.md`. Output is `Massing-Options.md` (�
 3. **Trade-space plot** — a scatter/bubble on the two or three objectives the project actually trades, with a **live point** that moves as the architect edits, so hybrids are seen against A/B/C and no driver is traded away invisibly.
 4. **⤓ Export JSON** — beside the existing share-edits/export button, emits `massing-interchange/v1` (schema of record: `Massing-Export-Roadmap.md`) — current scheme's boxes + site header (incl. **`latLong`**, pulled from the site phase's parcel geometry, not left blank) for the Rhino/Revit/Blender receivers in `_Export-Receivers/` to consume. Fixed shape, one-time build, no ongoing cost — see `references/phase-3-massing.md` for the exact fields.
 
-**OPTIONAL — offer, run only on request (model-in-the-loop, recurring token cost):** sketch/napkin → measured option; the **three-voice roster** (see below); real-drawing precedent overlay (a cheap schematic redraw from saved cards is the low-cost substitute).
+**OPTIONAL — offer, run only on request (model-in-the-loop, recurring token cost):** sketch/napkin → measured option; the **four-voice roster** (see below); real-drawing precedent overlay (a cheap schematic redraw from saved cards is the low-cost substitute).
 
 **Studio hygiene:** self-contained single file; syntax-check the script before delivery; sanity-check that the proxies reproduce the written narrative (the strong option should score strong on the drivers you claimed). Link the Studio from `Massing-Options.md`.
 
 ## The collaborator roster (optional, any phase)
 
-Beyond the standard one-shot phase gate, the user can convene a standing **three-voice roster** (full spec in `references/collaborator-voices.md`): **(1) Design Collaborator** — a generative protagonist that advances the design and converts critique into dimensioned, testable moves; calibrated to **MacKay-Lyons** (site/climate-generated archetypal forms, wind-sheltered clusters, local trades) + **Safdie** (every space earns light + outlook, section as social instrument, one clear geometry) as *sensibilities, not pastiche*. **(2) Client** — from the client profile + general owner concerns. **(3) Studio Critic** — ~75% RAIC review panel / 25% City DP + building code (egress, heights, setbacks, floor-area, humidity). The mode always ends generative — spar *and* build. On-request and token-taxing; usable in any phase.
+Beyond the standard one-shot phase gate, the user can convene a standing **four-voice roster** (full spec in `references/collaborator-voices.md`): **(1) Design Collaborator** — a generative protagonist that advances the design and converts critique into dimensioned, testable moves; calibrated to **MacKay-Lyons** (site/climate-generated archetypal forms, wind-sheltered clusters, local trades) + **Safdie** (every space earns light + outlook, section as social instrument, one clear geometry) as *sensibilities, not pastiche*. **(2) Client** — from the client profile + general owner concerns. **(3) Studio Critic** — ~75% RAIC review panel / 25% City DP + building code (egress, heights, setbacks, floor-area, humidity). **(4) The Archive** — retrieves the user's own prior decisions and patterns from cross-project history (decision logs, `Library/Parked-Ideas.md`), never invents one; says "nothing on record" plainly when there's nothing real to retrieve. The mode always ends generative — spar *and* build. On-request and token-taxing; usable in any phase.
 
 ## Phase gate (critique ritual, between phases)
 
@@ -169,6 +170,12 @@ On-demand, not a blocker — if the user says skip, skip, but note in the phase 
 After a phase gate (or on request), offer to promote keepers: **site moves and materials go to `Library/`** (Site-Strategies/, Materials/) — copy the card, keep the tags, add the source project name, strip client-identifying detail. When starting materiality on any project, check `Library/Materials/` first — past work is the cheapest research. Keep `Library/Sources.md` current (live / dead / paywall + human leads + null-yield notes).
 
 **Precedents go to the vault, not `Library/`** — see below.
+
+**Parked ideas cross the project boundary too, not just winners.** At the same phase gate, log any
+demoted/reframed/dropped driver, parked or dead massing option, or cut site zone/parcel to
+`Library/Parked-Ideas.md` — what it was, which project, why it died, tags, and what would make it
+worth reconsidering. `status: parked` already makes something recoverable *within* one project; this
+register is what makes "has anyone tried this before" answerable *across* all of them.
 
 ### The precedent library lives in the vault (decided 2026-08-27)
 

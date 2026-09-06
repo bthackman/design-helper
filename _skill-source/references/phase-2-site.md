@@ -19,7 +19,9 @@ actually discriminating between candidates.
 read, jurisdiction/zoning fit, and honest caveats. A cell resting on impression rather than a verified
 fact (a character read, a distance estimated rather than measured) carries `[proxy, unverified]`.
 Verdict per zone: drill down or cut — log cuts, same as a parked massing option, because they strengthen
-the final argument.
+the final argument. Cut zones and parcels also get a row in `Library/Parked-Ideas.md` (what, why it lost,
+tags, reconsider-if) — the search plan's own file already records the reasoning; the register is what
+makes it findable from a different project's site search.
 
 **Stage 2 — parcel scorecard.** Score every candidate parcel the same way, against the same motive
 columns, plus one more that zone-level scoring can't yet compute: **envelope-utilization** — target GSF

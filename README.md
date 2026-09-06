@@ -14,7 +14,7 @@ survives to later phases.
    upload). This is the core skill — it triggers automatically on any design-phase conversation, or on
    any folder containing a `0_Spine/` directory.
 2. Optionally install `design-collaborator-roster.skill` too — an account-level companion that convenes a
-   standing three-voice design review (see below). It works with this tool, or standalone on any project.
+   standing four-voice design review (see below). It works with this tool, or standalone on any project.
 3. Connect this repo's folder to your Claude session and say what you want: *"start a new project from
    this brief"* or *"resume the [project] project."* Claude reads the spine first — that's where all
    state lives.
@@ -68,11 +68,13 @@ Projects/                       one folder per project (gitignored — your proj
 
 - **`design-process`** — the core guided workflow above. Fires on any design-phase conversation, or a
   folder containing `0_Spine/`.
-- **`design-collaborator-roster`** — an optional, on-request three-voice critique: a generative **Design
+- **`design-collaborator-roster`** — an optional, on-request four-voice critique: a generative **Design
   Collaborator** (calibrated to Brian MacKay-Lyons + Moshe Safdie as sensibilities, not pastiche), a
-  **Client** voice pulled from the project's client profile, and a **Studio Critic** (RAIC review panel +
-  planning/code). Always ends generative — critique becomes a concrete, testable move, not just
-  commentary. Pull it anytime with "run the roster" / "critique this design."
+  **Client** voice pulled from the project's client profile, a **Studio Critic** (RAIC review panel +
+  planning/code), and **the Archive** (retrieves your own prior decisions and patterns cross-project,
+  never invents one — says "nothing on record" when there's nothing real to retrieve). Always ends
+  generative — critique becomes a concrete, testable move, not just commentary. Pull it anytime with
+  "run the roster" / "critique this design."
 
 ## Status
 

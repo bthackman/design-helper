@@ -11,6 +11,11 @@ Cross-project knowledge base. When a project wraps a phase, promote the keepers 
 
 Tag consistently; tags are how future projects find things.
 
+**`Parked-Ideas.md`** — the opposite register: demoted drivers, dead massing options, cut site
+candidates, logged with why they died and what would make them worth reconsidering. Promotion above
+is one-directional (winners only); this is the register that makes "has this been tried before,
+anywhere" answerable for the things that didn't win.
+
 **Precedents don't live here.** Decided 2026-08-27: Ben's Obsidian vault
 (`00_Reference/00_Vault/Work Vault/Architecture/`) already holds a large, typology-organized precedent
 collection and is the single source of truth for precedents, so there's no separate `Precedents/` folder

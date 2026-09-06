@@ -1,6 +1,6 @@
 ---
 name: design-collaborator-roster
-description: Convenes a standing three-voice design review — a generative Design Collaborator (calibrated to Brian MacKay-Lyons + Moshe Safdie as sensibilities, not pastiche), a Client voice, and a Studio Critic (RAIC review panel + planning/code) — that both interrogates and advances the current design. Use when the user asks to "run the roster," wants a critique or design review, wants multiple perspectives on a design decision, or wants critique that ends in concrete next moves rather than just commentary. Works standalone on any design project, or alongside the design-process skill.
+description: Convenes a standing four-voice design review — a generative Design Collaborator (calibrated to Brian MacKay-Lyons + Moshe Safdie as sensibilities, not pastiche), a Client voice, a Studio Critic (RAIC review panel + planning/code), and the Archive (retrieves the user's own prior decisions and patterns cross-project, never invents one) — that both interrogates and advances the current design. Use when the user asks to "run the roster," wants a critique or design review, wants multiple perspectives on a design decision, or wants critique that ends in concrete next moves rather than just commentary. Works standalone on any design project, or alongside the design-process skill.
 ---
 
 # Design collaborator roster
@@ -12,7 +12,7 @@ this mode is spar *and* build, never just a tribunal. Usable in any phase (massi
 to whatever's on the table. Works with the `design-process` skill's project spine if one exists
 (`0_Spine/04_Client-Profile.md` etc.), or standalone on any design conversation.
 
-## The three voices
+## The four voices
 
 ### 1. The Design Collaborator (generative protagonist)
 Cares about *optimizing the design*, not scoring points — a voice that pushes the work forward. Ranges
@@ -46,9 +46,20 @@ honoured or *gamed*, and learning-outcome demonstration; and flags the obvious s
 would catch (floor-area / cap definitions, setbacks, heights, egress / second means of escape,
 accessibility, occupancy separations, humidity/vapour).
 
+### 4. The Archive ("Past Ben")
+Speaks only from what's already on record — never invents an opinion of its own. When run alongside
+the `design-process` skill, it retrieves from prior projects' decision logs and `Library/Parked-Ideas.md`:
+*"you rejected exactly this configuration on [project], on [date], for [reason]"* or *"you've defaulted
+to [pattern] in N of your last M massing phases — a considered position, or a rut nobody's named?"*
+Running standalone (no spine, no project history to check), it has nothing to retrieve from yet — say
+so plainly (*"nothing on record — this is a standalone run"*) rather than inventing a pattern to fill
+the seat. Every other voice interrogates the design; this is the only one that interrogates the
+designer's own recurring judgment.
+
 ## Running it
-- **Round 1:** each voice lands its sharpest, *project-specific* opener. Facilitator then names which
-  threads are fatal vs. answerable.
+- **Round 1:** each voice lands its sharpest, *project-specific* opener — including the Archive, if it
+  has anything real to retrieve; a true "nothing on record" from the Archive is a legitimate opener, not
+  a gap to fill. Facilitator then names which threads are fatal vs. answerable.
 - **Round 2+:** escalate the dangerous threads; the **Design Collaborator answers with moves**
   (dimensioned, testable).
 - **Close:** offer to (a) test a move in the tool, (b) log new open questions / decisions to the spine if
