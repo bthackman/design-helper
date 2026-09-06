@@ -54,7 +54,7 @@ Projects/<name>/
 
 Site is two promptable functions — skip Search when the site is already known:
 
-- **SITE SEARCH** (`Site-Search.md`): criteria → candidate zones (with access math) → parcel drill-down (land-use verification) → user selects.
+- **SITE SEARCH** (`Site-Search.md`): criteria from weighted client motives → candidate zones scored (with access math) → parcel drill-down scored (land-use verification + envelope-utilization) → user selects. Same visible-scorecard pattern as precedent search, run against motives instead of drivers (drivers don't exist yet).
 - **SITE DETAILS** (`Site-Details_<address>.md`): land use from municipal open data → bylaw envelope → mandatory site-assessment battery. The battery is not optional: elevation/topo, views (earned vs. speculative), landscape context, computed sun study (3 dates), wind, acoustic (noise-source inventory with distance/direction/wind carry), plus a two-ring context scan (adjacent ring verified per the adjacency rule below; ~1–2 km ring for amenities *and* nuisances).
 
 Data pipeline proven for Calgary, repeatable elsewhere: municipal assessment dataset (parcel polygon, lot area, land-use, assessed value) + land-use bylaw division pages + NRCan CDEM altitude API for concept-grade elevations. Full method: `references/phase-2-site.md`.

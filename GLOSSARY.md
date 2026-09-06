@@ -53,7 +53,8 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | **Brief** | The program as understood *now*: spaces, areas, adjacencies, constraints. Versioned; the version bumps whenever the program changes. |
 | **Client discovery** | First phase. Household or organization fork, then the evidence → reading → position → implication matrix. Produces *motives*, not yet drivers. |
 | **Motives** | What the client's reading implies about how a site should be chosen or judged. Upstream of drivers. |
-| **Site search** | Criteria → candidate zones → parcel drill-down → user selects. Skipped when the site is already known. |
+| **Site search** | Criteria from weighted client motives → candidate zones scored → parcel drill-down scored (same scorecard pattern as precedents, plus envelope-utilization) → user selects. Skipped when the site is already known. |
+| **Envelope-utilization** | Target GSF (brief) ÷ buildable envelope GFA (setbacks/height/FAR), scored per-candidate in the Stage 2 parcel scorecard, before selection — not just computed once after. Catches a parcel that fits every motive but not the program. |
 | **Site details** | Land use, bylaw envelope, and the mandatory assessment battery on a known parcel. |
 | **Assessment battery** | The non-optional site checks: elevation, views, landscape context, computed sun study, wind, acoustic, plus the two-ring context scan. |
 | **Drivers** | The 3–5 project-scale ideas everything downstream is tested against. Each must be testable, traceable to evidence, and able to say no. **Always project-specific** — the template ships an empty table; a driver portable to another project isn't project-scale enough to have passed the gate. |
@@ -63,7 +64,7 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | **Precedents** | Buildings studied to answer a named problem. |
 | **Search plan** | The pre-search document. Reviewed and signed off *before* any query runs. |
 | **Campaign** | One search line built on a rare, retrievable discriminator. Only rare terms belong in queries. |
-| **Scorecard** | The visible scoring of the pooled long-list against drivers, so culling is auditable. |
+| **Scorecard** | The visible scoring of the pooled long-list against drivers — or, pre-lock, client motives (site search) — so culling is auditable. |
 | **Anchor / Lesson / Evidence** | A precedent's role. Anchor = whole building, ≥3 drivers. Lesson = one transferable move. Evidence = proof something works; never shown as a design precedent. |
 | **Region rings** | Search escalation: 0 city → 1 region → 2 country → 3 same climate → 4 anywhere. Inner rings first. |
 | **Default Canadian awards ladder** | The named, verified default sweep for the typology-baseline awards campaign — Prairie Design Awards (ring 0–1) → Governor General's Medals (ring 2) → Finlandia Prize (ring 3) → Stirling / Mies / Aga Khan (ring 4). Populates the ring sweep with known-good sources instead of rediscovering it per project. Search targets to fetch, never a list to recall from memory. |

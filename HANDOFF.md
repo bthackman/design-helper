@@ -43,6 +43,29 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (SITE SEARCH scorecard drafted)
+
+Third pass the same day, from a third Fable-model review specifically scoped to "what's workable on
+a machine with no access to Ben's Obsidian vault and no access to the Nonimuss pilot project." Its
+finding: backlog row #23 (the MASIV-inspired driver-weighted parcel scorecard) turned out to have
+zero dependency on either missing resource — `phase-2-site.md` and `Site-Search.md` never touch the
+vault, and the method can be authored the same way materiality's protocol was, from method rather
+than an earned failure.
+
+Drafted: a new "Site search — scoring candidates" section in `phase-2-site.md` describing the same
+two-layer pattern as precedent search (visible SCORE layer over a pooled candidate long-list), run
+against **weighted client motives** rather than drivers, since drivers don't exist yet at this point
+in the process. `Site-Search.md`'s template gained real tables at both stages — a criteria/weight
+list, a Stage 1 zone scorecard, a Stage 2 parcel scorecard — plus **envelope-utilization** (target
+GSF ÷ buildable envelope GFA) folded into Stage 2 as a scored row, computed per-candidate before
+selection rather than only after it. `SKILL.md`'s SITE SEARCH one-liner, `GLOSSARY.md` (new
+`Envelope-utilization` entry, updated `Site search` and `Scorecard` entries), and the backlog row in
+`00_Tool-Concept-Spec.md` were all updated to match.
+
+**Not yet run** — like materiality when its protocol was first written, this is drafted from method,
+not from a real search's failure. First real site-search run should be read against it the way every
+other phase's reference got sharpened by an actual mistake; don't treat this as validated until then.
+
 ## Session handoff — 2026-09-06 (judgment flag extended to scorecard cells)
 
 Small follow-on the same day, from two Fable-model reviews (one researching MASIV, a Calgary
