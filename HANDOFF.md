@@ -43,6 +43,28 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (all 13 pending SKILL-patches applied)
+
+All 13 patches drafted in `SKILL-patches.md` on 2026-08-27/28 are now applied to
+`_skill-source/SKILL.md`, `design-process.skill` was repackaged (only `SKILL.md` changed inside
+the zip — the `references/` files were untouched by any patch), and `GLOSSARY.md` picked up a
+sixth spine entry (`state.json`) plus new terms for the awards ladder, the open slot, and the
+judgment flag. `SKILL-patches.md` itself is now empty (no patches pending).
+
+Three patches (4, 7, 8) amended each other on the same section — the vault-path handling — and
+were synthesized into one final version rather than applied as three literal sequential diffs;
+likewise patches 6 and 9 (the Canadian awards ladder) were merged into one ring 0–4 list. Patch 13
+(the `04a`/`04b` → `04_Client-Profile.md` filename fix) turned out to be half-done already: the
+`_templates/0_Spine/04a_*`/`04b_*` files already carried the "save as `04_Client-Profile.md`
+regardless of fork" header comment, but `SKILL.md`'s own spine list, project-structure tree, and
+intake step 2 still said `04a`/`04b` as the filename — those three spots are now fixed to match.
+
+**Not yet run since the change:** no test project has exercised the new rules (parallel
+vault/search, the open slot, the awards ladder, the judgment flag, the phase-gate Studio Critic
+question, `state.json` maintenance) — the patches were reviewed and applied, not pilot-tested
+the way the earlier Project Window work was against real Nonimuss files. Worth a light sanity
+check the next time a phase actually runs, rather than trusting the prose alone.
+
 ## Session handoff — 2026-08-28 (Project Window built; materiality run once)
 
 The Project Window planned 2026-08-27 is now **built and working**: `_UI/Project-Window.html`,

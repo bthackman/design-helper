@@ -19,13 +19,14 @@ The single most important rule: **never do phase work without reading the spine 
 
 ## The spine (read before every phase, write after)
 
-Five living documents in `0_Spine/`:
+Six living documents in `0_Spine/`:
 
 - `00_Brief.md` — the program as understood *now* (spaces, areas, adjacencies, constraints). Versioned; bump the version when the program changes.
 - `01_Design-Drivers.md` — the 3–5 big ideas steering the project. Locked only after site (see gate below).
 - `02_Decision-Log.md` — every significant decision: statement, rationale, rejected alternatives, phase, date.
 - `03_Open-Questions.md` — unresolved items that carry between phases so nothing is silently dropped.
-- `04a_Client-Profile-Household.md` **or** `04b_Client-Profile-Organization.md` — the client reading (pick the fork at intake).
+- `04_Client-Profile.md` — the client reading. Start from whichever fork template fits (`04a_Client-Profile-Household.md` or `04b_Client-Profile-Organization.md`), but always save as `04_Client-Profile.md` — the household/organization distinction lives in the document's own H1 title, not the filename.
+- `state.json` — `currentPhase`, `driversLocked`, and a status per phase. Update it on phase entry, phase exit, drivers lock, and whenever a phase loops back. A pointer for external tools, never the source of truth — the other five files are. Store only what can't be derived from them.
 
 ## Project structure
 
@@ -33,18 +34,18 @@ Projects live in `Projects/<project-name>/`. Templates live in `_templates/`. Th
 
 ```
 Projects/<name>/
-├── 0_Spine/            00_Brief · 01_Design-Drivers · 02_Decision-Log · 03_Open-Questions · 04a/04b_Client-Profile
+├── 0_Spine/            00_Brief · 01_Design-Drivers · 02_Decision-Log · 03_Open-Questions · 04_Client-Profile · state.json
 ├── 1_Precedents/       Search-Plan.md · Precedent-Board.md · images/
 ├── 2_Site/             Site-Search.md · Site-Details_<address>.md · data/ (raw GeoJSON, APIs) · diagrams/
 ├── 3_Massing/          Massing-Options.md · Massing-Studio.html · images/
-├── 4_Space-Planning/   Program-Test-Fit.md
+├── 4_Space-Planning/   Program-Test-Fit.md · diagrams/ (adjacency, stacking, furnished plans)
 └── 5_Materiality/      Material-Palette.md · images/
 ```
 
 ## Starting a new project
 
 1. Copy the `_templates/` tree into `Projects/<name>/` (add `images/`, `diagrams/`, `data/` subfolders). If `_templates/` is missing, recreate from the structure above.
-2. **Pick the client fork first.** First intake question = household or organization? Use `04a` (daily life, ritual, taste) or `04b` (mission, deciders-vs-users, operations, politics).
+2. **Pick the client fork first.** First intake question = household or organization? Start from `04a` (daily life, ritual, taste) or `04b` (mission, deciders-vs-users, operations, politics) as the template, but save the result as `0_Spine/04_Client-Profile.md` regardless of fork — the distinction lives in the document's own H1 title, not the filename.
 3. **Client discovery** (`references/phase-0-drivers.md` covers the method). Two modes: *school/hypothetical* = invent the client defensibly from brief evidence; *work/real* = interview script. Output the evidence → reading → position → implication matrix. This yields *motives* — the criteria used to select or judge a site — not yet the locked drivers.
 4. Ingest the brief into `00_Brief.md` — program as a table with areas even where cells are unknown. **Interrogate the brief** before any design work: missing support space (circulation, mech, storage, washrooms), unrealistic unit areas for the typology, unstated adjacencies, quantities that don't match stated headcount, missing site info. Ask the gaps in one batch; log unresolved ones to `03_Open-Questions.md`.
 5. **Site** before drivers — the site must argue back before drivers lock. See the drivers-lock gate below.
@@ -77,7 +78,9 @@ Before any phase: read all spine files, skim prior phases' output docs, check bl
 **Common rules, every phase:**
 
 - **Write as you go.** Findings go into the phase's `.md` when discovered, not summarized at session end. Chat is scratch; files are the record.
+- **Keep `state.json` current.** `0_Spine/state.json` records `currentPhase`, `driversLocked`, and a status per phase. Update it on phase entry, phase exit, drivers lock, and whenever a phase loops back. It is a pointer for external tools, never the source of truth — the files are. Store only what can't be derived from them.
 - **Tie everything to drivers.** A precedent, site move, massing option, or material that serves no driver needs a stated reason to exist — or it prompts a conversation about whether the drivers are wrong.
+- **Say when a phase is running on judgment, not evidence.** If a claim, proxy, or invented position isn't traceable to something fetched, measured, or client-stated, label it as such in the doc (a bracketed `[invented]` / `[proxy, unverified]` tag is enough). This isn't a ban on judgment — most of this tool runs on it — it's making sure judgment-heavy output doesn't read with the same authority as a verified one.
 - **Check the math.** Areas, FAR, envelope, grossing, cap: compute and show the numbers; flag misfits early. Run real calculations, don't estimate.
 - **Decisions get logged the moment they're made** — decision, rationale, rejected alternatives — in `02_Decision-Log.md`. If the user picks a direction in conversation, that's a decision; log it unasked.
 - **Looping back is normal.** When later work invalidates earlier thinking, say so, update the earlier document, bump the brief version if the program changed, and note why in the decision log.
@@ -86,12 +89,13 @@ Before any phase: read all spine files, skim prior phases' output docs, check bl
 - **Geometry provenance.** When parcel polygons are fetched, save the raw GeoJSON to `2_Site/data/` and draw every diagram from the stored vertices — never reconstruct a shape from summarized edge lengths (an edge list doesn't determine a polygon). Same for neighbour buildings: fetch the city footprint layer or mark them as unplaced schematics; don't invent placement.
 - **Parcel adjacency verification** (learned from a real error): never claim what a lot abuts from mid-scale satellite. Required before site docs finalize: (1) house-number-zoom imagery on all sides, (2) a land-use district probe beyond each claimed edge using the parcel polygon coordinates, (3) user ground-truth sign-off.
 - **Diagram verification loop.** Every generated SVG/diagram is rendered to PNG and visually inspected (label collisions, edge clipping, marker scale) before delivery; fix and re-render until clean. OneDrive-synced files can appear truncated to the shell — render from a local copy and treat any mid-sentence file ending as sync damage.
+- **New terms land in `GLOSSARY.md`.** When a phase coins a protocol, a Studio gets built, or a rule earns a name, define it there in the same session.
 
 ## Phase 1 — Precedents (folded-in method)
 
 Full depth in `references/phase-1-precedents.md`. The operational spine:
 
-**Set the frame first.** From brief + locked drivers, name the typology/scale bracket, climate/context match, and the specific *problems* precedents must answer ("how to daylight a deep plate," not "nice libraries"). Check the vault first — reused research is free (see "The precedent library lives in the vault" below).
+**Set the frame first.** From brief + locked drivers, name the typology/scale bracket, climate/context match, and the specific *problems* precedents must answer ("how to daylight a deep plate," not "nice libraries"). Run the vault check alongside the fresh web campaigns, not before them — reused research is free, but vault-first biases the board toward what's already been noticed (see "The precedent library lives in the vault" below).
 
 **Kickoff elicitation** (before drafting the plan). The spine can't supply everything: ask the user for current inspirations/lineage, material ambitions, anti-precedents, existing collections, and driver weighting. Each becomes its own campaign and scorecard column.
 
@@ -101,9 +105,28 @@ Full depth in `references/phase-1-precedents.md`. The operational spine:
 
 **Source dialects are typology-dependent — discover, don't reuse.** Ask who commissions, awards, markets, regulates, preserves this building type in this region. Start local and escalate outward via **region rings** (0 city → 1 region → 2 country → 3 same-climate → 4 anywhere); exhaust inner rings first. Regional professional press, regional awards, heritage inventories come before Dezeen/Divisare/Archello flagships (later-ring, deep-dive only). Avoid ArchDaily for citation (paywalled galleries). Check and update `Library/Sources.md` (live / dead / paywall).
 
+**Default Canadian awards ladder** (fills the typology-baseline awards campaign — this does not jump the ring order, it populates the sweep that already runs alongside it). Named, verified defaults rather than rediscovering the ladder per project, while the vault is still thin:
+
+- **Ring 0–1, prairie/regional — Prairie Design Awards** (`prairiedesignawards.com`). Biennial since 2000, jointly run by the Alberta, Saskatchewan and Manitoba associations. Categories include Recent Work and Small Projects. First stop for Alberta work: same climate, same code, same trades, same cost environment.
+- **Ring 2, national — Governor General's Medals in Architecture** (`raic.org/governor-generals-medals-architecture-past-recipients`). Biennial, up to 12 medals per round, searchable past-recipients database with year pages back to 1982, tradition running to the 1950 Massey Medals. Roughly twenty-two curated sets of Canadian work — by far the deepest verified Canadian pool available.
+- **Ring 3, same climate — Finlandia Prize for Architecture** (`arkkitehtuurinfinlandia.fi/en/prize`). Annual, awarded by the Finnish Association of Architects for a specific completed building — the closest structural analogue to the GGMA in a genuinely comparable climate, the most transferable non-Canadian rung for cold-climate work. Norwegian and Swedish national awards exist alongside it; verify current status before relying on any of them (several Nordic prizes honour architects rather than buildings, and at least one pan-Nordic award has been discontinued).
+- **Ring 4, global — RIBA Stirling Prize** (annual, best building, UK/Europe), **EU Mies Award** (biennial, expert-nominated, jury-visited), **Aga Khan Award for Architecture** (triennial; foregrounds sustainability, climate adaptation and quality of life — the most valuable of the three precisely because it was not assembled from the Western canon).
+
+Sweep these **by typology, never wholesale** — a few hundred undifferentiated buildings pulled into the vault makes it worse, not better; the value is that a future search can say "sweep GGMA for cold-climate houses" and land on a known-good list. Every hit still goes through normal fetch-before-cite verification before it earns a role. Register each in `Library/Sources.md` with live/dead status on first use.
+
+**Guard rail.** Layering international awards is how the original precedent failure happened — canon recalled from memory rather than searched. These are **search targets to fetch, never lists to recall.** Naming an award-winning building from memory and presenting it as a hit from this ladder is the exact failure this ladder exists to prevent.
+
+**The open slot — one reserved campaign per board, booked in advance, never traded away.** Rings 0–4 carry an "exhaust inner rings first" rule, and ring 4 is already *anywhere* — but effort runs out around ring 2 in practice, so the outer rings become what you'd reach if there were time, a budget effect rather than a stated rule. There's also a category error inside ring 3: climate-matching is a proxy for whether a *technical* lesson transfers (envelope, snow load, thermal detailing), but sectional and organizational moves transfer across climate perfectly well — one ladder is being asked to rank two unrelated kinds of transferability at once.
+
+Every other campaign searches for a building *like this one* — same typology, climate, scale. The open slot searches for **the problem**, with the place words deliberately stripped out of the query: no city, no climate, no country. It is **reserved, not earned** — it runs even when the inner rings returned plenty, especially then, since a full inner-ring haul is exactly when it would otherwise get dropped.
+
+*Example.* Driver: zero corridor, on a long narrow infill lot. The inner-ring campaigns query prairie infill housing, cold-climate detached houses, Alberta awards, and return envelope, snow and height-cap lessons. The open slot asks the question underneath instead — *how do you organize a deep narrow plan so circulation disappears and light still reaches the middle?* — and the deepest built body of work on that exact problem is the Tokyo narrow-lot house. Nothing in rings 0–3 surfaces it, because the terms that find it don't mention prairies or cold.
+
+A keeper from the open slot may only earn the **Lesson** role — never Anchor, never Evidence. You cannot argue thermal performance from a Tokyo house; the envelope, the unheated buffer rooms, the whole climate logic doesn't travel. The board's existing "what to avoid" field carries the split: steal the light-court section, discard the envelope assumptions. Budget: one campaign, two or three keepers maximum. Restricting the open slot to a narrower brief is the user's call, not the tool's — narrow it only on explicit instruction; default is wide.
+
 **Three-pass execution.** Pass 0: internal-knowledge dump, every item tagged `unverified`, never shown raw. Pass 1: web verification (existence, facts, live links, viewable images). Pass 2: discovery sweeps only where internal knowledge is thin (rings 0–1, small firms, builders, recent work). Prefer domain-restricted queries; campaigns can run as parallel research agents.
 
-**Fetch before cite.** Every link presented is actually fetched: it resolves, facts come from the page not the snippet, images are viewable. Broken/paywalled → substitute before presenting. Log the queries run (with ring/dialect) in the board so the search is reproducible.
+**Fetch before cite.** Every link presented is actually fetched: it resolves, facts come from the page not the snippet, images are viewable. Broken/paywalled → substitute before presenting. Log the queries run (with ring/dialect) in the board so the search is reproducible. Every image that verifies gets saved to `1_Precedents/images/` at that moment, and the card points at the local copy while keeping the source URL as provenance — links rot, the board shouldn't, and this costs no tokens since the image was already fetched. Site map-view links stay as links: the saved GeoJSON already makes those diagrams reproducible, which is the durability that matters there.
 
 **Synthesis is the point.** The board isn't the output; the **lessons** are. Write 3–6 transferable moves the set teaches (sectional strategies, planning organizations, material logics) — these feed massing, space, and materiality directly. Per set before presenting: a diversity audit (era/budget/climate spread; any driver with zero support) and a third output kind — **human leads** (people holding unpublished knowledge, logged with what to ask; the user can call, the tool cannot).
 
@@ -137,6 +160,7 @@ When the user wants to move on — or output looks done — run a short gate. Pl
 2. Ask the 2–3 hardest questions a skeptical principal or client would ask, specific to this project.
 3. Review open questions: what did this phase resolve, what did it raise?
 4. Write the gate summary at the bottom of the phase doc; new questions to `03_Open-Questions.md`; direction chosen to the decision log.
+5. **For site, massing, and space-planning phases only** — would the Studio Critic voice (see the collaborator roster, above) change this? If the roster hasn't been run this phase, ask the question it exists to ask — what would a reviewer skeptical of code/zoning compliance flag here — before logging the gate as passed.
 
 On-demand, not a blocker — if the user says skip, skip, but note in the phase doc that the gate was skipped.
 
@@ -154,11 +178,34 @@ typology-organized personal precedent collection (`Architecture Design/Architect
 truth for precedents — the tool's own `Library/Precedents/` folder is retired (kept empty/unused to avoid
 two places drifting).
 
+The vault path is config, not hard-coded — resolve it once per environment (it differs between Cowork and
+Claude Code) and reuse the resolved value for the run.
+
+- **Path doesn't resolve** → say so loudly and continue with web search only. Something is misconfigured;
+  a silent fallback means the project's own precedent collection gets skipped without anyone noticing.
+- **Path resolves, no matching typology note** → normal while the vault is being built. Note it once, move
+  on to the awards ladder and fresh search, and offer to create the typology note at promotion time so the
+  next project finds it.
+
+**Run the vault check and the fresh campaigns in parallel, and pool them before scoring** (amends an
+earlier vault-first rule). Vault-first was a corrective for a real failure — the first precedent board was
+memory-biased toward international canon rather than actually searched — but it introduces the opposite
+bias: a vault reflects what its owner has already noticed, so a board built vault-first converges on that
+taste, invisibly, since you never see the buildings that were never considered. The vault supplies
+unverified leads; the campaigns supply unverified leads; both land in one long-list the scorecard evaluates
+without regard to origin.
+
+- **Every board runs at least one campaign that reaches outside the vault entirely**, even when the vault
+  has plenty — the point is exposure to work not already collected.
+- Add to the **diversity audit**: how many keepers came from the vault versus fresh search? If that ratio
+  climbs over successive projects, the collection is closing in on itself and the next board needs a
+  deliberately wider sweep.
+
 **Two-way flow, once per phase-1 run:**
-- **Search-time (vault → project):** before running a fresh web campaign, check the relevant vault
-  typology note as a free candidate long-list. Vault notes are lightweight bookmarks (tags, a source link
-  or two, sometimes an image) — treat every match as an unverified lead, not a citable card. It still goes
-  through the normal fetch-before-cite verification before it earns a role (Anchor/Lesson/Evidence).
+- **Search-time (vault → project):** run the vault typology-note check alongside the fresh web campaigns,
+  not before them. Vault notes are lightweight bookmarks (tags, a source link or two, sometimes an image)
+  — treat every match as an unverified lead, not a citable card. It still goes through the normal
+  fetch-before-cite verification before it earns a role (Anchor/Lesson/Evidence).
 - **Promotion-time (project → vault):** when the board closes and cards are culled, push the verified
   cards into the vault instead of a local `Library/Precedents/` folder: update the existing stub note if
   one exists (add "why relevant" / "steal" / "caution" + real source links), or create a new note matching

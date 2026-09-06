@@ -8,7 +8,7 @@ unfinished, read `HANDOFF.md`.
 name, the term lands here in the same session. A vocabulary that lags the tool is worse than
 none, because it teaches you the wrong thing confidently.
 
-Last updated: 2026-08-28.
+Last updated: 2026-09-06.
 
 
 ### The three surfaces
@@ -48,7 +48,8 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 
 | Term | What it means here |
 |---|---|
-| **Spine** | The five living docs in `0_Spine/` — brief, drivers, decision log, open questions, client profile. Read before every phase, written after. The project's memory. |
+| **Spine** | The six living docs in `0_Spine/` — brief, drivers, decision log, open questions, client profile, `state.json`. Read before every phase, written after. The project's memory. |
+| **`state.json`** | The spine's machine-readable pointer: `currentPhase`, `driversLocked`, a status per phase. Never the source of truth — the other five spine docs are — just a cheap index for external tools like the Project Window. |
 | **Brief** | The program as understood *now*: spaces, areas, adjacencies, constraints. Versioned; the version bumps whenever the program changes. |
 | **Client discovery** | First phase. Household or organization fork, then the evidence → reading → position → implication matrix. Produces *motives*, not yet drivers. |
 | **Motives** | What the client's reading implies about how a site should be chosen or judged. Upstream of drivers. |
@@ -65,6 +66,8 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | **Scorecard** | The visible scoring of the pooled long-list against drivers, so culling is auditable. |
 | **Anchor / Lesson / Evidence** | A precedent's role. Anchor = whole building, ≥3 drivers. Lesson = one transferable move. Evidence = proof something works; never shown as a design precedent. |
 | **Region rings** | Search escalation: 0 city → 1 region → 2 country → 3 same climate → 4 anywhere. Inner rings first. |
+| **Default Canadian awards ladder** | The named, verified default sweep for the typology-baseline awards campaign — Prairie Design Awards (ring 0–1) → Governor General's Medals (ring 2) → Finlandia Prize (ring 3) → Stirling / Mies / Aga Khan (ring 4). Populates the ring sweep with known-good sources instead of rediscovering it per project. Search targets to fetch, never a list to recall from memory. |
+| **The open slot** | One reserved campaign per precedent board that strips the place words out of the query and searches for the underlying problem, not a building "like this one." Runs even when the inner rings already returned plenty. A keeper from it may only earn the Lesson role, never Anchor or Evidence. |
 | **Source dialect** | Who commissions, awards, publishes, regulates this building type in this region — discovered per typology, not reused. |
 | **Fetch before cite** | Every link presented has actually been opened: it resolves, facts come from the page, images are viewable. |
 | **Lessons** | The 3–6 transferable moves a precedent set teaches. The real output of the phase; the board is just the working surface. |
@@ -83,7 +86,8 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 | **Circulation-first furnishing** | Mark openings and swings, draw desire lines, reserve keep-clear bands, and only then furnish the residual pockets. |
 | **Materiality** | 2–3 candidate palettes (each a coherent argument, not a shopping list) scored against drivers and tested against a 10% value-engineering cut, one locked, then stamped as a palette by system with performance, cost and carbon. Protocol drafted 2026-08-28, from method rather than an earned failure — still never run against a real project. |
 | **Palette candidate** | One coherent materiality argument (e.g. "heavy civic base, light warm upper body") covering envelope, structure and interior together. Three swatches of the same argument are one candidate, not three — same rule as a massing parti. |
-| **Phase gate (◇)** | The short critique between phases: score against drivers, ask the hardest questions, review open questions, log the direction. |
+| **Phase gate (◇)** | The short critique between phases: score against drivers, ask the hardest questions, review open questions, log the direction. For site, massing, and space-planning, also asks whether the Studio Critic voice would change the answer. |
+| **Judgment flag** | A bracketed `[invented]` / `[proxy, unverified]` tag on any claim, proxy, or invented position that isn't traceable to something fetched, measured, or client-stated — so judgment-heavy output never reads with the authority of a verified one. |
 | **Collaborator roster** | The optional three voices — Design Collaborator, Client, Studio Critic. Always ends generative. |
 | **Library** | Cross-project knowledge: site strategies, materials, `Sources.md`. |
 | **Vault** | The personal Obsidian precedent collection. Source of truth for precedents; `Library/Precedents/` is retired. |
