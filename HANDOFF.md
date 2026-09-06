@@ -43,6 +43,57 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (first full five-phase dry run — synthetic, solo, one sitting)
+
+Fifth pass the same day: a Fable-model agent invented its own project from scratch (deliberately
+picked something the tool had never been pointed at — equatorial, non-Canadian, a multi-organization
+coalition client, no Nonimuss reuse) and ran it through client discovery → site search → drivers
+lock → precedents → massing → space planning → materiality, writing real files into
+`Projects/Nyando-Maternity-Waiting-Home/` (gitignored, local only — never committed). Full method in
+`_skill-source/SKILL.md` was followed as written, not summarized or assumed.
+
+**Read the scope honestly, the same way the agent itself insisted on framing it:** this is real
+evidence the tool's *instructions* are followable and internally consistent when someone actually
+does what they say — including in a context the tool had never faced before. It is **not** the same
+kind of evidence as a real multi-week project with an independent human pushing back, and it does
+**not** mean the 13 SKILL patches applied earlier today are now "pilot-tested" in the sense the rest
+of this file uses that phrase. The two gates that most need a second, independent party — the
+precedent Search-Plan sign-off, and every phase-gate skeptic pass — were self-reviewed by the same
+agent that proposed the work, which is a fundamentally weaker check than a human catching a bad plan.
+
+**Depth per phase:** full depth on client discovery (re-scoped the 04b organization fork for a
+four-party coalition, which the template assumes is one org's internal politics), the brand-new
+site-search scorecard (the main event — a real two-stage zone/parcel cull), site details (real
+hand-computed sun-geometry math, not estimated), and drivers-lock (full consolidation workshop,
+including a site-volunteered driver and one client–site contradiction resolved via the protocol).
+Compressed: precedents (4 verified cards vs. the reference's 6–12, one campaign skipped). Massing was
+run as a text-based option table with real computed geometry — **the interactive Massing Studio HTML
+was deliberately not built**, judged disproportionately expensive relative to what it would teach
+about the tool's instructions specifically. Space planning ran at full depth (a real circulation-first
+clearance check caught a genuine undersized-veranda problem); materiality's analysis was full depth,
+material sourcing shallow.
+
+**What held up well:** the drivers-lock consolidation workshop, judgment flags working cleanly inside
+scorecard cells (not just prose — validates the same-day earlier change), the massing driver scorecard
+catching a real cross-phase conflict the two phases' outputs would otherwise have shipped silently,
+fetch-before-cite producing a more honest board even when it meant dropping good sources, and
+circulation-first furnishing catching a real numeric problem.
+
+**Real friction, now logged as backlog rows #27–34** in `00_Tool-Concept-Spec.md`: three conflicting
+names for the same site-phase output file across `SKILL.md`/the template/`phase-2-site.md` itself; no
+`state.json` template exists anywhere despite `SKILL.md` describing its shape in prose; Site-Search
+Stage 2's scorecard table ships hard-coded at 3 motive columns even though Stage 1 says to add/remove
+to match; the vault-path "config, not hard-coded" language in `SKILL.md` describes a mechanism that
+doesn't actually exist; the sun-study/glazing-proxy method silently assumes a temperate climate and
+scores backwards near the equator; `Library/Materials/`'s starter set was 0% usable outside a
+cold-climate context (its first real test outside the one context it was seeded in); the drivers-lock
+workshop has no template section of its own, only prose describing it; and fetch-before-cite's real
+coverage is bottlenecked by which domains the fetch tool can reach, not source quality (logged as an
+observation, not yet a proposed fix).
+
+**None of the eight backlog rows from this pass have been fixed yet** — this session logged the
+findings; the fixes themselves are still pending.
+
 ## Session handoff — 2026-09-06 (three ideas from a Fable "dream" pass, built same-day)
 
 Fourth pass the same day — this one deliberately not a structured review. A Fable-model agent was
