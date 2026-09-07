@@ -48,7 +48,8 @@ steer-space that would earn one — their outputs are judgement and evidence, no
 
 | Term | What it means here |
 |---|---|
-| **Spine** | The six living docs in `0_Spine/` — brief, drivers, decision log, open questions, client profile, `state.json`. Read before every phase, written after. The project's memory. |
+| **Spine** | The seven living docs in `0_Spine/` — brief, drivers, decision log, open questions, client profile, close-out, `state.json`. Read before every phase, written after. The project's memory. |
+| **Close-out** | `05_Close-Out.md` — written once, when a project goes `complete` or `dormant`: phase timing (expected vs. actual), driver-proxy-vs-reality deltas, which promoted `Library/`/vault items got reused later. The mechanism that closes the "system learns" loop — `Library/` promotion is otherwise curatorial only, never checking whether a proxy held up or a promoted item got reused. |
 | **`state.json`** | The spine's machine-readable pointer: `currentPhase`, `driversLocked`, a status per phase, and a project-level `status` (`active` / `dormant` / `complete`, with a one-line reason when dormant). Never the source of truth — the other five spine docs are — just a cheap index for external tools like the Project Window. Starter shape lives in `_templates/0_Spine/state.json` — copy it, don't invent field names per project. |
 | **Dormant** | A project's `state.json` status when it goes quiet without finishing — set deliberately, with a reason and what would restart it, rather than left to look indistinguishable from `complete`. Same anti-silent-drop discipline the tool already applies to open questions, at the scope of a whole project. |
 | **Brief** | The program as understood *now*: spaces, areas, adjacencies, constraints. Versioned; the version bumps whenever the program changes. |

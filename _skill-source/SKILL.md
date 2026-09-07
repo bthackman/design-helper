@@ -19,14 +19,15 @@ The single most important rule: **never do phase work without reading the spine 
 
 ## The spine (read before every phase, write after)
 
-Six living documents in `0_Spine/`:
+Seven living documents in `0_Spine/`:
 
 - `00_Brief.md` — the program as understood *now* (spaces, areas, adjacencies, constraints). Versioned; bump the version when the program changes.
 - `01_Design-Drivers.md` — the 3–5 big ideas steering the project. Locked only after site (see gate below).
 - `02_Decision-Log.md` — every significant decision: statement, rationale, rejected alternatives, phase, date.
 - `03_Open-Questions.md` — unresolved items that carry between phases so nothing is silently dropped.
 - `04_Client-Profile.md` — the client reading. Start from whichever fork template fits (`04a_Client-Profile-Household.md` or `04b_Client-Profile-Organization.md`), but always save as `04_Client-Profile.md` — the household/organization distinction lives in the document's own H1 title, not the filename.
-- `state.json` — `currentPhase`, `driversLocked`, a status per phase, and a project-level `status` (`active` / `dormant` / `complete`) with a one-line reason when dormant. Update it on phase entry, phase exit, drivers lock, whenever a phase loops back, and whenever the project itself goes quiet or wraps. A pointer for external tools, never the source of truth — the other five files are. Store only what can't be derived from them. Starter shape (copy and fill, don't invent the field names fresh): `_templates/0_Spine/state.json`. Per-phase `status` ∈ `not-started` / `in-progress` / `complete` / `looping-back`.
+- `state.json` — `currentPhase`, `driversLocked`, a status per phase, and a project-level `status` (`active` / `dormant` / `complete`) with a one-line reason when dormant. Update it on phase entry, phase exit, drivers lock, whenever a phase loops back, and whenever the project itself goes quiet or wraps. A pointer for external tools, never the source of truth — the other six files are. Store only what can't be derived from them. Starter shape (copy and fill, don't invent the field names fresh): `_templates/0_Spine/state.json`. Per-phase `status` ∈ `not-started` / `in-progress` / `complete` / `looping-back`.
+- `05_Close-Out.md` — written once, when project `status` moves to `complete` or `dormant`: phase timing (expected vs. actual), driver-proxy-vs-reality deltas, and which promoted `Library/`/vault items got reused by a later project. A table, not a running log — this is how the tool calibrates its own judgment over time instead of only accumulating reference material.
 
 ## Project structure
 
@@ -34,7 +35,7 @@ Projects live in `Projects/<project-name>/`. Templates live in `_templates/`. Th
 
 ```
 Projects/<name>/
-├── 0_Spine/            00_Brief · 01_Design-Drivers · 02_Decision-Log · 03_Open-Questions · 04_Client-Profile · state.json
+├── 0_Spine/            00_Brief · 01_Design-Drivers · 02_Decision-Log · 03_Open-Questions · 04_Client-Profile · 05_Close-Out · state.json
 ├── 1_Precedents/       Search-Plan.md · Precedent-Board.md · images/
 ├── 2_Site/             Site-Search.md · Site-Details_<address>.md · data/ (raw GeoJSON, APIs) · diagrams/
 ├── 3_Massing/          Massing-Options.md · Massing-Studio.html · images/
@@ -79,7 +80,7 @@ Before any phase: read all spine files, skim prior phases' output docs, check bl
 
 - **Write as you go.** Findings go into the phase's `.md` when discovered, not summarized at session end. Chat is scratch; files are the record.
 - **Keep `state.json` current.** `0_Spine/state.json` records `currentPhase`, `driversLocked`, a status per phase, and a project-level `status`. Update it on phase entry, phase exit, drivers lock, and whenever a phase loops back. It is a pointer for external tools, never the source of truth — the files are. Store only what can't be derived from them.
-- **Don't let a project go quiet without saying so.** The tool already refuses to let a decision or an open question vanish silently between phases — the same discipline applies to a whole project stalling. If a session ends with the user pausing, moving to another project without finishing this one, or the project otherwise stalling, ask why in one line and set `state.json`'s project-level `status` to `dormant` with that reason and what would restart it. Set it to `complete` when the project actually wraps. A project that's simply quiet with no status update is indistinguishable from one that's finished — that's the failure mode this rule exists to close.
+- **Don't let a project go quiet without saying so.** The tool already refuses to let a decision or an open question vanish silently between phases — the same discipline applies to a whole project stalling. If a session ends with the user pausing, moving to another project without finishing this one, or the project otherwise stalling, ask why in one line and set `state.json`'s project-level `status` to `dormant` with that reason and what would restart it. Set it to `complete` when the project actually wraps. A project that's simply quiet with no status update is indistinguishable from one that's finished — that's the failure mode this rule exists to close. Either transition also triggers `05_Close-Out.md` — fill what's known (phase timing, driver-proxy-vs-reality deltas so far); it's a cheap table, not a blocker, and a dormant project's close-out can stay partial until it either resumes or actually closes.
 - **Tie everything to drivers.** A precedent, site move, massing option, or material that serves no driver needs a stated reason to exist — or it prompts a conversation about whether the drivers are wrong.
 - **Say when a phase is running on judgment, not evidence.** If a claim, proxy, or invented position isn't traceable to something fetched, measured, or client-stated, label it as such in the doc (a bracketed `[invented]` / `[proxy, unverified]` tag is enough). This isn't a ban on judgment — most of this tool runs on it — it's making sure judgment-heavy output doesn't read with the same authority as a verified one. This applies inside scorecards too, not just prose: a driver score resting on an assumption rather than a fetched fact or a computed number carries the same tag in its rationale line, so a grid of ✓/~/✗ glyphs never reads as more verified than the judgment behind it.
 - **Check the math.** Areas, FAR, envelope, grossing, cap: compute and show the numbers; flag misfits early. Run real calculations, don't estimate.

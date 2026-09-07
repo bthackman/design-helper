@@ -43,6 +43,44 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (full backlog swept — one real build, twelve bookkeeping fixes)
+
+Same day, one more pass: went through every row in `00_Tool-Concept-Spec.md`'s backlog, oldest to
+newest, looking for anything fixable without a real project. Two kinds of thing turned up.
+
+**One genuinely unbuilt, buildable item — #22, the "system learns" close-out loop.** New spine file
+`0_Spine/05_Close-Out.md` (phase timing expected-vs-actual, driver-proxy-vs-reality deltas, which
+promoted `Library/`/vault items got reused by a later project), written once when a project goes
+`complete` or `dormant` — the same transition #24 added earlier today. Kept deliberately cheap (one
+table per section) on the MASIV research's own caution that this tool's project volume won't produce
+statistically meaningful calibration for years. The spine is now seven files, not six; `SKILL.md`,
+`GLOSSARY.md`, and the project-structure block all updated to match. `design-process.skill`
+repackaged.
+
+**Twelve stale status cells — rows #1–4, #6–13 — were bookkeeping, not builds.** The 2026-07-25
+re-package's own summary paragraph (top of `00_Tool-Concept-Spec.md`) already claimed these were
+folded into `SKILL.md`; checked `SKILL.md` directly and confirmed every one of them genuinely is
+(the client-discovery matrix, the 04a/04b fork, the process reorder, units/imagery hygiene, the
+SITE SEARCH/DETAILS split, the municipal+NRCan data pipeline, parcel adjacency verification, the
+full drivers-lock consolidation method, the mandatory assessment battery, the sun-section method,
+diagram verification + the OneDrive sync-damage note, and geometry provenance). Their status cells
+just never got updated after that re-package to say so — corrected to `✅` with a pointer to where
+each lives in `SKILL.md`, no content changes needed since the work was real.
+
+**Two items confirmed correctly still open, not fixable without a real project:**
+- **#20** (space-planning circulation-first rule) is folded into `phase-4-space-planning.md` but
+  deliberately *not* yet into `SKILL.md`'s main body — `SKILL.md` has no "Phase 4" or "Phase 5"
+  section at all, only Phase 1 and Phase 3 (matching the top-of-file note: those two phases haven't
+  been pilot-tested for real yet, and the established convention here is not to promote a phase's
+  method into the main skill body until it has been). Left alone rather than promoted early, since
+  today's synthetic solo pilot explicitly doesn't meet that bar per its own stated caveat.
+- **#27** (fetch-before-cite's domain-dependent coverage) stays a logged observation — the pilot that
+  found it proposed no concrete fix, so there was nothing to build.
+
+`design-process.skill` repackaged once more to include the close-out spine file. Nothing in this pass
+required Nonimuss, the vault, or any project data — it was file-reading and cross-referencing within
+the repo itself.
+
 ## Session handoff — 2026-09-06 (all 7 fixable pilot findings built)
 
 Same day, immediately following the pilot debrief below. All 7 of that pilot's "specific, actionable
