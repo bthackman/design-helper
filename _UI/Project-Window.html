@@ -76,6 +76,10 @@
   /* ---------- rail ---------- */
   .rail { width: 280px; flex:none; border-right:1px solid var(--line); background:var(--panel); display:flex; flex-direction:column; min-height:0; }
   .rail-fixed { flex:none; padding:var(--sp-5) var(--sp-4) var(--sp-3); }
+  .summary-tab { display:flex; align-items:center; gap:8px; padding:8px 9px; margin-bottom:var(--sp-4);
+    border:1px solid var(--line-strong); cursor:pointer; font-size:var(--fs-body); font-weight:600; color:var(--dim); }
+  .summary-tab:hover { border-color:var(--accent); color:var(--text); }
+  .summary-tab.selected { border-color:var(--accent); background:var(--accent-soft); color:var(--text); }
   .rail-scroll { flex:1; overflow-y:auto; padding:0 var(--sp-4) var(--sp-6); display:flex; flex-direction:column; gap:var(--sp-5); }
   main { flex:1; display:flex; flex-direction:column; min-width:0; }
   section h3, .rail-label { font-family:var(--mono); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:.12em; color:var(--faint); margin:0 0 var(--sp-2); font-weight:400; }
@@ -157,6 +161,25 @@
   .open-studio-btn { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--accent); color:var(--accent); background:transparent; font-size:var(--fs-body); font-weight:600; padding:.4rem .75rem; }
 
   .card-doc { border:1px solid var(--line); background:var(--panel); padding:var(--sp-5) var(--sp-6); margin-bottom:var(--sp-4); }
+  .summary-card { max-width:72ch; }
+  .summary-card > h3 { font-family:var(--sans); font-size:var(--fs-title-md); font-weight:600; color:var(--text); }
+  .summary-prose { font-size:15px; line-height:1.7; }
+  .summary-prose p { color:var(--text); margin:.6em 0; }
+  .summary-stats { display:flex; flex-wrap:wrap; gap:var(--sp-6); margin-top:var(--sp-6); padding-top:var(--sp-4); border-top:1px solid var(--line); }
+  .summary-stats .stat { min-width:110px; }
+  .summary-stats .stat-label { font-family:var(--mono); font-size:var(--fs-tag); text-transform:uppercase; letter-spacing:.08em; color:var(--faint); margin-bottom:3px; }
+  .summary-stats .stat-value { font-size:var(--fs-body); font-weight:600; color:var(--text); }
+
+  .shortcuts-card { max-width:72ch; }
+  .shortcuts-card > h3 { font-family:var(--sans); font-size:var(--fs-title-md); font-weight:600; color:var(--text); margin:0 0 var(--sp-2); }
+  .shortcuts-card .lead { font-size:var(--fs-meta); color:var(--faint); margin-bottom:var(--sp-6); }
+  .shortcuts-group { margin-bottom:var(--sp-6); }
+  .shortcuts-group h4 { font-family:var(--mono); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:.1em; color:var(--faint); margin:0 0 var(--sp-3); font-weight:400; }
+  .shortcuts-row { display:flex; gap:var(--sp-4); padding:7px 0; border-bottom:1px solid var(--line); align-items:baseline; }
+  .shortcuts-row:last-child { border-bottom:none; }
+  .shortcuts-row .key { flex:none; width:17ch; }
+  .shortcuts-row .key kbd { font-family:var(--mono); font-size:11px; background:var(--inset); border:1px solid var(--line-strong); padding:2px 6px; color:var(--text); }
+  .shortcuts-row .desc { font-size:var(--fs-body); color:var(--dim); line-height:1.5; }
   .card-doc > h3 { font-family:var(--mono); font-size:var(--fs-meta); color:var(--faint); margin:0 0 var(--sp-2); font-weight:400; }
   .md-body { font-size:var(--fs-prose); line-height:1.6; }
   .md-body h1, .md-body h2, .md-body h3, .md-body h4 { line-height:1.3; margin:1em 0 .4em; font-weight:600; }
@@ -250,6 +273,14 @@
   <div class="layout">
     <aside class="rail">
       <div class="rail-fixed">
+        <div class="summary-tab" id="summaryTab">
+          <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+          <span>Summary</span>
+        </div>
+        <div class="summary-tab" id="shortcutsTab" style="margin-bottom:var(--sp-5)">
+          <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 13h6"/></svg>
+          <span>Shortcuts</span>
+        </div>
         <div class="rail-label">Phases</div>
         <div id="phaseRail"></div>
       </div>
@@ -528,8 +559,30 @@ async function loadProjectInner(name) {
   const moved = Audit.sinceLastOpen(projectFiles, lastOpened);
   safeStorageSet(lastOpenedKey, new Date().toISOString());
 
-  parsed = { state, drivers, decisions, questions, boardText, massingText, findings, moved, phaseTexts };
+  // Every project's 00_Brief.md carries a required "## Project summary" section — the
+  // template's own instruction is "one paragraph: what, where, for whom, how big, when,"
+  // which is exactly the client/location/project-type TLDR a first-time viewer wants
+  // before the dense rail. Parsed generically so it works on any project, not just this one.
+  const briefText = (byPath['0_Spine/00_Brief.md'] || {}).text || '';
+  const brief = { summary: extractSection(briefText, 'Project summary') };
+
+  parsed = { state, drivers, decisions, questions, boardText, massingText, findings, moved, phaseTexts, brief };
   render();
+  openSummary();
+}
+
+// Pulls the body text under a level-2/3 markdown heading, up to the next heading of any
+// level. Generic (not tied to 00_Brief.md specifically) so it can be reused if another
+// spine doc ever wants the same "give me this one section" extraction.
+function extractSection(md, headingText) {
+  const lines = (md || '').split(/\r?\n/);
+  const re = new RegExp('^#{2,3}\\s+' + headingText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$', 'i');
+  const start = lines.findIndex(l => re.test(l.trim()));
+  if (start < 0) return null;
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) { if (/^#{1,6}\s/.test(lines[i])) { end = i; break; } }
+  const body = lines.slice(start + 1, end).join('\n').trim();
+  return body || null;
 }
 
 // ---------- rendering ----------
@@ -592,6 +645,8 @@ function renderPhaseRail() {
   });
   const co = document.getElementById('closeOutLink');
   co.classList.toggle('selected', selectedPhaseKey === '__closeout__');
+  document.getElementById('summaryTab').classList.toggle('selected', selectedPhaseKey === '__summary__');
+  document.getElementById('shortcutsTab').classList.toggle('selected', selectedPhaseKey === '__shortcuts__');
 }
 
 function renderDrivers() {
@@ -781,6 +836,101 @@ function openCloseOut() {
 }
 document.getElementById('closeOutLink').onclick = openCloseOut;
 
+// The landing view on every project load — a one-page TLDR (client/location/project-type,
+// from 00_Brief.md's "Project summary" paragraph) above the dense phase rail, so opening a
+// project for the first time doesn't drop straight into drivers/questions/decisions at once.
+function openSummary() {
+  selectedPhaseKey = '__summary__';
+  activeEditorSave = null; activeEditorCancel = null;
+  renderPhaseRail();
+  const viewer = document.getElementById('viewer');
+  viewer.innerHTML = '';
+  const card = document.createElement('div'); card.className = 'card-doc summary-card';
+  const heading = document.createElement('h3'); heading.textContent = projectName;
+  card.appendChild(heading);
+
+  if (!parsed.brief.summary) {
+    const p = document.createElement('p'); p.className = 'empty';
+    p.textContent = 'No "Project summary" section found in 0_Spine/00_Brief.md yet.';
+    card.appendChild(p);
+  } else {
+    const body = document.createElement('div'); body.className = 'md-body summary-prose';
+    body.innerHTML = renderMarkdown(parsed.brief.summary, '0_Spine/00_Brief.md');
+    card.appendChild(body);
+  }
+
+  const s = parsed.state;
+  const openQ = SpineParse.openOnly(parsed.questions).length;
+  const stat = (label, value) => '<div class="stat"><div class="stat-label">' + esc(label) + '</div><div class="stat-value">' + esc(value) + '</div></div>';
+  const stats = document.createElement('div'); stats.className = 'summary-stats';
+  stats.innerHTML =
+    stat('Phase', PHASE_LABELS[s.currentPhase] || s.currentPhase || '—') +
+    stat('Drivers', parsed.drivers.locked ? 'Locked' + (parsed.drivers.lockedDate ? ' ' + parsed.drivers.lockedDate : '') : 'Not locked') +
+    stat('Open questions', String(openQ)) +
+    stat('Decisions logged', String(parsed.decisions.length)) +
+    stat('Status', (s.status || 'active').toUpperCase());
+  card.appendChild(stats);
+  viewer.appendChild(card);
+}
+document.getElementById('summaryTab').onclick = openSummary;
+
+// A glossary of what's actually wired up — added after Ben spotted the search overlay
+// during a test pass and had no way to know it (or several other things) existed.
+// Kept as one data array so it can't quietly drift from what the app really does.
+const SHORTCUTS = [
+  { group: 'Keyboard', rows: [
+    ['Ctrl/Cmd + K', 'Search this project — drivers, decisions, open questions, and phase text.'],
+    ['Ctrl/Cmd + S', 'Save the raw-markdown editor you currently have focused.'],
+    ['Esc', "Close whatever's open — search, a save conflict, the decision form, or the raw editor."],
+    ['Alt + ↑ / ↓', 'Step to the previous / next phase without touching the mouse.'],
+  ]},
+  { group: 'Rail & navigation', rows: [
+    ['Summary tab', "This one-page TLDR — client, location, project type, and a few key stats."],
+    ['Click a phase', "Opens its docs. The dot shows workflow status (complete / in-progress / not-started / looping-back); a left accent bar shows what you're actually looking at right now — the two can differ."],
+    ['Drivers-lock chip', 'Shows whether drivers are locked, and the date they were.'],
+    ['[ BLOCKS: X ] tag', "An open question that's actively blocking the phase you're in right now."],
+    ['+ log a decision', 'Appends a real row to 02_Decision-Log.md on disk.'],
+    ['Close-out', '05_Close-Out.md — written once a project goes dormant or complete.'],
+  ]},
+  { group: 'Conscience panel', rows: [
+    ["Click a finding's text", "Jumps to the section it's about (a driver, open questions, or a phase)."],
+    ['Click the ×', 'Mutes that finding for this project. A "N muted — show" link brings them back.'],
+    ['Click the header', "Collapses/expands the panel. It re-expands on its own if a new high-severity finding shows up, even if you'd collapsed it."],
+  ]},
+  { group: 'Docs', rows: [
+    ['edit raw markdown', 'Switches a doc into a plain-text editor. Save writes straight to the file on disk.'],
+    ['If the file changed on disk', "since you loaded it, you get an in-app choice — overwrite with your edits, or discard them and reload — instead of a browser popup."],
+  ]},
+  { group: 'Header', rows: [
+    ['Project name + ⌄', 'Click to switch projects. The last one you had open is remembered automatically.'],
+    ['"N changed since open"', 'Click to see which files moved since you last opened this project.'],
+    ['"Reconnect to this folder"', "On the gate screen — remembers your repo folder in this browser, so you don't re-pick it every session."],
+  ]},
+];
+
+function openShortcuts() {
+  selectedPhaseKey = '__shortcuts__';
+  activeEditorSave = null; activeEditorCancel = null;
+  renderPhaseRail();
+  const viewer = document.getElementById('viewer');
+  viewer.innerHTML = '';
+  const card = document.createElement('div'); card.className = 'card-doc shortcuts-card';
+  card.innerHTML = '<h3>Shortcuts &amp; tools</h3><div class="lead">Everything currently wired up in this window — nothing here is aspirational.</div>';
+  for (const g of SHORTCUTS) {
+    const group = document.createElement('div'); group.className = 'shortcuts-group';
+    const h4 = document.createElement('h4'); h4.textContent = g.group;
+    group.appendChild(h4);
+    for (const [key, desc] of g.rows) {
+      const row = document.createElement('div'); row.className = 'shortcuts-row';
+      row.innerHTML = '<div class="key"><kbd>' + esc(key) + '</kbd></div><div class="desc">' + esc(desc) + '</div>';
+      group.appendChild(row);
+    }
+    card.appendChild(group);
+  }
+  viewer.appendChild(card);
+}
+document.getElementById('shortcutsTab').onclick = openShortcuts;
+
 function renderEditableDoc(fileEntry) {
   const wrap = document.createElement('div'); wrap.className = 'card-doc';
   const title = document.createElement('h3'); title.textContent = fileEntry.path;
@@ -893,9 +1043,20 @@ function renderMarkdown(md, docPath) {
 
     if (!line.trim()) { closeList(); i++; continue; }
 
+    // A markdown paragraph is a run of consecutive non-blank lines, not one line per <p> —
+    // every spine doc hard-wraps prose at ~90 chars, so treating each source line as its
+    // own paragraph (the previous behavior) rendered every multi-line paragraph in the
+    // tool as a stack of choppy fragments instead of one flowing block. Join wrapped lines
+    // with a space; stop at anything that starts a different block type.
     closeList();
-    html += '<p>' + inline(line) + '</p>';
-    i++;
+    const isOtherBlock = (l) => !l.trim() || /^#{1,6}\s/.test(l) || /^>\s?/.test(l) ||
+      /^\s*[-*]\s+/.test(l) || /^\s*\d+\.\s+/.test(l) || /^\s*(-{3,}|\*{3,})\s*$/.test(l) ||
+      l.includes('|');
+    const paraLines = [line];
+    let j = i + 1;
+    while (j < lines.length && !isOtherBlock(lines[j])) { paraLines.push(lines[j]); j++; }
+    html += '<p>' + inline(paraLines.join(' ')) + '</p>';
+    i = j;
   }
   closeList();
   return html || '<p class="empty">(empty)</p>';
