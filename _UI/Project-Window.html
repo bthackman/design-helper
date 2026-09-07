@@ -24,6 +24,8 @@
   header .proj-title { font-weight:700; }
   header .spacer { flex:1; }
   header .since { font-size:12px; color:var(--dim); cursor:pointer; }
+  header .since.warn { color:var(--amber); font-weight:600; }
+  header .since.dormant { color:var(--red); font-weight:600; }
   .layout { flex:1; display:flex; min-height:0; }
   .rail { width: 260px; flex:none; border-right:1px solid var(--line); overflow-y:auto; padding:.75rem; display:flex; flex-direction:column; gap:1rem; }
   main { flex:1; display:flex; flex-direction:column; min-width:0; }
@@ -110,6 +112,7 @@
     <span class="proj-title" id="projTitle">&mdash;</span>
     <select id="projectSelect"></select>
     <span class="spacer"></span>
+    <span class="since" id="stateBadge" style="display:none"></span>
     <span class="since" id="sinceBadge" title="Click to see what changed"></span>
   </header>
   <div id="appError" style="display:none; background:#5a1a1a; color:#fff; padding:.5rem 1rem; font:12.5px/1.5 ui-monospace,Consolas,monospace; white-space:pre-wrap"></div>
@@ -141,6 +144,10 @@
           </div>
         </form>
         <ul class="declist" id="decisionList"></ul>
+      </section>
+      <section>
+        <h3>Close-out</h3>
+        <div class="phase" id="closeOutLink" onclick="openCloseOut()">05_Close-Out.md</div>
       </section>
     </aside>
     <main>
@@ -245,7 +252,7 @@ async function loadProjectInner(name) {
   if (sf && sf.text) {
     try {
       const parsed0 = JSON.parse(sf.text);
-      state = SpineParse.reconcile(parsed0, sf.mtime, projectFiles);
+      state = SpineParse.reconcile(parsed0, sf.mtime, projectFiles, templates);
     } catch (e) { state = SpineParse.inferState(projectFiles, templates); }
   } else {
     state = SpineParse.inferState(projectFiles, templates);
@@ -288,6 +295,28 @@ function render() {
   renderDecisions();
   renderConscience();
   renderSinceBadge();
+  renderStateBadge();
+}
+
+// Project-level status (dormant/complete), plus the two "don't trust state.json
+// silently" flags SpineParse.reconcile() computes but nothing used to read: `stale`
+// (a project file is newer than state.json) and `schemaMismatch` (state.json's
+// `phases` didn't match the expected shape, so this view is inferred, not authoritative).
+function renderStateBadge() {
+  const el = document.getElementById('stateBadge');
+  const s = parsed.state;
+  const parts = [];
+  if (s.status === 'dormant') parts.push('DORMANT' + (s.dormantReason ? ' — ' + s.dormantReason : ''));
+  else if (s.status === 'complete') parts.push('COMPLETE');
+  if (s.schemaMismatch) parts.push("state.json didn't match the expected shape — showing inferred status");
+  else if (s.stale) parts.push('state.json looks older than ' + (s.newestFile ? 'some project files' : 'the project') + ' — status below may be behind');
+  if (!parts.length) { el.style.display = 'none'; return; }
+  el.textContent = parts.join(' · ');
+  el.className = 'since' + (s.status === 'dormant' ? ' dormant' : (s.schemaMismatch || s.stale ? ' warn' : ''));
+  el.style.display = 'inline';
+  el.title = s.schemaMismatch
+    ? 'state.json exists but its phases field is missing or in an old shape; falling back to inferring status from the files themselves.'
+    : '';
 }
 
 function renderPhaseRail() {
@@ -321,10 +350,10 @@ function renderDrivers() {
   parsed.drivers.drivers.forEach(d => {
     const c = document.createElement('div'); c.className = 'driver-card';
     const extra = Object.entries(d.extra || {}).filter(([,v]) => v).map(([k,v]) => k + ': ' + v).join(' &middot; ');
-    c.innerHTML = '<div class="n">D' + d.n + '</div><div class="d">' + esc(d.driver) + '</div>' +
-      (d.test ? '<div class="t"><b>Test:</b> ' + esc(d.test) + '</div>' : '') +
-      (d.why ? '<div class="t"><b>Why:</b> ' + esc(d.why) + '</div>' : '') +
-      (extra ? '<div class="t">' + esc(extra) + '</div>' : '');
+    c.innerHTML = '<div class="n">D' + d.n + '</div><div class="d">' + mdInline(d.driver) + '</div>' +
+      (d.test ? '<div class="t"><b>Test:</b> ' + mdInline(d.test) + '</div>' : '') +
+      (d.why ? '<div class="t"><b>Why:</b> ' + mdInline(d.why) + '</div>' : '') +
+      (extra ? '<div class="t">' + mdInline(extra) + '</div>' : '');
     el.appendChild(c);
   });
 }
@@ -396,7 +425,10 @@ function renderSinceBadge() {
   };
 }
 
-function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+// Escapes quotes too, not just &<> — esc() is used to build HTML attribute values
+// (option value=, img src=, a href=) from file content (folder names, markdown image/
+// link syntax), and an unescaped quote there breaks out of the attribute.
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // ---------- phase viewer ----------
 
@@ -413,10 +445,21 @@ function openPhase(key) {
     }
   }
   // Otherwise: render the phase's markdown docs as raw-editable text, doc by doc.
+  // 05_Close-Out.md lives in 0_Spine/ (same dir as client-discovery's files) but isn't
+  // client-discovery content — it gets its own rail entry instead (openCloseOut()).
   const dir = SpineParse.PHASES.find(p => p.key === key).dir;
-  const docs = projectFiles.filter(f => f.path.startsWith(dir + '/') && f.path.endsWith('.md'));
+  const docs = projectFiles.filter(f => f.path.startsWith(dir + '/') && f.path.endsWith('.md') &&
+    !/05_Close-Out/.test(f.path));
   if (!docs.length) { viewer.innerHTML = '<p class="empty">No docs found for this phase yet.</p>'; return; }
   docs.forEach(d => viewer.appendChild(renderEditableDoc(d)));
+}
+
+function openCloseOut() {
+  const viewer = document.getElementById('viewer');
+  viewer.innerHTML = '';
+  const doc = projectFiles.find(f => f.path === '0_Spine/05_Close-Out.md');
+  if (!doc) { viewer.innerHTML = '<p class="empty">No close-out doc yet — written once the project goes dormant or complete.</p>'; return; }
+  viewer.appendChild(renderEditableDoc(doc));
 }
 
 function renderEditableDoc(fileEntry) {
@@ -463,21 +506,27 @@ function currentPhaseKeyFromPath(path) {
 // italic/code/links, images (rewritten to resolve against the doc's real folder,
 // since they're relative to the project file, not to this Window's own location),
 // blockquotes, rules, and lists.
+// Bold/italic/code/link/image inline formatting — factored out of renderMarkdown so
+// callers with no docPath (driver cards, which aren't rendering a file, just a table
+// cell) can still get bold/italic instead of falling back to raw esc(). imgBase is
+// optional; without it a relative image src just won't resolve, which is fine for
+// contexts (like driver text) that realistically never embed one.
+function mdInline(text, imgBase) {
+  let s = esc(text);
+  s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, src) =>
+    '<img alt="' + alt + '" src="' + (/^(https?:|data:)/i.test(src) ? src : (imgBase || '') + src) + '">');
+  s = s.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (m, t, href) =>
+    '<a href="' + href + '" target="_blank" rel="noopener">' + t + '</a>');
+  s = s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<i>$2</i>');
+  return s;
+}
+
 function renderMarkdown(md, docPath) {
   const baseDir = docPath ? docPath.slice(0, docPath.lastIndexOf('/') + 1) : '';
   const imgBase = '../Projects/' + encodeURIComponent(projectName) + '/' + baseDir;
-
-  const inline = (text) => {
-    let s = esc(text);
-    s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, src) =>
-      '<img alt="' + alt + '" src="' + (/^(https?:|data:)/i.test(src) ? src : imgBase + src) + '">');
-    s = s.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (m, t, href) =>
-      '<a href="' + href + '" target="_blank" rel="noopener">' + t + '</a>');
-    s = s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-    s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
-    s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<i>$2</i>');
-    return s;
-  };
+  const inline = (text) => mdInline(text, imgBase);
 
   const lines = (md || '').split(/\r?\n/);
   let html = '', inList = null, i = 0;
@@ -540,8 +589,18 @@ document.getElementById('decisionForm').onsubmit = async (e) => {
 
   const entry = byPath['0_Spine/02_Decision-Log.md'];
   if (!entry) { alert('No decision log found for this project.'); return; }
-  const lines = entry.text.split(/\r?\n/);
-  const dividerIdx = lines.findIndex((l, i) => l.includes('|') && /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/.test(l) && l.includes('-'));
+
+  // Read fresh from disk rather than trusting the in-memory copy loaded when the
+  // project opened — Claude Code may have appended its own decisions since then, and
+  // an append should land on top of the real current content, not silently clobber it.
+  // (renderEditableDoc's raw-markdown Save uses a re-read-and-confirm pattern instead,
+  // because it's a full overwrite where the user's edit and the disk content can
+  // genuinely conflict; an append has no such conflict — there's always a safe place
+  // to insert a new row into whatever the current table actually is.)
+  const freshFile = await entry.handle.getFile();
+  const freshText = await freshFile.text();
+  const lines = freshText.split(/\r?\n/);
+  const dividerIdx = lines.findIndex((l) => l.includes('|') && /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/.test(l) && l.includes('-'));
   if (dividerIdx < 0) { alert('Could not find the decision table in this file.'); return; }
   lines.splice(dividerIdx + 1, 0, row);
   const newText = lines.join('\n');

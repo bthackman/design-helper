@@ -91,9 +91,13 @@ function orphanCards(text, label, driverField) {
 }
 
 // A phase marked complete with no gate written at the bottom of its doc.
+// `phases` comes from state.json by way of SpineParse.reconcile() — reconcile() now
+// guards against a malformed shape itself, but this stays defensive too rather than
+// trusting a single choke point, since a thrown error here blanks the entire Window.
 function missingGates(phases, phaseTexts) {
+  if (!phases || typeof phases !== 'object') return [];
   return Object.entries(phases)
-    .filter(([k, v]) => v.status === 'complete' && phaseTexts[k] &&
+    .filter(([k, v]) => v && v.status === 'complete' && phaseTexts[k] &&
                         !/gate|skipped/i.test(phaseTexts[k]))
     .map(([k]) => ({ kind: 'no-gate', severity: 'medium',
                      text: `${k} is complete but no phase gate is recorded in its doc.` }));

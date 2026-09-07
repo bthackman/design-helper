@@ -4,6 +4,18 @@
 <script src="spine-parse.js"></script>
 <script src="audit.js"></script>
 <script>
+// STALE on two dimensions as of 2026-09-06 (found by a Fable-model code review; not
+// fixed here because fixing it blind would mean guessing, not testing):
+// 1. PROJECT_BASE points at Nonimuss-Residence, which doesn't exist on this machine
+//    (Projects/ is gitignored — project instances stay local, never pushed).
+// 2. Even once a real project is available, the `files` list below needs to be
+//    regenerated from that project's ACTUAL current file inventory, not assumed —
+//    'Site-Shortlist.md' below is already known-wrong (matches no version of the
+//    site-phase template, past or current; the live name is 'Site-Search.md').
+// Before next use: point PROJECT_BASE at a real project and re-list `files` from
+// what's actually in its folders, the same care `templateFiles` below already needs
+// (it's current as of today's Site-Details/Site-Search reconciliation, but re-check
+// it against `_templates/` rather than trusting this comment next time either).
 const PROJECT_BASE = '../Projects/Nonimuss-Residence/';
 const TEMPLATE_BASE = '../_templates/';
 
@@ -11,7 +23,7 @@ const files = [
   '0_Spine/00_Brief.md','0_Spine/01_Design-Drivers.md','0_Spine/02_Decision-Log.md',
   '0_Spine/03_Open-Questions.md','0_Spine/04_Client-Profile.md','0_Spine/state.json',
   '1_Precedents/Precedent-Board.md','1_Precedents/Search-Plan.md',
-  '2_Site/Site-Details_6831-Livingstone-Dr-SW.md','2_Site/Site-Shortlist.md',
+  '2_Site/Site-Details_6831-Livingstone-Dr-SW.md','2_Site/Site-Shortlist.md', // Site-Shortlist.md: known-stale, see note above
   '3_Massing/Massing-Options.md',
   '4_Space-Planning/Program-Test-Fit.md',
   '5_Materiality/Material-Palette.md'
@@ -50,7 +62,7 @@ async function run() {
     let state;
     if (sf) {
       const parsed0 = JSON.parse(sf.text);
-      state = SpineParse.reconcile(parsed0, sf.mtime, fileObjs);
+      state = SpineParse.reconcile(parsed0, sf.mtime, fileObjs, templates);
     } else {
       state = SpineParse.inferState(fileObjs, templates);
     }
@@ -85,7 +97,7 @@ async function run() {
 
     // ---- markdown renderer check (verbatim copy of Project-Window.html's function) ----
     const projectName = 'Nonimuss-Residence';
-    function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
     function renderMarkdown(md, docPath) {
       const baseDir = docPath ? docPath.slice(0, docPath.lastIndexOf('/') + 1) : '';
       const imgBase = '../Projects/' + encodeURIComponent(projectName) + '/' + baseDir;

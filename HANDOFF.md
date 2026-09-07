@@ -43,6 +43,55 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (Project Window: fixed a real crash, five smaller bugs)
+
+A Fable-model pass finally code-reviewed `_UI/` directly (every earlier pass this session reviewed
+method/backlog/strategy, never the actual UI code) — and it ran the real parser/audit pipeline in
+Node against the one real project on this machine to check rather than guess. Verdict: **opening
+that project threw and blanked the whole window.** Its `state.json` uses a `phaseStatus` key with
+narrative string values, not the `phases: {key:{status,updated}}` shape `reconcile()`/`missingGates()`
+assumed — `Object.entries(undefined)` in `audit.js` threw before `render()` ever ran.
+
+Fixed, each verified afterward with a small throwaway Node script reproducing the exact malformed
+shape found (not a claim this substitutes for real browser testing — just confirming the diff itself
+doesn't have a logic bug, since neither `testproj/` nor Nonimuss exist on this machine to run the
+real `_UI/runtest.js`/`_UI/audittest.js` suites or `_selftest.html`):
+
+- **The crash itself** — `spine-parse.js`'s `reconcile()` now validates `phases` before trusting it;
+  a malformed/legacy shape degrades to `inferState()`'s inferred phases instead of throwing, flagged
+  `schemaMismatch: true` so the UI can say so rather than presenting inferred data as authoritative.
+  `audit.js`'s `missingGates()` also hardened defensively (belt and suspenders — one choke point
+  shouldn't be the only thing standing between a bad file and a blank window).
+- **Decision-log append had no concurrent-write protection** (the raw markdown editor's Save button
+  did, per the original plan's own explicit requirement; the append form skipped it). Fixed by
+  re-reading the file fresh from disk before inserting, rather than trusting the in-memory copy —
+  stronger than a re-read-and-confirm pattern, since an append never actually needs to overwrite.
+- **`esc()` didn't escape quotes** despite building HTML attributes (`img src=`, `a href=`, `option
+  value=`) from file content — fixed; a stray `"` in a URL or folder name could break out of an
+  attribute before this.
+- **`state.stale`** (a project file newer than `state.json`) **was computed and never shown anywhere**
+  — now surfaced in a header badge, along with the new `status`/`dormantReason` field added earlier
+  today (which nothing in the UI read at all until now) and the `schemaMismatch` flag above.
+- **Driver cards rendered raw asterisks** instead of bold — `**text**` in `01_Design-Drivers.md` was
+  passed through `esc()` only. Fixed by factoring the markdown renderer's inline formatter out into
+  a standalone `mdInline()` both call.
+- **`0_Spine/05_Close-Out.md`** (added earlier today) was getting silently swept into the
+  "Client discovery" phase view along with every other spine file. Given its own rail entry instead.
+- **The site-phase status probe only checked `Site-Details*.md`**, so a project deep into Site-Search
+  scoring but not yet at Site-Details could read as "not started" in the phase rail (the raw content
+  was still visible — `openPhase()` shows all `.md` files in the dir regardless of probe — just the
+  status dot was wrong). Probe now matches `Site-Search.md` too.
+- **`_selftest.html` is stale on two dimensions**, not fixed (would require guessing): its hardcoded
+  `Nonimuss-Residence` path doesn't exist here, and its fixture file list separately references
+  `Site-Shortlist.md`, a name that matches no version of the site templates, past or current. Left a
+  clear comment flagging both rather than guessing a replacement; needs regenerating against the real
+  project's actual current file inventory next time someone has access to it.
+
+Still unverified: none of this has been opened in an actual browser against the real project since
+the fix (only the Node-level logic was checked). First thing worth doing next time the Window is
+opened for real: confirm `Nyando-Maternity-Waiting-Home` (or a fresh project) now renders instead of
+red-banner-erroring.
+
 ## Session handoff — 2026-09-06 (full backlog swept — one real build, twelve bookkeeping fixes)
 
 Same day, one more pass: went through every row in `00_Tool-Concept-Spec.md`'s backlog, oldest to

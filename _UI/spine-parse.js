@@ -201,7 +201,7 @@ const openOnly = qs => qs.filter(q => q.status !== 'resolved' && q.status !== 'c
 
 const PHASES = [
   { key: 'client-discovery', dir: '0_Spine',          probe: /^04[ab]?_Client-Profile/ },
-  { key: 'site',             dir: '2_Site',           probe: /^Site-Details/ },
+  { key: 'site',             dir: '2_Site',           probe: /^Site-(Details|Search)/ },
   { key: 'precedents',       dir: '1_Precedents',     probe: /^Precedent-Board/ },
   { key: 'massing',          dir: '3_Massing',        probe: /^Massing-Options/ },
   { key: 'space-planning',   dir: '4_Space-Planning', probe: /^Program-Test-Fit/ },
@@ -262,10 +262,34 @@ function inferState(files, templates = {}) {
 
 // state.json is a pointer, not the authority. If any project file is newer than it,
 // say so rather than trusting it silently.
-function reconcile(stateJson, stateMtime, files) {
+//
+// It's also not guaranteed to match the current schema — a project's state.json may
+// predate a spine change (found 2026-09-06: a real project's file used a `phaseStatus`
+// key with narrative string values instead of `phases: {key:{status,updated}}`, which
+// used to reach `Object.entries(undefined)` downstream and throw, blanking the whole
+// Window). A malformed/legacy `phases` shape now degrades to inferred state instead —
+// the same "don't trust it silently" reasoning `stale` already exists for, just applied
+// to the shape of the data instead of its age.
+function reconcile(stateJson, stateMtime, files, templates = {}) {
   const newest = files.filter(f => !f.path.endsWith('state.json'))
     .map(f => f.mtime).sort().pop();
-  return { ...stateJson, inferred: false, stale: !!(newest && stateMtime && newest > stateMtime), newestFile: newest };
+  const stale = !!(newest && stateMtime && newest > stateMtime);
+
+  const phases = stateJson && stateJson.phases;
+  const validPhases = phases && typeof phases === 'object' &&
+    ORDER.some(k => phases[k] && typeof phases[k].status === 'string');
+
+  if (!validPhases) {
+    const inferred = inferState(files, templates);
+    return {
+      ...inferred,
+      schemaMismatch: true,
+      status: (stateJson && stateJson.status) || 'active',
+      dormantReason: (stateJson && stateJson.dormantReason) || null,
+      stale, newestFile: newest
+    };
+  }
+  return { ...stateJson, inferred: false, stale, newestFile: newest };
 }
 
 // Dual-mode: Node (test suites, require()) and plain <script> in the Window.
