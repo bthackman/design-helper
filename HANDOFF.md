@@ -43,6 +43,42 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-07 (four-agent UI review + a redesign mockup, no code changes)
+
+Ben asked for the Project Window UI reviewed from a graphic-design lens and a UI/UX-and-tool-builder lens
+(two Fable-model agents, text critiques), plus a Fable pick on the single highest-leverage next build for
+the tool overall, plus a fourth Fable agent using Claude Code's `design` skill to produce an actual
+redesigned mockup rather than more prose. Full reports (verbatim) in **`UI-Review-2026-09-07.md`** at the
+repo root. This session made no code changes — it's four inputs for a future build session, not a build
+itself.
+
+**Mockup:** https://claude.ai/code/artifact/28ebd6a2-52b6-47b9-9c46-a8b321bd4cb7 — dark-first warm-charcoal
+palette, bronze accent, IBM Plex Mono/Sans pairing, header rebuilt as real app chrome, conscience panel
+styled like an IDE problems panel. Static, dark-only, sample content only — not wired to real data.
+
+**Where the two text critiques agreed:** severity/status signaling is color-only with no icon/border/fill
+backup; the native `<select>` project switcher and raw Unicode glyphs (▮▯✓⚠▼) are the clearest "unfinished"
+tells; the drivers-lock gate is visually under-weighted relative to how central it is to the workflow.
+
+**Graphic-design review, top items:** no governed type scale (8 sizes in a 4px band) or spacing scale;
+project title barely reads as a heading; dark-mode semantic colors (`--red/--amber/--green/--accent`)
+reuse light-tuned hex values unchecked in the dark media block (`Project-Window.html:12-14`).
+
+**UX/tool-builder review, top items — the sharper of the two:** `alert()`/`confirm()` block the UI for
+routine saves and conflicts (`:487,492`) — the single biggest "form, not tool" tell; no persisted
+`FileSystemDirectoryHandle` (re-picks the folder every session); zero keyboard shortcuts; the phase-rail
+"current" highlight never tracks what's actually open (`:337` vs. `openPhase()` at `:435-455` never
+updating a selected state); decision log silently truncates to 8 rows (`:381,383`) with no escape hatch;
+`looping-back` status may be practically unreachable since `inferState()`'s fallback never produces it
+(`spine-parse.js:243-252`) — worth confirming the skill side always writes it correctly.
+
+**Product-direction pick: build the Test-Fit Studio next**, not exports/Rhino/materiality-library work.
+Case rests on real evidence already on disk: `Projects/Nyando-Maternity-Waiting-Home/4_Space-Planning/
+Program-Test-Fit.md`'s manual pass caught a cross-cluster required-adjacency violation and an undersized
+veranda only *after* massing was already locked — exactly what a live clearance/adjacency check would
+catch during placement. Also cheaper to build than Massing Studio (2D canvas/SVG, no Three.js). v1 scope,
+what to read/write, and a concrete "done" bar (validate against Nyando's real files) are in the full report.
+
 ## Session handoff — 2026-09-06 (Project Window: fixed a real crash, five smaller bugs)
 
 A Fable-model pass finally code-reviewed `_UI/` directly (every earlier pass this session reviewed
