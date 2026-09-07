@@ -176,6 +176,25 @@ function readDrivers(md) {
   };
 }
 
+// Locates the actual decisions table (matched by column heading, same rule readDecisions()
+// uses) rather than "the first pipe-table divider in the file" — a file that ever grows a
+// second table would otherwise silently receive an appended row in the wrong place.
+// Returns 0-indexed line numbers, or null if no matching table exists.
+function findTableLineRange(md, columnPredicate) {
+  const lines = (md || '').split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('|') && isDivider(lines[i + 1] || '')) {
+      const cols = splitRow(lines[i]);
+      if (columnPredicate(cols)) {
+        let j = i + 2;
+        while (j < lines.length && lines[j].includes('|') && lines[j].trim()) j++;
+        return { headerLine: i, dividerLine: i + 1, firstRowLine: i + 2, endLine: j };
+      }
+    }
+  }
+  return null;
+}
+
 function readDecisions(md) {
   const t = parseTables(md).find(t => t.columns.some(c => /decision/i.test(c)));
   if (!t) return [];
@@ -228,6 +247,12 @@ function templateKeyFor(relPath, templates = {}) {
 
 const ORDER = ['client-discovery', 'site', 'precedents', 'massing', 'space-planning', 'materiality'];
 
+// Note on `looping-back`: this inference path can never produce it — it only ever
+// assigns not-started/in-progress/complete (below), by construction, since "a phase
+// looped back" isn't something file contents alone can distinguish from "in progress."
+// The status is real and reachable, but only through a valid state.json — SKILL.md's
+// spine section already instructs the skill to write it "whenever a phase loops back."
+// Confirmed 2026-09-07: not a bug in this file, just a boundary of what inference can know.
 function inferState(files, templates = {}) {
   const byPath = Object.fromEntries(files.map(f => [f.path, f]));
   const df = byPath['0_Spine/01_Design-Drivers.md'];
@@ -299,7 +324,7 @@ function reconcile(stateJson, stateMtime, files, templates = {}) {
 (function () {
   const exported = {
     splitRow, parseTables, parseCards, filledCards, cardsBeyondTemplate, realRows, rowsBeyondTemplate, looksWorked, normalize,
-    templateKeyFor, readDrivers, readDecisions, readOpenQuestions, openOnly,
+    templateKeyFor, readDrivers, readDecisions, readOpenQuestions, openOnly, findTableLineRange,
     inferState, reconcile, PHASES, ORDER
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exported;

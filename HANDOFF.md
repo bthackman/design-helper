@@ -43,6 +43,144 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-07 (Project Window: redesign + UX fixes from the review below, applied)
+
+Same day, immediately after the Test-Fit Studio build below: went back to the four-agent UI
+review and actually built what it recommended, rather than leaving it as four inputs for later.
+`_UI/Project-Window.html` was rewritten in full; `_UI/spine-parse.js` and `_UI/audit.js` got small
+additive changes. **No browser was available this session** (Chrome extension not connected) —
+verification was static (JS syntax check via `new Function()`, every `getElementById` target
+confirmed present in markup, every CSS `var(--x)` confirmed defined, div-tag balance, a
+throwaway-script check of the two new `spine-parse.js`/`audit.js` functions). This is real risk:
+none of the interactive behavior (drag, IndexedDB permission flow, keyboard shortcuts, the
+conflict overlay) has actually been clicked through. **First thing worth doing next time a browser
+is available: open this for real, ideally against a real project, before trusting it further.**
+
+**Visual redesign — the Claude Design mockup, ported for real.** Pulled the actual mockup content
+(not just the review's prose summary) by reading the published artifact's `Main.dc.html`/
+`Gate.dc.html` source directly, and re-implemented its dark warm-charcoal/bronze palette, IBM
+Plex type pairing (see below), inline-SVG icon set (lock/check/warning/x/chevron/external-link —
+replacing every raw Unicode glyph: `▮▯✓⚠▼`), the drivers-lock gate's dashed-rule-plus-chip
+treatment, the IDE-problems-panel conscience style, and the header's real-app-chrome layout
+(brand mark, mono breadcrumb path). **Made dark the tool's one theme** rather than inventing a
+matching light palette — the mockup only ever designed dark, and the review explicitly left that
+decision for Ben; light mode is gone, not hidden, and can be revisited on request. **Kept IBM Plex
+named in the font stack but never loaded it from Google Fonts** — the UX review called this tool's
+"offline-first, dependency-free architecture" a real strength ("exactly right for this tool"), and
+a CDN font would cut against that for a `file://` tool meant to open with no network; system
+mono/sans fill in as the fallback, so the look is close but not pixel-identical to the mockup.
+Also did the graphic-design pass's own list: collapsed the previous 8 uncoordinated font sizes to
+7 governed `--fs-*` tokens and scattered spacing to a 4px `--sp-*` scale; gave the project title
+real heading weight (17px, was 14px+bold-only); restyled the native `<select>` as an invisible
+full-row overlay behind a custom title+chevron trigger (`showPicker()`) instead of bare OS chrome;
+extended chip/badge treatment to the header's stale/dormant/changed indicators; added left-border+
+icon backing to every severity/blocking signal that used to be color-only.
+
+**UX/tool-builder fixes — all 15 numbered recommendations, at least at a working level:**
+1–2. `alert()`/`confirm()` gone — replaced with a toast system (save success/error) and an in-app
+   conflict overlay (Overwrite / Discard & reload / Cancel) for the raw-markdown save conflict.
+3. **Directory handle now persists via IndexedDB.** On load, a stored handle offers "Reconnect to
+   this folder" (calls `requestPermission` from a real click, satisfying the browser's user-gesture
+   requirement) instead of always re-prompting with the native picker — the review's own
+   "highest-leverage fix." Unverified end-to-end (no browser), but the IndexedDB
+   structured-clone-of-a-FileSystemDirectoryHandle pattern this uses is Chrome's documented one.
+4. Phase-rail highlight now tracks `selectedPhaseKey` (set in `openPhase()`/`openCloseOut()`),
+   separate from the workflow's `currentPhase` — both render, distinctly (fill vs. left-border).
+5. Decision log un-clipped entirely (was `.slice(0,8)` rows / `.slice(0,140)` chars) — safe now
+   that the rail splits into a pinned Phases zone plus one independently-scrolling zone for
+   Drivers/Open-Questions/Decisions/Close-out, so a long log can't push navigation off-screen.
+6. Conscience-panel collapse state is now keyed per-project (`pw-conscience-collapsed:<name>`,
+   was one global key), and force-expands on a real high-severity finding unless the user has
+   already manually toggled it this session.
+7. Conscience findings are click-through (via a `target` field now attached in `audit.js` — best
+   effort, maps to a phase or a rail section) and per-finding mutable (× button, stored per
+   project, with a "N muted — show" recall).
+8. **Decision-append divider bug fixed at the root**, not just in the UI: `spine-parse.js` gained
+   `findTableLineRange()`, reusing `readDecisions()`'s own column-matching rule instead of "the
+   first pipe-table divider in the file" — verified with a throwaway script that it finds the
+   *decisions* table specifically even when a second table exists earlier in the file.
+9. Baseline keyboard support: Esc backs out of whatever's open (search/conflict/decision-form/
+   editor), Ctrl/Cmd+S saves the focused raw-markdown editor, Ctrl/Cmd+K opens search, Alt+Up/Down
+   steps through phases.
+10. Cross-project search was scoped down to **project search** (Ctrl/Cmd+K) — drivers, decisions,
+    open questions, and phase text within the currently open project only. Indexing every project
+    up front for true cross-project search was judged disproportionate to this pass; logged here
+    as a deliberate reduction, not an oversight.
+11. **`looping-back` reachability confirmed, not changed.** It's real and reachable through a valid
+    `state.json` — `SKILL.md`'s spine section already instructs the skill to write it "whenever a
+    phase loops back." The only path that can't produce it is the `inferState()` fallback used
+    when `state.json` is missing/malformed, which is inherent to what inference can know from file
+    contents alone, not a bug. Left a code comment in `spine-parse.js` recording this.
+12. Status dots now carry a `title` tooltip with the human-readable status name.
+13. Massing Studio iframe gets a best-effort `postMessage` bridge (theme + changed-file paths) on
+    load — **unverified**, since no Massing Studio instance exists on this machine to round-trip
+    against (Nyando skipped building one; Nonimuss's is gone). Degrades to a no-op if unheard.
+14. A successful raw-markdown save now returns to rendered view instead of staying in the editor.
+15. The last-opened project is now remembered globally (`pw-last-project`) and reselected on
+    reconnect, not just per-project last-opened timestamps.
+
+Also fixed a small bug introduced while wiring Ctrl/Cmd+S and Esc: the first draft left
+`activeEditorSave`/`activeEditorCancel` pointing at a just-closed editor's buttons whenever the
+editor was closed via its own Save/Cancel click rather than via Esc, so a stale shortcut could
+re-fire against removed DOM. Fixed by clearing both at the top of `openPhase()`/`openCloseOut()`,
+the single choke point every close path already funnels through.
+
+**Not done / left as-is:** the search-result ordering has no relevance ranking (first-match order
+only); the conflict overlay's "Overwrite" and "Discard & reload" don't show an actual diff, just
+the review's minimum bar of "not a bare confirm()"; per-section independent scroll inside the rail
+was simplified to one pinned zone (Phases) + one scrolling zone (everything else) rather than each
+subsection scrolling independently, which was judged sufficient to fix the actual complaint (Phases
+disappearing) without the added complexity.
+
+## Session handoff — 2026-09-07 (Test-Fit Studio built — the pick from the review below)
+
+Same day, immediately following the four-agent review below: built the **Test-Fit Studio**, the
+tool this session's own product-direction pick named as the highest-leverage next build. Two
+things changed, following the same split the Massing Studio already established — method in the
+skill, artifact generated per-project (never a checked-in template):
+
+- **`_skill-source/references/phase-4-space-planning.md`** gained a new "The Test-Fit Studio
+  (interactive instrument)" section, mirroring `phase-3-massing.md`'s Massing Studio section in
+  structure and cost principle (client-side/one-time-build always-in; model-in-the-loop
+  on-request). `design-process.skill` repackaged (`python3 -m zipfile`, per the 2026-09-06 note
+  about `Compress-Archive` silently writing backslash paths).
+- **A real generated instance** — `Projects/Nyando-Maternity-Waiting-Home/4_Space-Planning/
+  Test-Fit-Studio.html`, seeded with that project's actual `Program-Test-Fit.md` data (12
+  program-table rows expanded into placed room blocks, the real 10×10 adjacency matrix, the real
+  7-opening veranda loop). Linked from `Program-Test-Fit.md`.
+
+**Freeform, not massing-dependent — a deliberate v1 scope call.** Nyando's own massing was run as
+a text option table (`Massing-Options.md` explicitly skipped building the interactive Massing
+Studio as disproportionately expensive for that exercise), so no `massing-interchange/v1` JSON
+exists to overlay. The Studio works as a pure sketchpad against the program table alone; an
+outline overlay is optional infrastructure for later, not a dependency.
+
+**What it does, live:** room blocks sized to program NSF (draggable/resizable, grouped by
+cluster) with a running cap meter against the massing GFA; click-to-place doors with clear-swing
+arcs; a fixed-casework check (crosses-a-doorway test); a live adjacency panel reading the real
+matrix; a veranda/hub-loop clearance panel merging keep-clear bands and reporting residual
+furniture pockets per arc; a `test-fit-interchange/v1` JSON export mirroring the massing export's
+pattern.
+
+**Verification — the "done" bar from the review below, met, with an honest caveat.** No browser
+was available this session (the Chrome extension tool reported not connected), so verification
+was Node-level only, same caveat pattern as the 2026-09-06 Project-Window fixes: the pure
+geometry/adjacency/veranda-coverage functions were copied into a throwaway script and run against
+the same embedded Nyando data. Both real findings from `Program-Test-Fit.md`'s manual pass
+reproduce: the newborn-nook/night-nurse required-adjacency violation (the two clusters are
+genuinely spatially separated — the check isn't rigged to fire) and the Cluster-1 veranda's
+busiest arc showing exactly 0.00 m residual once its 5 closest-spaced openings' 1.2 m keep-clear
+bands are merged, matching the doc's "no residual pocket left for even a bench." A first attempt
+at the initial room layout used loose, evenly-spaced placement and flagged nearly every
+required-adjacency pair as a violation, not just the real one — noise that would have buried the
+actual signal; fixed by packing each cluster's required-linked rooms into a touching chain (0 m
+gaps) before re-verifying, since the adjacency check is type-level (minimum gap across all
+instances of a type), not instance-level — a limitation worth knowing, documented as an honesty
+note in the new phase-4-space-planning.md section. **Not yet exercised in an actual browser** —
+next time this project (or a new one) is open on a machine with Chrome available, click through it
+for real rather than trusting the Node-level check alone, the same way `_selftest.html` doesn't
+substitute for a real click-through of the Project Window.
+
 ## Session handoff — 2026-09-07 (four-agent UI review + a redesign mockup, no code changes)
 
 Ben asked for the Project Window UI reviewed from a graphic-design lens and a UI/UX-and-tool-builder lens

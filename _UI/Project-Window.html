@@ -4,163 +4,326 @@
 <meta charset="utf-8">
 <title>Project Window</title>
 <style>
+  /* Dark warm-charcoal/bronze design system, ported from the 2026-09-07 Claude Design
+     mockup (UI-Review-2026-09-07.md §4). Only the dark theme was ever designed there —
+     rather than invent a matching light theme, this makes dark the tool's one theme.
+     Font stacks name IBM Plex first but never load it from a CDN: the review's own
+     UX pass flagged "offline-first, dependency-free architecture" as a real strength
+     of this tool ("exactly right for this tool"), and a Google Fonts dependency would
+     cut against that for a file:// tool meant to open with no network. System
+     monospace/sans fill in identically when Plex isn't present. */
   :root {
-    color-scheme: light dark;
-    --bg: #faf9f6; --panel: #fff; --line: #ddd8cc; --text: #2a2822; --dim: #7a7568;
-    --accent: #8a6d3b; --red: #b3261e; --amber: #9a6700; --green: #1a7f37; --lock: #3a3630;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#1c1b18; --panel:#242320; --line:#3a382f; --text:#eae6da; --dim:#9b9686; --lock:#c9c3b3; }
+    color-scheme: dark;
+    --bg:#15130f; --panel:#1c1812; --panel-2:#221c15; --inset:#100e0b;
+    --line:#332a1e; --line-strong:#4a3f2c;
+    --text:#ece3d3; --dim:#a89c86; --faint:#726858;
+    --accent:#c6975a; --accent-soft:rgba(198,151,90,.14);
+    --green:#5ea36b; --amber:#d99a3c; --red:#c85a4a; --red-soft:rgba(200,90,74,.09);
+    --amber-soft:rgba(217,154,60,.09); --steel:#b7c1c9;
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, 'Segoe UI', Arial, sans-serif;
+    /* type scale — 7 governed steps instead of the previous 8 uncoordinated sizes */
+    --fs-tag:9.5px; --fs-label:10.5px; --fs-meta:11px; --fs-body:12.5px;
+    --fs-prose:13.5px; --fs-title-md:17px; --fs-title-lg:22px;
+    /* spacing scale — 4px base */
+    --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:28px;
   }
   * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font: 14px/1.5 ui-sans-serif, system-ui, Segoe UI, Arial; }
+  body { margin:0; background:var(--bg); color:var(--text); font: var(--fs-body)/1.5 var(--sans); }
   button { font: inherit; cursor:pointer; }
-  #gate { max-width: 42rem; margin: 4rem auto; padding: 0 1.5rem; }
-  #gate button { padding:.7rem 1.2rem; font-weight:600; }
-  #gateLog { white-space:pre-wrap; margin-top:1rem; font: 12.5px/1.6 ui-monospace, Consolas, monospace; color:var(--dim); }
+  code { font-family: var(--mono); }
+  svg.icon { flex:none; vertical-align:middle; }
+
+  /* ---------- gate ---------- */
+  #gate { max-width: 40rem; margin: 4.5rem auto; padding: 0 var(--sp-4); }
+  .gate-kicker { font-family:var(--mono); font-size:var(--fs-label); letter-spacing:.14em; color:var(--faint); margin-bottom:var(--sp-2); text-transform:uppercase; }
+  #gate h1 { margin:0 0 var(--sp-2); font-size:var(--fs-title-lg); font-weight:600; letter-spacing:-.005em; }
+  #gate p { margin:0 0 var(--sp-5); font-size:var(--fs-prose); line-height:1.6; color:var(--dim); }
+  #gate code { font-size:12px; background:var(--inset); border:1px solid var(--line); padding:.1em .4em; border-radius:2px; }
+  .gate-card { border:1px solid var(--line-strong); background:var(--panel); padding:var(--sp-7) var(--sp-6) var(--sp-6); }
+  .gate-drop { border:1px dashed var(--line-strong); background:var(--inset); padding:var(--sp-6); display:flex; flex-direction:column; align-items:center; gap:var(--sp-3); }
+  .gate-drop .name { font-family:var(--mono); font-size:var(--fs-body); color:var(--text); }
+  .gate-btn { font-family:var(--sans); font-size:13.5px; font-weight:600; color:#161310; background:var(--accent); border:1px solid var(--accent); padding:.65rem 1.4rem; letter-spacing:.01em; }
+  .gate-btn.ghost { background:transparent; color:var(--dim); border-color:var(--line-strong); font-weight:500; padding:.5rem 1rem; }
+  .gate-log-card { border:1px solid var(--line-strong); border-top:none; background:var(--inset); padding:var(--sp-4) var(--sp-6) var(--sp-5); }
+  #gateLog { font-family:var(--mono); font-size:12px; line-height:1.85; color:var(--dim); }
+  #gateLog .ok { color:var(--green); }
+  #gateLog .err { color:var(--red); }
+  #gateLog .strong { color:var(--text); font-weight:600; }
+  #gate .footer-row { display:flex; justify-content:space-between; margin-top:var(--sp-5); font-family:var(--mono); font-size:var(--fs-meta); color:var(--faint); }
+
+  /* ---------- app chrome ---------- */
   #app { display:none; height:100vh; flex-direction:column; }
-  header { display:flex; align-items:center; gap:1rem; padding:.5rem 1rem; border-bottom:1px solid var(--line); }
-  header select { font:inherit; padding:.3rem .5rem; }
-  header .proj-title { font-weight:700; }
+  header { display:flex; align-items:center; gap:var(--sp-3); padding:0 var(--sp-5); height:56px; flex:none; border-bottom:1px solid var(--line); background:var(--panel); }
+  .brand-mark { width:22px; height:22px; border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:10px; font-weight:700; color:var(--accent); flex:none; }
+  .brand-sep { width:1px; height:26px; background:var(--line-strong); flex:none; }
+  .proj-id { display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .proj-title-row { display:flex; align-items:center; gap:6px; cursor:pointer; position:relative; }
+  .proj-title { font-size:var(--fs-title-md); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:32ch; }
+  .proj-path { font-family:var(--mono); font-size:var(--fs-meta); color:var(--faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:40ch; }
+  #projectSelect { position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer; }
   header .spacer { flex:1; }
-  header .since { font-size:12px; color:var(--dim); cursor:pointer; }
-  header .since.warn { color:var(--amber); font-weight:600; }
-  header .since.dormant { color:var(--red); font-weight:600; }
+  .chip { display:inline-flex; align-items:center; gap:5px; font-family:var(--mono); font-size:var(--fs-meta); color:var(--dim); border:1px solid var(--line-strong); padding:.3rem .6rem; cursor:pointer; }
+  .chip.warn { color:var(--amber); border-color:var(--amber); }
+  .chip.dormant { color:var(--red); border-color:var(--red); }
+  .conn-dot { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:var(--fs-meta); color:var(--faint); }
+  .conn-dot .d { width:6px; height:6px; border-radius:50%; background:var(--green); }
+  .vrule { width:1px; height:20px; background:var(--line-strong); flex:none; }
+
   .layout { flex:1; display:flex; min-height:0; }
-  .rail { width: 260px; flex:none; border-right:1px solid var(--line); overflow-y:auto; padding:.75rem; display:flex; flex-direction:column; gap:1rem; }
+  #appError { display:none; background:#3a1512; color:#f3d9d3; border-bottom:1px solid var(--red); padding:var(--sp-3) var(--sp-5); font:12.5px/1.5 var(--mono); white-space:pre-wrap; }
+
+  /* ---------- rail ---------- */
+  .rail { width: 280px; flex:none; border-right:1px solid var(--line); background:var(--panel); display:flex; flex-direction:column; min-height:0; }
+  .rail-fixed { flex:none; padding:var(--sp-5) var(--sp-4) var(--sp-3); }
+  .rail-scroll { flex:1; overflow-y:auto; padding:0 var(--sp-4) var(--sp-6); display:flex; flex-direction:column; gap:var(--sp-5); }
   main { flex:1; display:flex; flex-direction:column; min-width:0; }
-  .conscience-wrap { border-bottom:1px solid var(--line); flex:none; }
-  .conscience-head { display:flex; align-items:center; gap:.5rem; padding:.35rem .9rem; font-size:11.5px;
-    color:var(--dim); cursor:pointer; user-select:none; }
-  .conscience-head:hover { color:var(--text); }
-  .conscience-head .chev { display:inline-block; transition:transform .15s; font-size:9px; }
-  .conscience-wrap.collapsed .conscience, .conscience-wrap.collapsed .conscience-caveat { display:none; }
-  .conscience-wrap.collapsed .chev { transform:rotate(-90deg); }
-  .conscience-caveat { padding:0 .9rem .35rem; font-size:10.5px; font-style:italic; color:var(--dim); }
-  .conscience { max-height:180px; min-height:2.4rem; overflow-y:auto; overflow-x:hidden; resize:vertical;
-    padding:.2rem .9rem .6rem; font-size:12.5px; }
-  .conscience .row { display:flex; gap:.5rem; padding:.15rem 0; align-items:baseline; }
-  .conscience .row.high { color:var(--red); }
-  .conscience .row.medium { color:var(--amber); }
-  .conscience .row.low { color:var(--dim); }
-  .conscience .clean { color:var(--green); }
-  .viewer { flex:1; overflow:auto; padding:1rem; }
-  .viewer iframe { width:100%; height:100%; border:1px solid var(--line); border-radius:6px; }
-  section h3 { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--dim); margin:0 0 .4rem; }
-  .phase { display:flex; align-items:center; gap:.5rem; padding:.3rem .4rem; border-radius:5px; cursor:pointer; }
-  .phase:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
-  .phase.current { background: color-mix(in srgb, var(--accent) 18%, transparent); font-weight:600; }
-  .dot { width:10px; height:10px; border-radius:50%; flex:none; border:1.5px solid var(--dim); }
+  section h3, .rail-label { font-family:var(--mono); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:.12em; color:var(--faint); margin:0 0 var(--sp-2); font-weight:400; }
+  .rail-label-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp-2); }
+
+  .phase { display:flex; align-items:center; gap:9px; padding:5px 6px; border-radius:2px; cursor:pointer; border-left:2px solid transparent; }
+  .phase:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .phase.current { background:var(--accent-soft); font-weight:600; }
+  .phase.selected { border-left-color:var(--accent); }
+  .phase .lbl { font-size:var(--fs-body); color:var(--dim); }
+  .phase.current .lbl { color:var(--text); }
+  .dot { width:9px; height:9px; border-radius:50%; flex:none; border:1.4px solid var(--faint); }
   .dot.complete { background:var(--green); border-color:var(--green); }
   .dot.in-progress { background: linear-gradient(90deg, var(--amber) 50%, transparent 50%); border-color:var(--amber); }
   .dot.not-started { background:transparent; }
   .dot.looping-back { background:var(--red); border-color:var(--red); }
-  .lock-gate { display:flex; align-items:center; gap:.5rem; padding:.25rem .4rem; font-size:11.5px; color:var(--dim); }
-  .lock-gate .bar { flex:1; height:2px; background:var(--line); }
-  .lock-gate.locked { color:var(--lock); font-weight:700; }
-  .driver-card { border:1px solid var(--line); border-radius:6px; padding:.5rem .6rem; margin-bottom:.5rem; background:var(--panel); }
-  .driver-card .n { font-size:11px; color:var(--dim); }
-  .driver-card .d { font-weight:600; margin:.1rem 0 .25rem; }
-  .driver-card .t { font-size:12px; color:var(--dim); }
+
+  .lock-gate-row { display:flex; align-items:center; gap:7px; margin:var(--sp-2) 0; }
+  .lock-gate-row .bar { flex:1; height:0; border-top:1px dashed var(--line-strong); }
+  .lock-gate-chip { display:flex; align-items:center; gap:4px; border:1px solid var(--steel); color:var(--steel); font-family:var(--mono); font-size:var(--fs-tag); letter-spacing:.06em; padding:3px 6px; white-space:nowrap; flex:none; }
+  .lock-gate-chip.locked { background:color-mix(in srgb, var(--steel) 10%, transparent); }
+
+  .driver-card { border:1px solid var(--line); background:var(--panel-2); padding:9px 10px; margin-bottom:var(--sp-2); }
+  .driver-card .n { font-family:var(--mono); font-size:var(--fs-meta); color:var(--accent); font-weight:600; margin-bottom:3px; }
+  .driver-card .d { font-weight:600; font-size:var(--fs-body); line-height:1.4; margin-bottom:5px; }
+  .driver-card .t { font-size:var(--fs-meta); color:var(--dim); line-height:1.5; }
   .driver-card .t b { color:var(--text); font-weight:600; }
-  .qlist, .declist { list-style:none; margin:0; padding:0; font-size:12.5px; }
-  .qlist li, .declist li { padding:.3rem 0; border-bottom:1px solid var(--line); }
-  .qlist li.blocks-now { color:var(--red); font-weight:600; }
-  .toggle { font-size:11px; color:var(--accent); background:none; border:none; padding:0; text-decoration:underline; }
-  textarea.editor { width:100%; height:60vh; font: 12.5px/1.5 ui-monospace, Consolas, monospace; padding:.6rem; border:1px solid var(--line); border-radius:6px; background:var(--panel); color:var(--text); }
-  .row-actions { display:flex; gap:.5rem; margin-top:.5rem; }
-  .row-actions button { padding:.4rem .8rem; border:1px solid var(--line); border-radius:5px; background:var(--panel); color:var(--text); }
-  .row-actions button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
-  .card-doc { border:1px solid var(--line); border-radius:8px; padding:.75rem 1rem; margin-bottom:1rem; background:var(--panel); }
-  .card-doc img { max-width:100%; border-radius:4px; margin:.4rem 0; }
-  .card-doc .field { font-size:12.5px; margin:.15rem 0; }
-  .card-doc .field b { color:var(--dim); }
-  .md-body { font-size:13.5px; line-height:1.6; }
-  .md-body h1, .md-body h2, .md-body h3, .md-body h4 { line-height:1.3; margin:1em 0 .4em; }
-  .md-body h1 { font-size:1.4em; } .md-body h2 { font-size:1.2em; } .md-body h3 { font-size:1.05em; }
-  .md-body p { margin:.5em 0; }
-  .md-body ul, .md-body ol { margin:.4em 0; padding-left:1.4em; }
-  .md-body li { margin:.15em 0; }
-  .md-body blockquote { margin:.6em 0; padding:.3em .9em; border-left:3px solid var(--accent); color:var(--dim); }
-  .md-body hr { border:none; border-top:1px solid var(--line); margin:1em 0; }
-  .md-body code { font:12px ui-monospace, Consolas, monospace; background:color-mix(in srgb, var(--line) 60%, transparent); padding:.1em .3em; border-radius:3px; }
-  .md-body img { max-width:100%; border-radius:4px; margin:.4em 0; }
-  .md-body a { color:var(--accent); }
-  .md-body table { border-collapse:collapse; width:100%; margin:.6em 0; font-size:12.5px; }
-  .md-body th, .md-body td { border:1px solid var(--line); padding:.35em .6em; text-align:left; vertical-align:top; }
-  .md-body th { background:color-mix(in srgb, var(--line) 40%, transparent); }
-  .md-body table { display:block; overflow-x:auto; }
-  form.append { display:flex; flex-direction:column; gap:.4rem; margin-top:.5rem; }
-  form.append input, form.append select, form.append textarea { font:inherit; padding:.4rem; border:1px solid var(--line); border-radius:5px; background:var(--panel); color:var(--text); }
+  .badge { display:inline-flex; align-items:center; font-family:var(--mono); font-size:var(--fs-tag); letter-spacing:.06em; padding:1px 6px; border:1px solid var(--steel); color:var(--steel); }
+
+  .qlist, .declist { list-style:none; margin:0; padding:0; font-size:var(--fs-body); }
+  .qlist li { padding:7px 8px; border-bottom:1px solid var(--line); line-height:1.5; }
+  .qlist li.blocks-now { border:none; border-left:2px solid var(--red); background:var(--red-soft); color:var(--text); margin-bottom:4px; }
+  .qlist li.blocks-now .tag { display:block; font-family:var(--mono); font-size:9px; color:var(--red); letter-spacing:.04em; margin-top:4px; }
+  .declist li { padding:6px 0; border-bottom:1px solid var(--line); }
+  .declist .meta { display:flex; gap:7px; align-items:baseline; margin-bottom:3px; }
+  .declist .meta .date { font-family:var(--mono); font-size:var(--fs-meta); color:var(--dim); }
+  .declist .meta .phase-tag { font-family:var(--mono); font-size:9px; border:1px solid var(--line-strong); color:var(--faint); padding:1px 5px; letter-spacing:.03em; }
+  .declist .text { font-size:var(--fs-meta); line-height:1.45; color:var(--dim); }
+
+  .toggle { font-size:var(--fs-meta); color:var(--accent); background:none; border:none; padding:0; text-decoration:underline; }
+  .ghost-btn { border:1px dashed var(--line-strong); color:var(--dim); background:transparent; font-family:var(--mono); font-size:var(--fs-body); padding:6px 8px; width:100%; text-align:left; margin-bottom:9px; }
+  .closeout-row { display:flex; align-items:center; gap:7px; padding:7px 8px; border:1px solid var(--line); color:var(--dim); font-family:var(--mono); font-size:var(--fs-meta); cursor:pointer; }
+  .closeout-row.selected { border-color:var(--accent); color:var(--text); }
+
+  textarea.editor { width:100%; height:60vh; font: 12.5px/1.5 var(--mono); padding:.6rem; border:1px solid var(--line); background:var(--inset); color:var(--text); }
+  .row-actions { display:flex; gap:var(--sp-2); margin-top:var(--sp-2); }
+  .row-actions button { padding:.4rem .8rem; border:1px solid var(--line-strong); background:var(--panel); color:var(--text); }
+  .row-actions button.primary { background:var(--accent); color:#161310; border-color:var(--accent); font-weight:600; }
+
+  form.append { display:flex; flex-direction:column; gap:var(--sp-2); margin-top:var(--sp-2); }
+  form.append input, form.append select, form.append textarea { font:inherit; font-size:var(--fs-body); padding:.4rem; border:1px solid var(--line); background:var(--inset); color:var(--text); }
   form.append textarea { min-height:3.5rem; }
-  .empty { color:var(--dim); font-style:italic; }
-  .badge { display:inline-block; font-size:10px; padding:.1rem .4rem; border-radius:3px; background:var(--line); color:var(--text); margin-left:.3rem; }
+  .empty { color:var(--faint); font-style:italic; }
+
+  /* ---------- conscience panel (IDE problems-panel register) ---------- */
+  .conscience-wrap { border-bottom:1px solid var(--line); flex:none; background:var(--panel-2); }
+  .conscience-head { display:flex; align-items:center; gap:8px; padding:9px 20px; cursor:pointer; user-select:none; }
+  .conscience-head .chev { display:inline-flex; transition:transform .15s; }
+  .conscience-wrap.collapsed .conscience, .conscience-wrap.collapsed .conscience-caveat { display:none; }
+  .conscience-wrap.collapsed .chev { transform:rotate(-90deg); }
+  .conscience-head .label { font-family:var(--mono); font-size:var(--fs-label); letter-spacing:.1em; color:var(--dim); text-transform:uppercase; }
+  .conscience-head .meta { font-size:var(--fs-meta); color:var(--faint); }
+  .conscience-caveat { padding:0 20px 7px; font-size:var(--fs-meta); font-style:italic; color:var(--faint); line-height:1.5; max-width:78ch; }
+  .conscience { max-height:200px; min-height:2.4rem; overflow-y:auto; overflow-x:hidden; resize:vertical; padding:2px 20px 14px; display:flex; flex-direction:column; gap:8px; }
+  .conscience .row { display:flex; gap:8px; align-items:flex-start; font-size:var(--fs-body); line-height:1.5; }
+  .conscience .row .txt { flex:1; cursor:pointer; }
+  .conscience .row.high .txt { color:var(--red); }
+  .conscience .row.medium .txt { color:var(--amber); }
+  .conscience .row.low .txt { color:var(--faint); }
+  .conscience .row .mute { flex:none; color:var(--faint); background:none; border:none; font-size:14px; line-height:1; padding:0 2px; }
+  .conscience .row .mute:hover { color:var(--text); }
+  .conscience .clean { color:var(--green); display:flex; align-items:center; gap:8px; }
+  .conscience .muted-toggle { font-size:var(--fs-meta); color:var(--faint); text-decoration:underline; background:none; border:none; padding:0; align-self:flex-start; }
+
+  .viewer { flex:1; overflow:auto; padding:var(--sp-5) var(--sp-6) var(--sp-6); }
+  .viewer-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp-4); }
+  .viewer-toolbar .path { font-family:var(--mono); font-size:var(--fs-meta); color:var(--faint); }
+  .viewer iframe { width:100%; height:100%; border:1px solid var(--line); }
+  .open-studio-btn { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--accent); color:var(--accent); background:transparent; font-size:var(--fs-body); font-weight:600; padding:.4rem .75rem; }
+
+  .card-doc { border:1px solid var(--line); background:var(--panel); padding:var(--sp-5) var(--sp-6); margin-bottom:var(--sp-4); }
+  .card-doc > h3 { font-family:var(--mono); font-size:var(--fs-meta); color:var(--faint); margin:0 0 var(--sp-2); font-weight:400; }
+  .md-body { font-size:var(--fs-prose); line-height:1.6; }
+  .md-body h1, .md-body h2, .md-body h3, .md-body h4 { line-height:1.3; margin:1em 0 .4em; font-weight:600; }
+  .md-body h1 { font-size:var(--fs-title-md); } .md-body h2 { font-size:15px; } .md-body h3 { font-size:13.5px; }
+  .md-body p { margin:.5em 0; color:var(--dim); }
+  .md-body ul, .md-body ol { margin:.4em 0; padding-left:1.4em; color:var(--dim); }
+  .md-body li { margin:.15em 0; }
+  .md-body blockquote { margin:.6em 0; padding:.4em 1em; border-left:3px solid var(--accent); color:var(--dim); font-style:italic; }
+  .md-body hr { border:none; border-top:1px solid var(--line); margin:1em 0; }
+  .md-body code { font-size:12px; background:var(--inset); border:1px solid var(--line); padding:.1em .3em; }
+  .md-body img { max-width:100%; margin:.4em 0; }
+  .md-body a { color:var(--accent); }
+  .md-body table { border-collapse:collapse; width:100%; margin:.6em 0; font-size:12px; display:block; overflow-x:auto; }
+  .md-body th, .md-body td { border:1px solid var(--line); padding:.5em .7em; text-align:left; vertical-align:top; }
+  .md-body th { background:var(--inset); font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; color:var(--faint); font-weight:600; text-transform:uppercase; }
+  .md-body td { color:var(--dim); }
+
+  /* ---------- toast ---------- */
+  #toastHost { position:fixed; right:var(--sp-5); bottom:var(--sp-5); display:flex; flex-direction:column; gap:var(--sp-2); z-index:200; }
+  .toast { font-family:var(--sans); font-size:var(--fs-body); padding:.6rem .9rem; border:1px solid var(--line-strong); background:var(--panel); color:var(--text); box-shadow:0 8px 24px rgba(0,0,0,.4); cursor:pointer; }
+  .toast.success { border-color:var(--green); }
+  .toast.error { border-color:var(--red); }
+
+  /* ---------- overlays: conflict + search ---------- */
+  .overlay-scrim { position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:flex-start; justify-content:center; padding-top:12vh; z-index:300; }
+  .overlay-scrim[hidden] { display:none; }
+  .overlay-card { width:520px; max-width:92vw; border:1px solid var(--line-strong); background:var(--panel); padding:var(--sp-5); }
+  .overlay-card h4 { margin:0 0 var(--sp-3); font-size:var(--fs-body); font-weight:600; }
+  .overlay-card p { margin:0 0 var(--sp-4); font-size:var(--fs-meta); color:var(--dim); line-height:1.5; }
+  .search-input { width:100%; font:15px var(--sans); background:var(--inset); border:1px solid var(--line-strong); color:var(--text); padding:.6rem .7rem; }
+  .search-results { margin-top:var(--sp-3); max-height:46vh; overflow-y:auto; display:flex; flex-direction:column; gap:2px; }
+  .search-result { padding:8px 9px; cursor:pointer; border-left:2px solid transparent; }
+  .search-result:hover { background:var(--panel-2); border-left-color:var(--accent); }
+  .search-result .label { font-family:var(--mono); font-size:var(--fs-tag); color:var(--faint); text-transform:uppercase; letter-spacing:.06em; }
+  .search-result .snippet { font-size:var(--fs-body); color:var(--dim); margin-top:2px; }
+  .search-hint { font-family:var(--mono); font-size:var(--fs-tag); color:var(--faint); margin-top:var(--sp-3); }
 </style>
 </head>
 <body>
 
 <div id="gate">
-  <h2>Project Window</h2>
-  <p style="color:var(--dim)">Grant access to the <code>design-helper</code> repo root (the folder containing
-  <code>_templates</code>, <code>Projects</code>, <code>_skill-source</code>).</p>
-  <button id="openRepo">Open repo folder&hellip;</button>
-  <div id="gateLog"></div>
+  <div class="gate-card">
+    <div class="gate-kicker">Workspace &middot; step 1 of 1</div>
+    <h1>Open a repo to begin</h1>
+    <p>Grant access to the <code>design-helper</code> repo root (the folder containing
+    <code>_templates</code>, <code>Projects</code>, <code>_skill-source</code>).</p>
+
+    <div id="reconnectBox" hidden>
+      <div class="gate-drop">
+        <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--dim)" stroke-width="1.4"><path d="M3 6.5C3 5.67 3.67 5 4.5 5h4.6l1.6 2h8.8c.83 0 1.5.67 1.5 1.5v9c0 .83-.67 1.5-1.5 1.5h-15C3.67 19 3 18.33 3 17.5v-11Z"/></svg>
+        <div class="name" id="reconnectName"></div>
+        <button class="gate-btn" id="reconnectBtn">Reconnect to this folder</button>
+        <button class="gate-btn ghost" id="chooseDifferentBtn">Choose a different folder&hellip;</button>
+      </div>
+    </div>
+    <div id="pickBox">
+      <div class="gate-drop">
+        <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--dim)" stroke-width="1.4"><path d="M3 6.5C3 5.67 3.67 5 4.5 5h4.6l1.6 2h8.8c.83 0 1.5.67 1.5 1.5v9c0 .83-.67 1.5-1.5 1.5h-15C3.67 19 3 18.33 3 17.5v-11Z"/></svg>
+        <button class="gate-btn" id="openRepo">Open repo folder&hellip;</button>
+      </div>
+    </div>
+  </div>
+  <div class="gate-log-card">
+    <div class="gate-kicker">Log</div>
+    <div id="gateLog"></div>
+  </div>
+  <div class="footer-row">
+    <span>design-helper &middot; local-first, no network &middot; File System Access API</span>
+  </div>
 </div>
 
 <div id="app">
   <header>
-    <span class="proj-title" id="projTitle">&mdash;</span>
-    <select id="projectSelect"></select>
+    <div class="brand-mark">PW</div>
+    <div class="brand-sep"></div>
+    <div class="proj-id">
+      <div class="proj-title-row" id="projTitleRow">
+        <span class="proj-title" id="projTitle">&mdash;</span>
+        <svg class="icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        <select id="projectSelect" title="Switch project"></select>
+      </div>
+      <div class="proj-path" id="projPath"></div>
+    </div>
     <span class="spacer"></span>
-    <span class="since" id="stateBadge" style="display:none"></span>
-    <span class="since" id="sinceBadge" title="Click to see what changed"></span>
+    <span class="chip dormant" id="stateBadge" style="display:none"></span>
+    <span class="chip" id="sinceBadge" title="Click to see what changed"></span>
+    <div class="vrule"></div>
+    <div class="conn-dot"><span class="d"></span>workspace connected</div>
   </header>
-  <div id="appError" style="display:none; background:#5a1a1a; color:#fff; padding:.5rem 1rem; font:12.5px/1.5 ui-monospace,Consolas,monospace; white-space:pre-wrap"></div>
+  <div id="appError"></div>
   <div class="layout">
     <aside class="rail">
-      <section>
-        <h3>Phases</h3>
+      <div class="rail-fixed">
+        <div class="rail-label">Phases</div>
         <div id="phaseRail"></div>
-      </section>
-      <section>
-        <h3>Drivers <span id="driversLockBadge" class="badge" style="display:none">LOCKED</span></h3>
-        <div id="driverCards"></div>
-      </section>
-      <section>
-        <h3>Open questions (<span id="oqCount">0</span>)</h3>
-        <ul class="qlist" id="oqList"></ul>
-      </section>
-      <section>
-        <h3>Decisions</h3>
-        <button class="toggle" id="showDecisionForm">+ log a decision</button>
-        <form class="append" id="decisionForm" style="display:none">
-          <input name="phase" placeholder="Phase (e.g. Massing)" required>
-          <textarea name="decision" placeholder="Decision" required></textarea>
-          <textarea name="rationale" placeholder="Rationale"></textarea>
-          <textarea name="rejected" placeholder="Rejected alternatives"></textarea>
-          <div class="row-actions">
-            <button type="submit" class="primary">Append to decision log</button>
-            <button type="button" id="cancelDecision">Cancel</button>
+      </div>
+      <div class="rail-scroll">
+        <section id="sec-drivers">
+          <div class="rail-label-row">
+            <span class="rail-label" style="margin:0">Drivers</span>
+            <span id="driversLockBadge" class="badge" style="display:none">LOCKED</span>
           </div>
-        </form>
-        <ul class="declist" id="decisionList"></ul>
-      </section>
-      <section>
-        <h3>Close-out</h3>
-        <div class="phase" id="closeOutLink" onclick="openCloseOut()">05_Close-Out.md</div>
-      </section>
+          <div id="driverCards"></div>
+        </section>
+        <section id="sec-oq">
+          <div class="rail-label" style="margin-bottom:8px">Open questions (<span id="oqCount">0</span>)</div>
+          <ul class="qlist" id="oqList"></ul>
+        </section>
+        <section id="sec-decisions">
+          <div class="rail-label">Decisions</div>
+          <button class="ghost-btn" id="showDecisionForm">+ log a decision</button>
+          <form class="append" id="decisionForm" style="display:none">
+            <input name="phase" placeholder="Phase (e.g. Massing)" required>
+            <textarea name="decision" placeholder="Decision" required></textarea>
+            <textarea name="rationale" placeholder="Rationale"></textarea>
+            <textarea name="rejected" placeholder="Rejected alternatives"></textarea>
+            <div class="row-actions">
+              <button type="submit" class="primary">Append to decision log</button>
+              <button type="button" id="cancelDecision">Cancel</button>
+            </div>
+          </form>
+          <ul class="declist" id="decisionList"></ul>
+        </section>
+        <section id="sec-closeout">
+          <div class="rail-label">Close-out</div>
+          <div class="closeout-row" id="closeOutLink">
+            <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg>
+            05_Close&#8209;Out.md
+          </div>
+        </section>
+      </div>
     </aside>
     <main>
       <div class="conscience-wrap" id="conscienceWrap">
         <div class="conscience-head" id="conscienceHead">
-          <span class="chev">&#9660;</span>
-          <span id="conscienceSummary">Conscience panel</span>
+          <svg class="icon chev" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          <span class="label">Conscience</span>
+          <span class="meta" id="conscienceSummary"></span>
         </div>
-        <div class="conscience-caveat">Loose keyword matching over files the tool already wrote — a prompt to look, not a verdict. A clean panel means nothing the net caught, not that nothing's wrong.</div>
+        <div class="conscience-caveat">Loose keyword matching over files the tool already wrote &mdash; a prompt to look, not a verdict. A clean panel means nothing the net caught, not that nothing's wrong.</div>
         <div class="conscience" id="conscience"></div>
       </div>
-      <div class="viewer" id="viewer"><p class="empty">Pick a phase on the left.</p></div>
+      <div class="viewer" id="viewer"><p class="empty">Pick a phase on the left. (Ctrl/Cmd+K to search this project.)</p></div>
     </main>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+
+<div class="overlay-scrim" id="conflictOverlay" hidden>
+  <div class="overlay-card">
+    <h4>File changed on disk</h4>
+    <p id="conflictMessage"></p>
+    <div class="row-actions">
+      <button class="primary" id="conflictOverwrite">Overwrite with my edits</button>
+      <button id="conflictReload">Discard my edits &amp; reload</button>
+      <button id="conflictCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay-scrim" id="searchOverlay" hidden>
+  <div class="overlay-card" style="width:640px;">
+    <h4>Search this project</h4>
+    <input class="search-input" id="searchInput" placeholder="Drivers, decisions, open questions, phase text&hellip;">
+    <div class="search-results" id="searchResults"></div>
+    <div class="search-hint">Esc to close &middot; scoped to the open project, not across projects</div>
   </div>
 </div>
 
@@ -171,15 +334,96 @@ const PHASE_LABELS = {
   'client-discovery': 'Client discovery', 'site': 'Site', 'precedents': 'Precedents',
   'massing': 'Massing', 'space-planning': 'Space planning', 'materiality': 'Materiality'
 };
+const STATUS_LABELS = {
+  'complete': 'Complete', 'in-progress': 'In progress', 'not-started': 'Not started', 'looping-back': 'Looping back'
+};
 let repoHandle = null, templates = {}, templatesByPhaseDir = {};
 let projectHandle = null, projectName = null, projectFiles = [], byPath = {};
 let parsed = null;
+let selectedPhaseKey = null; // what's open in the viewer right now — independent of workflow-current
+let userToggledConscience = false;
+let activeEditorSave = null, activeEditorCancel = null;
 
-const log = (msg, cls) => {
+// ---------- tiny inline icon set (replaces the raw Unicode glyphs) ----------
+function icon(name, opts) {
+  opts = opts || {};
+  const c = opts.color || 'currentColor', w = opts.size || 12;
+  const body = {
+    chevron: '<path d="M6 9l6 6 6-6"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    warning: '<path d="M12 4 2 20h20L12 4Z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="' + c + '" stroke="none"/>',
+    x: '<path d="M18 6 6 18"/><path d="M6 6l12 12"/>',
+    'external-link': '<path d="M7 17 17 7"/><path d="M9 7h8v8"/>',
+  }[name] || '';
+  return '<svg class="icon" width="' + w + '" height="' + w + '" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + body + '</svg>';
+}
+
+// ---------- toast (replaces alert() for routine feedback) ----------
+function toast(msg, type) {
+  const host = document.getElementById('toastHost');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' ' + type : '');
+  el.textContent = msg;
+  el.onclick = () => el.remove();
+  host.appendChild(el);
+  setTimeout(() => el.remove(), 3400);
+}
+
+// ---------- in-app conflict view (replaces confirm() for save conflicts) ----------
+function showConflict({ message, onOverwrite, onReload, onCancel }) {
+  const ov = document.getElementById('conflictOverlay');
+  document.getElementById('conflictMessage').textContent = message;
+  ov.hidden = false;
+  const cleanup = () => { ov.hidden = true; ow.onclick = rl.onclick = cn.onclick = null; };
+  const ow = document.getElementById('conflictOverwrite');
+  const rl = document.getElementById('conflictReload');
+  const cn = document.getElementById('conflictCancel');
+  ow.onclick = () => { cleanup(); onOverwrite && onOverwrite(); };
+  rl.onclick = () => { cleanup(); onReload && onReload(); };
+  cn.onclick = () => { cleanup(); onCancel && onCancel(); };
+}
+function closeConflictOverlay() {
+  const ov = document.getElementById('conflictOverlay');
+  if (ov.hidden) return false;
+  ov.hidden = true; return true;
+}
+
+// ---------- IndexedDB: persist the picked directory handle across sessions ----------
+// Highest-leverage UX fix flagged in the 2026-09-07 review: without this, the tool
+// re-prompts for the folder every single time it's opened.
+const IDB_NAME = 'project-window', IDB_STORE = 'kv';
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(IDB_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbSet(key, val) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).put(val, key);
+    tx.oncomplete = resolve; tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readonly');
+    const req = tx.objectStore(IDB_STORE).get(key);
+    req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error);
+  });
+}
+
+function logRow(html, cls) {
   const el = document.getElementById('gateLog');
-  const s = document.createElement('div'); if (cls) s.style.color = 'var(--' + cls + ')';
-  s.textContent = msg; el.appendChild(s);
-};
+  const s = document.createElement('div'); if (cls) s.className = cls;
+  s.innerHTML = html; el.appendChild(s);
+}
+function clearLog() { document.getElementById('gateLog').innerHTML = ''; }
 
 async function walk(dirHandle, prefix, out) {
   for await (const [name, handle] of dirHandle.entries()) {
@@ -241,6 +485,9 @@ async function loadProject(name) {
 
 async function loadProjectInner(name) {
   projectName = name;
+  selectedPhaseKey = null;
+  userToggledConscience = false;
+  safeStorageSet('pw-last-project', name);
   const projDir = await repoHandle.getDirectoryHandle('Projects');
   projectHandle = await projDir.getDirectoryHandle(name);
   projectFiles = await walk(projectHandle, '', []);
@@ -281,7 +528,7 @@ async function loadProjectInner(name) {
   const moved = Audit.sinceLastOpen(projectFiles, lastOpened);
   safeStorageSet(lastOpenedKey, new Date().toISOString());
 
-  parsed = { state, drivers, decisions, questions, boardText, massingText, findings, moved };
+  parsed = { state, drivers, decisions, questions, boardText, massingText, findings, moved, phaseTexts };
   render();
 }
 
@@ -289,6 +536,7 @@ async function loadProjectInner(name) {
 
 function render() {
   document.getElementById('projTitle').textContent = projectName;
+  document.getElementById('projPath').textContent = 'Projects/' + projectName;
   renderPhaseRail();
   renderDrivers();
   renderOpenQuestions();
@@ -298,10 +546,6 @@ function render() {
   renderStateBadge();
 }
 
-// Project-level status (dormant/complete), plus the two "don't trust state.json
-// silently" flags SpineParse.reconcile() computes but nothing used to read: `stale`
-// (a project file is newer than state.json) and `schemaMismatch` (state.json's
-// `phases` didn't match the expected shape, so this view is inferred, not authoritative).
 function renderStateBadge() {
   const el = document.getElementById('stateBadge');
   const s = parsed.state;
@@ -312,8 +556,8 @@ function renderStateBadge() {
   else if (s.stale) parts.push('state.json looks older than ' + (s.newestFile ? 'some project files' : 'the project') + ' — status below may be behind');
   if (!parts.length) { el.style.display = 'none'; return; }
   el.textContent = parts.join(' · ');
-  el.className = 'since' + (s.status === 'dormant' ? ' dormant' : (s.schemaMismatch || s.stale ? ' warn' : ''));
-  el.style.display = 'inline';
+  el.className = 'chip' + (s.status === 'dormant' ? ' dormant' : (s.schemaMismatch || s.stale ? ' warn' : ''));
+  el.style.display = 'inline-flex';
   el.title = s.schemaMismatch
     ? 'state.json exists but its phases field is missing or in an old shape; falling back to inferring status from the files themselves.'
     : '';
@@ -325,26 +569,35 @@ function renderPhaseRail() {
   const order = SpineParse.ORDER;
   order.forEach((key, i) => {
     if (i === 2) { // gate sits between site and precedents
+      const locked = parsed.state.driversLocked;
       const g = document.createElement('div');
-      g.className = 'lock-gate' + (parsed.state.driversLocked ? ' locked' : '');
+      g.className = 'lock-gate-row';
       g.innerHTML = '<div class="bar"></div>' +
-        (parsed.state.driversLocked ? '&#9646; LOCKED ' + (parsed.state.driversLockedDate || '') : '&#9647; drivers lock') +
+        '<div class="lock-gate-chip' + (locked ? ' locked' : '') + '">' +
+          icon('lock', { color: 'var(--steel)', size: 10 }) +
+          (locked ? 'DRIVERS LOCKED' + (parsed.state.driversLockedDate ? ' · ' + parsed.state.driversLockedDate : '') : 'DRIVERS LOCK') +
+        '</div>' +
         '<div class="bar"></div>';
       el.appendChild(g);
     }
     const ph = (parsed.state.phases || {})[key] || { status: 'not-started' };
     const row = document.createElement('div');
-    row.className = 'phase' + (parsed.state.currentPhase === key ? ' current' : '');
-    row.innerHTML = '<span class="dot ' + ph.status + '"></span>' + PHASE_LABELS[key];
+    row.className = 'phase' +
+      (parsed.state.currentPhase === key ? ' current' : '') +
+      (selectedPhaseKey === key ? ' selected' : '');
+    row.title = PHASE_LABELS[key] + ' — ' + (STATUS_LABELS[ph.status] || ph.status);
+    row.innerHTML = '<span class="dot ' + ph.status + '" title="' + (STATUS_LABELS[ph.status] || ph.status) + '"></span><span class="lbl">' + PHASE_LABELS[key] + '</span>';
     row.onclick = () => openPhase(key);
     el.appendChild(row);
   });
+  const co = document.getElementById('closeOutLink');
+  co.classList.toggle('selected', selectedPhaseKey === '__closeout__');
 }
 
 function renderDrivers() {
   const el = document.getElementById('driverCards');
   const badge = document.getElementById('driversLockBadge');
-  badge.style.display = parsed.drivers.locked ? 'inline-block' : 'none';
+  badge.style.display = parsed.drivers.locked ? 'inline-flex' : 'none';
   el.innerHTML = '';
   if (!parsed.drivers.drivers.length) { el.innerHTML = '<p class="empty">No locked drivers found.</p>'; return; }
   parsed.drivers.drivers.forEach(d => {
@@ -369,84 +622,146 @@ function renderOpenQuestions() {
     const li = document.createElement('li');
     const blocksNow = curTok && (q.blocks || '').toLowerCase().includes(curTok);
     if (blocksNow) li.className = 'blocks-now';
-    li.textContent = 'Q' + q.n + ' — ' + q.question + (q.blocks ? ' (blocks: ' + q.blocks + ')' : '');
+    li.innerHTML = 'Q' + q.n + ' — ' + esc(q.question) +
+      (blocksNow ? '<span class="tag">[ BLOCKS: ' + esc((q.blocks || '').toUpperCase()) + ' ]</span>'
+                 : (q.blocks ? ' <span style="color:var(--faint)">(blocks: ' + esc(q.blocks) + ')</span>' : ''));
     el.appendChild(li);
   });
 }
 
+// No longer clipped to 8 rows / 140 chars (review: "clipping without an escape hatch
+// undercuts the core value prop") — the rail's Decisions section now lives in its own
+// independently-scrolling zone (`.rail-scroll`) instead of one shared region with
+// Phases, so a long log no longer pushes primary navigation off-screen either.
 function renderDecisions() {
   const el = document.getElementById('decisionList');
   el.innerHTML = '';
   if (!parsed.decisions.length) { el.innerHTML = '<li class="empty">None logged.</li>'; return; }
-  parsed.decisions.slice(0, 8).forEach(d => {
+  parsed.decisions.forEach(d => {
     const li = document.createElement('li');
-    li.innerHTML = '<b>' + esc(d.date) + '</b> (' + esc(d.phase) + ') ' + esc(d.decision).slice(0, 140);
+    li.innerHTML = '<div class="meta"><span class="date">' + esc(d.date) + '</span><span class="phase-tag">' + esc((d.phase || '').toUpperCase()) + '</span></div>' +
+      '<div class="text">' + esc(d.decision) + '</div>';
     el.appendChild(li);
   });
 }
 
+function findingId(f) { return f.kind + '|' + f.text; }
+function mutedKey() { return 'pw-muted:' + projectName; }
+function getMuted() { try { return new Set(JSON.parse(safeStorageGet(mutedKey()) || '[]')); } catch { return new Set(); } }
+function setMuted(set) { safeStorageSet(mutedKey(), JSON.stringify([...set])); }
+
 function renderConscience() {
   const el = document.getElementById('conscience');
   const summary = document.getElementById('conscienceSummary');
+  const wrap = document.getElementById('conscienceWrap');
   el.innerHTML = '';
+
+  const muted = getMuted();
+  const visible = parsed.findings.filter(f => !muted.has(findingId(f)));
+  const mutedCount = parsed.findings.length - visible.length;
+
   if (!parsed.findings.length) {
-    el.innerHTML = '<div class="row clean">&#10003; Nothing the conscience panel wants to flag right now.</div>';
-    summary.textContent = 'Conscience panel — all clear';
-    return;
+    el.innerHTML = '<div class="clean">' + icon('check', { color: 'var(--green)' }) + ' Nothing the conscience panel wants to flag right now.</div>';
+    summary.textContent = 'all clear';
+  } else {
+    const high = visible.filter(f => f.severity === 'high').length;
+    const rest = visible.length - high;
+    summary.textContent = visible.length + ' finding' + (visible.length === 1 ? '' : 's') +
+      (high ? ' · ' + high + ' high' : '') + (rest ? ', ' + rest + ' other' : '');
+    // Force-expand on real high-severity findings, unless the user has already
+    // manually toggled the panel this session (review: don't let a stale collapsed
+    // preference hide the thing most worth seeing).
+    if (high && !userToggledConscience) wrap.classList.remove('collapsed');
+
+    visible.forEach(f => {
+      const row = document.createElement('div'); row.className = 'row ' + f.severity;
+      const markup = f.severity === 'high' ? icon('warning', { color: 'var(--red)', size: 13 })
+        : f.severity === 'medium' ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--amber);margin-top:4px;flex:none;"></span>'
+        : '<span style="color:var(--faint);flex:none;">&ndash;</span>';
+      row.innerHTML = markup + '<span class="txt">' + esc(f.text) + '</span>' +
+        '<button class="mute" title="Mute this finding">' + icon('x', { size: 11 }) + '</button>';
+      row.querySelector('.txt').onclick = () => navigateToTarget(f.target);
+      row.querySelector('.mute').onclick = (e) => {
+        e.stopPropagation();
+        const m = getMuted(); m.add(findingId(f)); setMuted(m); renderConscience();
+      };
+      el.appendChild(row);
+    });
   }
-  const high = parsed.findings.filter(f => f.severity === 'high').length;
-  const rest = parsed.findings.length - high;
-  summary.textContent = 'Conscience panel — ' + parsed.findings.length + ' item' + (parsed.findings.length > 1 ? 's' : '') +
-    (high ? ' (' + high + ' high)' : '') + (rest ? ', ' + rest + ' other' : '');
-  parsed.findings.forEach(f => {
-    const row = document.createElement('div'); row.className = 'row ' + f.severity;
-    row.innerHTML = (f.severity === 'high' ? '&#9888; ' : '') + esc(f.text);
-    el.appendChild(row);
-  });
+
+  if (mutedCount > 0) {
+    const btn = document.createElement('button'); btn.className = 'muted-toggle';
+    btn.textContent = mutedCount + ' muted finding' + (mutedCount === 1 ? '' : 's') + ' — show';
+    btn.onclick = () => { setMuted(new Set()); renderConscience(); };
+    el.appendChild(btn);
+  }
+}
+
+// Click-through for a conscience finding: audit.js attaches a best-effort `target`
+// to most findings ({section:'phase',key} or {section:'drivers'|'open-questions'}).
+function navigateToTarget(target) {
+  if (!target) return;
+  if (target.section === 'phase' && target.key) { openPhase(target.key); return; }
+  const id = target.section === 'drivers' ? 'sec-drivers'
+    : target.section === 'open-questions' ? 'sec-oq' : null;
+  if (id) document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 document.getElementById('conscienceHead').onclick = () => {
+  userToggledConscience = true;
   const wrap = document.getElementById('conscienceWrap');
   wrap.classList.toggle('collapsed');
-  safeStorageSet('pw-conscience-collapsed', wrap.classList.contains('collapsed') ? '1' : '0');
+  safeStorageSet('pw-conscience-collapsed:' + projectName, wrap.classList.contains('collapsed') ? '1' : '0');
 };
-if (safeStorageGet('pw-conscience-collapsed') === '1') {
-  document.getElementById('conscienceWrap').classList.add('collapsed');
-}
 
 function renderSinceBadge() {
   const el = document.getElementById('sinceBadge');
-  el.textContent = parsed.moved.length ? parsed.moved.length + ' file(s) changed since you last opened this' : '';
+  el.textContent = parsed.moved.length ? parsed.moved.length + ' changed since open' : '';
+  el.style.display = parsed.moved.length ? 'inline-flex' : 'none';
+  // Per-project collapse preference for the conscience panel (review: a global key
+  // silently carried a collapse choice made for one project into every other one).
+  const wrap = document.getElementById('conscienceWrap');
+  wrap.classList.toggle('collapsed', safeStorageGet('pw-conscience-collapsed:' + projectName) === '1');
   el.onclick = () => {
     if (!parsed.moved.length) return;
     const viewer = document.getElementById('viewer');
     viewer.innerHTML = '<h3>Changed since last open</h3><ul class="qlist">' +
       parsed.moved.map(m => '<li>' + esc(m.path) + ' — ' + esc(m.mtime) + '</li>').join('') + '</ul>';
+    selectedPhaseKey = null; renderPhaseRail();
   };
 }
 
-// Escapes quotes too, not just &<> — esc() is used to build HTML attribute values
-// (option value=, img src=, a href=) from file content (folder names, markdown image/
-// link syntax), and an unescaped quote there breaks out of the attribute.
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // ---------- phase viewer ----------
 
 function openPhase(key) {
+  selectedPhaseKey = key;
+  activeEditorSave = null; activeEditorCancel = null;
+  renderPhaseRail();
   const viewer = document.getElementById('viewer');
   viewer.innerHTML = '';
   if (key === 'massing') {
     const studio = projectFiles.find(f => /^3_Massing\/Massing-Studio\.html$/.test(f.path));
     if (studio) {
+      const toolbar = document.createElement('div'); toolbar.className = 'viewer-toolbar';
+      toolbar.innerHTML = '<span class="path">3_Massing/Massing-Studio.html</span>';
       const iframe = document.createElement('iframe');
       iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/3_Massing/Massing-Studio.html';
+      iframe.addEventListener('load', () => {
+        // Best-effort bridge (unverified — no Massing Studio instance exists on this
+        // machine to round-trip against). No-op if the Studio has no listener.
+        try {
+          iframe.contentWindow.postMessage({ type: 'pw:theme', theme: 'dark' }, '*');
+          const changed = (parsed.moved || []).filter(m => m.path.startsWith('3_Massing/')).map(m => m.path);
+          if (changed.length) iframe.contentWindow.postMessage({ type: 'pw:files-changed', paths: changed }, '*');
+        } catch {}
+      });
+      viewer.appendChild(toolbar);
       viewer.appendChild(iframe);
       return;
     }
   }
-  // Otherwise: render the phase's markdown docs as raw-editable text, doc by doc.
-  // 05_Close-Out.md lives in 0_Spine/ (same dir as client-discovery's files) but isn't
-  // client-discovery content — it gets its own rail entry instead (openCloseOut()).
   const dir = SpineParse.PHASES.find(p => p.key === key).dir;
   const docs = projectFiles.filter(f => f.path.startsWith(dir + '/') && f.path.endsWith('.md') &&
     !/05_Close-Out/.test(f.path));
@@ -455,12 +770,16 @@ function openPhase(key) {
 }
 
 function openCloseOut() {
+  selectedPhaseKey = '__closeout__';
+  activeEditorSave = null; activeEditorCancel = null;
+  renderPhaseRail();
   const viewer = document.getElementById('viewer');
   viewer.innerHTML = '';
   const doc = projectFiles.find(f => f.path === '0_Spine/05_Close-Out.md');
   if (!doc) { viewer.innerHTML = '<p class="empty">No close-out doc yet — written once the project goes dormant or complete.</p>'; return; }
   viewer.appendChild(renderEditableDoc(doc));
 }
+document.getElementById('closeOutLink').onclick = openCloseOut;
 
 function renderEditableDoc(fileEntry) {
   const wrap = document.createElement('div'); wrap.className = 'card-doc';
@@ -480,16 +799,37 @@ function renderEditableDoc(fileEntry) {
     const cancel = document.createElement('button'); cancel.textContent = 'Cancel';
     actions.appendChild(save); actions.appendChild(cancel);
     wrap.appendChild(ta); wrap.appendChild(actions);
-    cancel.onclick = () => openPhase(currentPhaseKeyFromPath(fileEntry.path));
+
+    const backToView = () => openPhase(currentPhaseKeyFromPath(fileEntry.path));
+    ta.addEventListener('focus', () => { activeEditorSave = () => save.click(); activeEditorCancel = () => cancel.click(); });
+    cancel.onclick = () => {
+      if (fileEntry.path === '0_Spine/05_Close-Out.md') { openCloseOut(); return; }
+      backToView();
+    };
     save.onclick = async () => {
       const fresh = await fileEntry.handle.getFile();
+      const doSave = async () => {
+        const w = await fileEntry.handle.createWritable();
+        await w.write(ta.value); await w.close();
+        fileEntry.text = ta.value; fileEntry.mtime = new Date((await fileEntry.handle.getFile()).lastModified).toISOString();
+        toast('Saved.', 'success');
+        // Return to rendered view instead of staying in raw-editor mode (review item #14).
+        if (fileEntry.path === '0_Spine/05_Close-Out.md') openCloseOut(); else backToView();
+      };
       if (fresh.lastModified !== new Date(fileEntry.mtime).getTime()) {
-        if (!confirm('This file changed on disk since it was loaded (probably edited by Claude Code). Overwrite anyway?')) return;
+        showConflict({
+          message: 'This file changed on disk since it was loaded (probably edited by Claude Code). Overwrite it with your edits, or discard your edits and reload the current disk version?',
+          onOverwrite: doSave,
+          onReload: async () => {
+            const freshText = await fresh.text();
+            ta.value = freshText;
+            fileEntry.text = freshText; fileEntry.mtime = new Date(fresh.lastModified).toISOString();
+            toast('Reloaded from disk — your edits were discarded.', 'error');
+          }
+        });
+        return;
       }
-      const w = await fileEntry.handle.createWritable();
-      await w.write(ta.value); await w.close();
-      fileEntry.text = ta.value; fileEntry.mtime = new Date((await fileEntry.handle.getFile()).lastModified).toISOString();
-      alert('Saved.');
+      await doSave();
     };
   };
   return wrap;
@@ -499,18 +839,7 @@ function currentPhaseKeyFromPath(path) {
   const p = SpineParse.PHASES.find(p => p.dir === dir);
   return p ? p.key : 'client-discovery';
 }
-// Small dependency-free markdown renderer — no CDN, so the Window keeps working
-// with no network connection, matching the tool's own architecture decision.
-// Handles what the spine/phase docs actually use: headers, tables (reusing
-// SpineParse.splitRow so escaped pipes match the tested parsing layer), bold/
-// italic/code/links, images (rewritten to resolve against the doc's real folder,
-// since they're relative to the project file, not to this Window's own location),
-// blockquotes, rules, and lists.
-// Bold/italic/code/link/image inline formatting — factored out of renderMarkdown so
-// callers with no docPath (driver cards, which aren't rendering a file, just a table
-// cell) can still get bold/italic instead of falling back to raw esc(). imgBase is
-// optional; without it a relative image src just won't resolve, which is fine for
-// contexts (like driver text) that realistically never embed one.
+
 function mdInline(text, imgBase) {
   let s = esc(text);
   s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, src) =>
@@ -588,21 +917,17 @@ document.getElementById('decisionForm').onsubmit = async (e) => {
     .map(v => (v || '').replace(/\|/g, '\\|').replace(/\n/g, ' ')).join(' | ') + ' |';
 
   const entry = byPath['0_Spine/02_Decision-Log.md'];
-  if (!entry) { alert('No decision log found for this project.'); return; }
+  if (!entry) { toast('No decision log found for this project.', 'error'); return; }
 
-  // Read fresh from disk rather than trusting the in-memory copy loaded when the
-  // project opened — Claude Code may have appended its own decisions since then, and
-  // an append should land on top of the real current content, not silently clobber it.
-  // (renderEditableDoc's raw-markdown Save uses a re-read-and-confirm pattern instead,
-  // because it's a full overwrite where the user's edit and the disk content can
-  // genuinely conflict; an append has no such conflict — there's always a safe place
-  // to insert a new row into whatever the current table actually is.)
   const freshFile = await entry.handle.getFile();
   const freshText = await freshFile.text();
+  // Reuses readDecisions()'s own column-matching rule (findTableLineRange) instead of
+  // "the first pipe-table divider in the file" — a file with a second table could
+  // otherwise silently receive the new row in the wrong place (review item #8).
+  const range = SpineParse.findTableLineRange(freshText, cols => cols.some(c => /decision/i.test(c)));
+  if (!range) { toast('Could not find the decision table in this file.', 'error'); return; }
   const lines = freshText.split(/\r?\n/);
-  const dividerIdx = lines.findIndex((l) => l.includes('|') && /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/.test(l) && l.includes('-'));
-  if (dividerIdx < 0) { alert('Could not find the decision table in this file.'); return; }
-  lines.splice(dividerIdx + 1, 0, row);
+  lines.splice(range.dividerLine + 1, 0, row);
   const newText = lines.join('\n');
 
   const w = await entry.handle.createWritable();
@@ -614,29 +939,184 @@ document.getElementById('decisionForm').onsubmit = async (e) => {
   renderDecisions();
   e.target.reset();
   document.getElementById('decisionForm').style.display = 'none';
+  toast('Decision logged.', 'success');
 };
+
+// ---------- project switcher ----------
+
+document.getElementById('projTitleRow').addEventListener('click', () => {
+  const sel = document.getElementById('projectSelect');
+  if (sel.showPicker) { try { sel.showPicker(); return; } catch {} }
+  sel.focus();
+});
+
+// ---------- search overlay (Ctrl/Cmd+K) — scoped to the open project, not cross-project ----------
+
+function openSearchOverlay() {
+  if (!parsed) return;
+  const ov = document.getElementById('searchOverlay');
+  ov.hidden = false;
+  const input = document.getElementById('searchInput');
+  input.value = ''; runSearch('');
+  input.focus();
+  input.oninput = () => runSearch(input.value);
+}
+function closeSearchOverlay() {
+  const ov = document.getElementById('searchOverlay');
+  if (ov.hidden) return false;
+  ov.hidden = true; return true;
+}
+function runSearch(qRaw) {
+  const results = document.getElementById('searchResults');
+  results.innerHTML = '';
+  const q = qRaw.trim().toLowerCase();
+  if (!q) { results.innerHTML = '<div class="search-hint" style="margin-top:0">Type to search drivers, decisions, open questions, and phase text.</div>'; return; }
+  const hits = [];
+  const snippet = (text) => {
+    const idx = text.toLowerCase().indexOf(q);
+    const start = Math.max(0, idx - 40);
+    return (start > 0 ? '…' : '') + text.slice(start, idx + q.length + 60) + '…';
+  };
+  parsed.drivers.drivers.forEach(d => {
+    const hay = [d.driver, d.why, d.test].join(' ');
+    if (hay.toLowerCase().includes(q)) hits.push({ label: 'Driver D' + d.n, snippet: snippet(hay), action: () => { closeSearchOverlay(); document.getElementById('sec-drivers').scrollIntoView({ behavior: 'smooth' }); } });
+  });
+  parsed.decisions.forEach(d => {
+    const hay = [d.decision, d.rationale, d.rejected].join(' ');
+    if (hay.toLowerCase().includes(q)) hits.push({ label: 'Decision · ' + d.phase, snippet: snippet(hay), action: () => { closeSearchOverlay(); document.getElementById('sec-decisions').scrollIntoView({ behavior: 'smooth' }); } });
+  });
+  parsed.questions.forEach(qn => {
+    if (qn.question.toLowerCase().includes(q)) hits.push({ label: 'Open question Q' + qn.n, snippet: snippet(qn.question), action: () => { closeSearchOverlay(); document.getElementById('sec-oq').scrollIntoView({ behavior: 'smooth' }); } });
+  });
+  for (const key of SpineParse.ORDER) {
+    const text = parsed.phaseTexts[key] || '';
+    if (text.toLowerCase().includes(q)) hits.push({ label: 'Phase · ' + PHASE_LABELS[key], snippet: snippet(text), action: () => { closeSearchOverlay(); openPhase(key); } });
+  }
+  if (!hits.length) { results.innerHTML = '<div class="search-hint" style="margin-top:0">No matches.</div>'; return; }
+  hits.slice(0, 25).forEach(h => {
+    const row = document.createElement('div'); row.className = 'search-result';
+    row.innerHTML = '<div class="label">' + esc(h.label) + '</div><div class="snippet">' + esc(h.snippet) + '</div>';
+    row.onclick = h.action;
+    results.appendChild(row);
+  });
+}
+
+// ---------- keyboard shortcuts ----------
+// Baseline support the 2026-09-07 review flagged as entirely missing: Esc to back
+// out of whatever's open, Ctrl/Cmd+S to save the focused editor, Ctrl/Cmd+K to
+// search, Alt+Up/Down to step through phases without touching the mouse.
+document.addEventListener('keydown', (e) => {
+  const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+  const typing = tag === 'input' || tag === 'textarea';
+
+  if (e.key === 'Escape') {
+    if (closeSearchOverlay()) return;
+    if (closeConflictOverlay()) return;
+    const df = document.getElementById('decisionForm');
+    if (df && df.style.display !== 'none') { df.style.display = 'none'; return; }
+    if (activeEditorCancel) { activeEditorCancel(); activeEditorCancel = null; activeEditorSave = null; return; }
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    if (activeEditorSave) { e.preventDefault(); activeEditorSave(); }
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault(); openSearchOverlay(); return;
+  }
+  if (!typing && e.altKey && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    e.preventDefault();
+    if (!parsed) return;
+    const order = SpineParse.ORDER;
+    const cur = order.indexOf(selectedPhaseKey);
+    const next = cur < 0 ? 0 : (cur + (e.key === 'ArrowDown' ? 1 : -1) + order.length) % order.length;
+    openPhase(order[next]);
+  }
+});
 
 // ---------- gate ----------
 
-document.getElementById('openRepo').onclick = async () => {
+async function proceedWithRepo(handle) {
+  clearLog();
+  logRow('&rsaquo; verifying repo structure&hellip;');
+  repoHandle = handle;
+  const want = ['_templates', '_skill-source', 'Projects'];
+  let allOk = true;
+  for (const w of want) {
+    try {
+      await repoHandle.getDirectoryHandle(w);
+      logRow(icon('check', { color: 'var(--green)', size: 11 }) + ' ' + esc(w) + ' found', 'ok');
+    } catch (e) {
+      logRow(icon('x', { color: 'var(--red)', size: 11 }) + ' ' + esc(w) + ' NOT found here', 'err');
+      allOk = false;
+    }
+  }
+  if (!allOk) {
+    logRow('Repo verification failed — pick the folder that contains all three above.', 'err');
+    showPickBox();
+    return;
+  }
   try {
-    repoHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-    const want = ['_templates', '_skill-source', 'Projects'];
-    for (const w of want) await repoHandle.getDirectoryHandle(w); // throws if missing
-    log('Repo verified: ' + repoHandle.name, 'green');
     await loadTemplates();
     const names = await listProjects();
-    if (!names.length) { log('No projects found in Projects/.', 'red'); return; }
+    if (!names.length) { logRow('No projects found in Projects/.', 'err'); return; }
+    logRow('Repo verified: ' + esc(repoHandle.name) + ' — ' + names.length + ' project(s)', 'strong');
+    try { await idbSet('repoHandle', repoHandle); } catch {}
     const sel = document.getElementById('projectSelect');
     sel.innerHTML = names.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
     sel.onchange = () => loadProject(sel.value);
     document.getElementById('gate').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    await loadProject(names[0]);
+    const remembered = safeStorageGet('pw-last-project');
+    const initial = (remembered && names.includes(remembered)) ? remembered : names[0];
+    sel.value = initial;
+    await loadProject(initial);
   } catch (e) {
-    log('Failed: ' + e.name + ' — ' + e.message, 'red');
+    logRow('Failed: ' + esc(e.name) + ' — ' + esc(e.message), 'err');
+    showPickBox();
+  }
+}
+
+function showPickBox() {
+  document.getElementById('reconnectBox').hidden = true;
+  document.getElementById('pickBox').hidden = false;
+}
+function showReconnectBox(name) {
+  document.getElementById('reconnectName').textContent = name;
+  document.getElementById('reconnectBox').hidden = false;
+  document.getElementById('pickBox').hidden = true;
+}
+
+document.getElementById('openRepo').onclick = async () => {
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    await proceedWithRepo(handle);
+  } catch (e) {
+    if (e.name !== 'AbortError') logRow('Failed: ' + esc(e.name) + ' — ' + esc(e.message), 'err');
   }
 };
+document.getElementById('chooseDifferentBtn').onclick = showPickBox;
+document.getElementById('reconnectBtn').onclick = async () => {
+  try {
+    const stored = await idbGet('repoHandle');
+    if (!stored) { showPickBox(); return; }
+    const perm = await stored.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') { logRow('Permission not granted for the stored folder — choose it again.', 'err'); showPickBox(); return; }
+    await proceedWithRepo(stored);
+  } catch (e) {
+    logRow('Could not reconnect: ' + esc(e.name) + ' — ' + esc(e.message) + '. Choose the folder again.', 'err');
+    showPickBox();
+  }
+};
+
+// On load: offer to reconnect to a previously-picked folder instead of always
+// re-prompting with the native picker.
+(async () => {
+  try {
+    const stored = await idbGet('repoHandle');
+    if (stored) showReconnectBox(stored.name);
+  } catch {}
+})();
 </script>
 </body>
 </html>

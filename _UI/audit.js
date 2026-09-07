@@ -36,7 +36,7 @@ function untestedDrivers(drivers, decisions, phaseTexts, templatesFor = {}) {
     if (!ks.length) return false;
     return !ks.some(k => hay.has(k));
   }).map(d => ({
-    kind: 'untested-driver', severity: 'high',
+    kind: 'untested-driver', severity: 'high', target: { section: 'drivers' },
     text: `Driver ${d.n} "${d.driver}" isn't mentioned in any decision or downstream phase doc.`
   }));
 }
@@ -46,7 +46,7 @@ function blockingNow(questions, currentPhase) {
   const cur = norm(currentPhase).replace('-', ' ');
   return P.openOnly(questions)
     .filter(q => cur && norm(q.blocks) && (norm(q.blocks).includes(cur.split(' ')[0])))
-    .map(q => ({ kind: 'blocking-question', severity: 'high',
+    .map(q => ({ kind: 'blocking-question', severity: 'high', target: { section: 'open-questions' },
                  text: `Q${q.n} blocks ${currentPhase} and is still open: ${q.question}` }));
 }
 
@@ -56,7 +56,7 @@ function staleQuestions(questions, currentPhase) {
   return P.openOnly(questions).map(q => {
     const ri = AUDIT_PHASE_ORDER.findIndex(p => norm(p).startsWith(norm(q.raisedIn).split(' ')[0] || '\u0000'));
     if (ri < 0 || ci - ri < 2) return null;
-    return { kind: 'stale-question', severity: 'medium',
+    return { kind: 'stale-question', severity: 'medium', target: { section: 'open-questions' },
              text: `Q${q.n} has been open since ${q.raisedIn}, ${ci - ri} phases ago: ${q.question}` };
   }).filter(Boolean);
 }
@@ -72,7 +72,10 @@ function changedSinceLock(lockedDate, files) {
                                  f.mtime && f.mtime.slice(0, 10) > lockedDate)
                     .map(f => f.path);
   if (!hits.length) return [];
-  return [{ kind: 'changed-since-lock', severity: 'medium', files: hits,
+  // Best-effort click-through target: whichever phase owns the first hit's directory.
+  const hitDir = hits[0].split('/')[0];
+  const target = { section: 'phase', key: (P.PHASES.find(p => p.dir === hitDir) || {}).key || 'client-discovery' };
+  return [{ kind: 'changed-since-lock', severity: 'medium', files: hits, target,
             text: `${hits.length} upstream file${hits.length > 1 ? 's' : ''} changed after the drivers locked (${lockedDate}) — do the drivers still follow from them? (${hits.join(', ')})` }];
 }
 
@@ -82,11 +85,11 @@ function changedSinceLock(lockedDate, files) {
 // 'D1 ...' rather than a value under a 'driver' key; and a precedent board's actual
 // practice, which scores drivers right in the heading ('P1 · Poole — ANCHOR (D1 ● ·
 // D2 ● · D3 ●)') and never fills a dedicated field at all. Any of the three counts.
-function orphanCards(text, label, driverField) {
+function orphanCards(text, label, driverField, phaseKey) {
   return P.filledCards(P.parseCards(text || '', 3))
     .filter(c => !(/D\d/.test(c.title) || Object.entries(c.fields).some(([k, v]) =>
       (new RegExp(driverField, 'i').test(k) && v) || /^D\d/.test(k))))
-    .map(c => ({ kind: 'orphan-card', severity: 'low',
+    .map(c => ({ kind: 'orphan-card', severity: 'low', target: { section: 'phase', key: phaseKey },
                  text: `${label} "${c.title}" names no driver it serves.` }));
 }
 
@@ -99,7 +102,7 @@ function missingGates(phases, phaseTexts) {
   return Object.entries(phases)
     .filter(([k, v]) => v && v.status === 'complete' && phaseTexts[k] &&
                         !/gate|skipped/i.test(phaseTexts[k]))
-    .map(([k]) => ({ kind: 'no-gate', severity: 'medium',
+    .map(([k]) => ({ kind: 'no-gate', severity: 'medium', target: { section: 'phase', key: k },
                      text: `${k} is complete but no phase gate is recorded in its doc.` }));
 }
 
@@ -110,8 +113,8 @@ function audit({ drivers, decisions, questions, state, files, phaseTexts, templa
     ...changedSinceLock(drivers.lockedDate, files),
     ...staleQuestions(questions, state.currentPhase),
     ...missingGates(state.phases, phaseTexts),
-    ...orphanCards(boardText, 'Precedent', 'driver'),
-    ...orphanCards(massingText, 'Massing option', 'driver')
+    ...orphanCards(boardText, 'Precedent', 'driver', 'precedents'),
+    ...orphanCards(massingText, 'Massing option', 'driver', 'massing')
   ];
   const rank = { high: 0, medium: 1, low: 2 };
   return out.sort((a, b) => rank[a.severity] - rank[b.severity]);
