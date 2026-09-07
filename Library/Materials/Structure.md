@@ -7,6 +7,10 @@ durability/maintenance — see `Envelope.md` for how this library is meant to be
 tables, actual local-trades pricing, and code/seismic requirements with an engineer before citing
 any of this in a real deliverable.
 
+**Climate of origin: cold-climate (seeded 2026-08-28) — see `Envelope.md` for the full warning.**
+A 2026-09-06 pilot found this set's cold-climate assumptions don't transfer; treat rows as
+untested outside that context rather than adapting one by assumption.
+
 | Material | Climate fit | Cost tier | Durability / maintenance | Embodied carbon (relative) | Notes |
 |---|---|---|---|---|---|
 | Wood light-frame (2x6/2x8 platform) | Standard for this climate and scale; well-proven | $ | High if envelope keeps it dry; termite/rot risk only from envelope failure | Low (renewable, low-processing) | The default for residential scale; local trades know it cold — the "local trades and equipment" baseline |

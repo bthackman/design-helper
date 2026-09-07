@@ -26,7 +26,7 @@ Six living documents in `0_Spine/`:
 - `02_Decision-Log.md` — every significant decision: statement, rationale, rejected alternatives, phase, date.
 - `03_Open-Questions.md` — unresolved items that carry between phases so nothing is silently dropped.
 - `04_Client-Profile.md` — the client reading. Start from whichever fork template fits (`04a_Client-Profile-Household.md` or `04b_Client-Profile-Organization.md`), but always save as `04_Client-Profile.md` — the household/organization distinction lives in the document's own H1 title, not the filename.
-- `state.json` — `currentPhase`, `driversLocked`, a status per phase, and a project-level `status` (`active` / `dormant` / `complete`) with a one-line reason when dormant. Update it on phase entry, phase exit, drivers lock, whenever a phase loops back, and whenever the project itself goes quiet or wraps. A pointer for external tools, never the source of truth — the other five files are. Store only what can't be derived from them.
+- `state.json` — `currentPhase`, `driversLocked`, a status per phase, and a project-level `status` (`active` / `dormant` / `complete`) with a one-line reason when dormant. Update it on phase entry, phase exit, drivers lock, whenever a phase loops back, and whenever the project itself goes quiet or wraps. A pointer for external tools, never the source of truth — the other five files are. Store only what can't be derived from them. Starter shape (copy and fill, don't invent the field names fresh): `_templates/0_Spine/state.json`. Per-phase `status` ∈ `not-started` / `in-progress` / `complete` / `looping-back`.
 
 ## Project structure
 
@@ -185,10 +185,16 @@ typology-organized personal precedent collection (`Architecture Design/Architect
 truth for precedents — the tool's own `Library/Precedents/` folder is retired (kept empty/unused to avoid
 two places drifting).
 
-The vault path is config, not hard-coded — resolve it once per environment (it differs between Cowork and
-Claude Code) and reuse the resolved value for the run.
+The vault path is config, not hard-coded. **Concretely:** check `config.local.json` at the repo root
+first (gitignored — never shared, differs per machine/user; shape in `config.local.example.json`). If
+it exists, read `vaultPath` from it and reuse that value for the run. If it doesn't exist, ask the
+user for the vault path once, then offer to write it to `config.local.json` (copy
+`config.local.example.json`'s shape) so the next run doesn't have to ask again. Don't guess a path by
+searching the filesystem — a wrong guess that happens to resolve to *some* folder is worse than an
+honest "not configured yet," because it fails silently instead of loudly.
 
-- **Path doesn't resolve** → say so loudly and continue with web search only. Something is misconfigured;
+- **Path doesn't resolve** (missing config *and* the user has none to give, or the configured path
+  doesn't exist on disk) → say so loudly and continue with web search only. Something is misconfigured;
   a silent fallback means the project's own precedent collection gets skipped without anyone noticing.
 - **Path resolves, no matching typology note** → normal while the vault is being built. Note it once, move
   on to the awards ladder and fresh search, and offer to create the typology note at promotion time so the

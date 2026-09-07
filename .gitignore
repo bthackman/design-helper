@@ -4,6 +4,9 @@
 Projects/*/
 !Projects/README.md
 
+# Per-environment config (vault path, etc.) — differs per machine/user, never shared
+config.local.json
+
 # Python bytecode from the export receivers
 __pycache__/
 *.pyc

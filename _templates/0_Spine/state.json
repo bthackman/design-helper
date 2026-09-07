@@ -1,0 +1,17 @@
+{
+  "project": "[Project name]",
+  "status": "active",
+  "dormantReason": null,
+  "currentPhase": "client-discovery",
+  "driversLocked": false,
+  "driversLockedDate": null,
+  "updated": "YYYY-MM-DD",
+  "phases": {
+    "client-discovery": { "status": "not-started", "updated": null },
+    "site": { "status": "not-started", "updated": null },
+    "precedents": { "status": "not-started", "updated": null },
+    "massing": { "status": "not-started", "updated": null },
+    "space-planning": { "status": "not-started", "updated": null },
+    "materiality": { "status": "not-started", "updated": null }
+  }
+}

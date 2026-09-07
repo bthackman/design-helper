@@ -29,7 +29,9 @@ Named trade-off:
 3. Scorecard vs. client motives, below — plus **envelope-utilization** (target GSF ÷ buildable envelope GFA: the same setback/height/FAR math `Site-Details.md` runs for real once a site is chosen, run here per-candidate). A parcel that scores well on every motive but can't fit the program should lose visibly here, not surface as a later surprise.
 4. User selects → log decision with rejected alternatives → create `Site-Details_[address].md`
 
-Same glyphs as Stage 1.
+Same glyphs as Stage 1. Add/remove motive columns to match the criteria table too — not necessarily
+the same set Stage 1 used: a motive can resolve by Stage 1 (every surviving zone already satisfies
+it) or a new one can emerge only once real parcels are on the table.
 
 | Parcel | Land-use verified? | M1 | M2 | M3 | Envelope-utilization | Caveats | Verdict |
 |---|---|---|---|---|---|---|---|

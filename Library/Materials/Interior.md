@@ -7,6 +7,10 @@ durability/maintenance — see `Envelope.md` for how this library is meant to be
 **These are drafted starting points, not verified specs.** [proxy, unverified] — verify actual
 supplier pricing and product performance before citing any of this in a real deliverable.
 
+**Climate of origin: cold-climate (seeded 2026-08-28) — see `Envelope.md` for the full warning.**
+This file is the least climate-coupled of the three (interior climate is controlled), but the
+"radiant floor heat" framing in a couple of notes below still assumes a heating-dominated context.
+
 | Material | Climate fit | Cost tier | Durability / maintenance | Embodied carbon (relative) | Notes |
 |---|---|---|---|---|---|
 | White oak (flooring or millwork, site-finished) | N/A (interior) | $$–$$$ | High; refinishable, scratches show on light finish | Moderate | The "warm, tactile" default when a driver calls for acoustic/textural quality over gesture |

@@ -8,6 +8,9 @@ Cross-project knowledge base. When a project wraps a phase, promote the keepers 
   5 has something real to sweep on a first run — drafted from general knowledge, not fetched specs,
   flagged `[proxy, unverified]` in each file. Promote a project's actual, built-and-known-to-work
   choice into the matching file the same way precedent cards get promoted after verification.
+  **All three files are cold-climate-of-origin only** (a 2026-09-06 pilot found the starter set 0%
+  usable outside that context) — sweep them on any project, but treat every row as untested outside
+  a freeze-thaw/heating-dominated climate.
 
 Tag consistently; tags are how future projects find things.
 

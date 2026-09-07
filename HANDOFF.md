@@ -43,6 +43,38 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-06 (all 7 fixable pilot findings built)
+
+Same day, immediately following the pilot debrief below. All 7 of that pilot's "specific, actionable
+fixes" (backlog rows #28–34) were built in one pass — only #27 (fetch-before-cite's domain-dependent
+coverage) stays a logged observation, since the pilot itself proposed no fix for it. What changed:
+
+- **#28** — `phase-2-site.md`'s Output line now says `Site-Details_<address>.md`, matching `SKILL.md`
+  and the template's own rename instruction. The stale `Site-Strategy.md` name is gone.
+- **#29** — `_templates/0_Spine/state.json` now exists (trimmed shape: project status, per-phase
+  status, drivers-lock state) — `SKILL.md` and `GLOSSARY.md` point to it instead of describing the
+  fields in prose alone.
+- **#30** — `Site-Search.md`'s Stage 2 scorecard note now says to add/remove motive columns, matching
+  Stage 1 (previously hard-coded at M1–M3).
+- **#31** — `config.local.json` (gitignored, per-machine) + `config.local.example.json` (the shape,
+  committed) added at the repo root. `SKILL.md`'s vault-path instruction now names the concrete
+  check-then-ask-then-offer-to-save mechanism instead of the aspirational "resolve it once per
+  environment" line the pilot found nothing behind.
+- **#32** — `phase-2-site.md`'s sun-study battery and `phase-3-massing.md`'s glazing proxy both gained
+  an explicit temperate-vs-near-equatorial branch, naming which worst-case condition and section cut
+  applies in each regime instead of assuming the temperate one silently.
+- **#33** — all three `Library/Materials/` files (+ `Library/README.md`) now carry an explicit
+  cold-climate-of-origin warning. No non-cold-climate example was seeded — that part of the finding
+  stays open.
+- **#34** — `01_Design-Drivers.md` template gained a "Consolidation workshop" section (the CONFIRM /
+  SPECIFY / DEFLATE-REFRAME / DEMOTE verdict table + full-disposition record + site-volunteered-drivers
+  prompt), which previously existed only as prose in `phase-0-drivers.md` with no template home.
+
+`design-process.skill` repackaged (SKILL.md + phase-2-site.md + phase-3-massing.md all changed).
+**None of these 7 fixes have been exercised on a real (or even a second synthetic) project yet** —
+same caveat as everything else built today: this closes the gap the pilot found in the *instructions*,
+it doesn't yet prove the fixed instructions hold up in a second real run.
+
 ## Session handoff — 2026-09-06 (first full five-phase dry run — synthetic, solo, one sitting)
 
 Fifth pass the same day: a Fable-model agent invented its own project from scratch (deliberately

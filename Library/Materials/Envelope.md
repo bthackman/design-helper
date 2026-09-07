@@ -11,6 +11,15 @@ actual performance numbers, current pricing, and code compliance before citing a
 real deliverable. Promote a *real* project's actual choice here once it's built and known to work,
 the same way precedent cards only get promoted after fetch-before-cite verification.
 
+**Climate of origin: cold-climate / freeze-thaw / heating-dominated (seeded 2026-08-28, no other
+climate represented yet).** Every entry below assumes that context — triple-glazing called
+"non-negotiable," freeze-thaw durability as the default test. A 2026-09-06 synthetic pilot run in a
+hot/equatorial context found this set 0% usable there, not just biased toward one answer but
+answering a question that project didn't have. Sweep this list on any project, but if the site's
+climate isn't cold/freeze-thaw, treat every row as untested for that context rather than adapting a
+cold-climate row by assumption — draft fresh candidates and promote the real ones back here once a
+project actually earns them, the same way this file itself should have grown past one climate by now.
+
 | Material | Climate fit | Cost tier | Durability / maintenance | Embodied carbon (relative) | Notes |
 |---|---|---|---|---|---|
 | Board-formed concrete | Excellent cold-climate; freeze-thaw proven | $$$ | Very high durability; near-zero maintenance | High (cement-heavy) | Reads heavy/civic; good "base" material against a lighter upper body |
