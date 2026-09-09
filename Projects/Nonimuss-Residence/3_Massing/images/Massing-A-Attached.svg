@@ -1,0 +1,52 @@
+<svg width="470" height="330" viewBox="0 0 470 330" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+<style>
+  .lot{fill:#f4f1ea;stroke:#8a8577;stroke-width:1.5}
+  .setback{fill:none;stroke:#b7ae97;stroke-width:1;stroke-dasharray:4 3}
+  .forest{fill:#cfe0c3;stroke:none}
+  .tree{fill:#7fa06a}
+  .house{fill:#5b6b7a;stroke:#3d4a56;stroke-width:1.5}
+  .pool{fill:#7fb0d0;stroke:#2f6f92;stroke-width:1.5}
+  .terr{fill:#e6d9b8;stroke:#b7a878;stroke-width:1;stroke-dasharray:3 2}
+  .link{fill:#c9b8d6;stroke:#8a6ea6;stroke-width:1.5}
+  .gym{fill:#9aa39a;stroke:#68715f;stroke-width:1}
+  .lbl{font-size:9px;fill:#2b2b2b}
+  .wlbl{font-size:9px;fill:#fff;font-weight:bold}
+  .cap{font-size:13px;fill:#1c1c1c;font-weight:bold}
+  .sub{font-size:9.5px;fill:#555}
+  .edge{font-size:8.5px;fill:#6b6459;font-style:italic}
+  .n{font-size:10px;fill:#333;font-weight:bold}
+</style>
+<text x="20" y="24" class="cap">Option A — “One Roof” (pool ATTACHED)</text>
+<text x="20" y="38" class="sub">House bar + vestibuled pool room under one continuous roof; terrace in rear band</text>
+<!-- forest band (W / left) -->
+<rect x="20" y="55" width="34" height="207" class="forest"/>
+<circle cx="30" cy="80" r="7" class="tree"/><circle cx="44" cy="105" r="8" class="tree"/>
+<circle cx="30" cy="135" r="8" class="tree"/><circle cx="44" cy="168" r="7" class="tree"/>
+<circle cx="30" cy="200" r="8" class="tree"/><circle cx="44" cy="235" r="7" class="tree"/>
+<text x="21" y="300" class="edge">Weaselhead</text><text x="24" y="311" class="edge">forest (W)</text>
+<!-- lot -->
+<polygon class="lot" points="60,60 335,60 335,179 60,257"/>
+<polygon class="setback" points="105,67 317,67 317,166 105,226"/>
+<!-- edge labels -->
+<text x="150" y="52" class="edge">N boundary 45.9 m</text>
+<text x="340" y="120" class="edge">Livingstone</text><text x="340" y="131" class="edge">Dr (E/front)</text>
+<text x="120" y="278" class="edge">S neighbour (3.0 m side, S sun slot)</text>
+<!-- N arrow -->
+<g transform="translate(420,50)"><line x1="0" y1="18" x2="0" y2="0" stroke="#333" stroke-width="1.5"/><polygon points="0,-4 -4,4 4,4" fill="#333"/><text x="-3" y="30" class="n">N</text></g>
+
+<!-- terrace in rear band -->
+<rect x="107" y="150" width="60" height="72" class="terr"/>
+<text x="112" y="215" class="lbl">terrace</text>
+<!-- house bar (N buffer, E-W) -->
+<rect x="150" y="70" width="150" height="46" class="house"/>
+<text x="165" y="88" class="wlbl">HOUSE 120 m²</text>
+<text x="158" y="101" class="wlbl" style="font-weight:normal">great rm → forest | beds/service buffer N</text>
+<!-- attached pool room (W end, behind 7.5m rear setback) -->
+<rect x="150" y="118" width="70" height="48" class="pool"/>
+<text x="158" y="140" class="wlbl">POOL rm</text>
+<text x="155" y="152" class="wlbl" style="font-weight:normal">vestibuled</text>
+<!-- gym outbuilding -->
+<rect x="290" y="150" width="26" height="26" class="gym"/>
+<text x="286" y="187" class="lbl">gym</text>
+
+</svg>

@@ -1,8 +1,17 @@
-# Project instances stay local — only the reusable tool ships in this repo.
-# Projects/README.md (the folder's own explainer) is kept; everything under
-# an actual project folder is not.
+# Project instances stay local by default — only the reusable tool ships in this repo.
+# Projects/README.md (the folder's own explainer) is kept; everything under an actual
+# project folder is not, EXCEPT explicit exceptions below.
 Projects/*/
 !Projects/README.md
+
+# EXCEPTION, 2026-09-09: Nonimuss-Residence is an academic/hypothetical RAIC Syllabus
+# studio project, not real client work. Ben explicitly chose to make it public so a
+# second Claude account (no shared OneDrive access) can pick up the Massing<->Test-Fit
+# architecture rework staged in HANDOFF.md's 2026-09-09 entries. See that discussion
+# before un-ignoring any OTHER project folder — this was a deliberate per-project call,
+# not a reversal of the general policy above.
+!Projects/Nonimuss-Residence/
+!Projects/Nonimuss-Residence/**
 
 # Per-environment config (vault path, etc.) — differs per machine/user, never shared
 config.local.json

@@ -1,0 +1,23 @@
+{
+  "type": "Feature",
+  "properties": {
+    "address": "6831 LIVINGSTONE DR SW",
+    "roll_number": "109034306",
+    "roll_year": "2026",
+    "land_use_designation": "R-CG",
+    "land_size_sm": 1216.8,
+    "source": "City of Calgary assessment parcels (Socrata 4bsw-nn7w), fetched 2026-07-11",
+    "note": "SOURCE GEOMETRY — draw all site diagrams from these vertices, never from summarized edge lengths. Vertex order: NE → NW → SW → S-mid → SE → close. The two south segments (15.2 m + 32.5 m) are nearly collinear — one continuous diagonal boundary with a survey vertex in it, NOT a jog."
+  },
+  "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [[[
+      [-114.1346312, 50.9927121],
+      [-114.1352861, 50.9927116],
+      [-114.1352861, 50.9924154],
+      [-114.1350771, 50.9924528],
+      [-114.1346306, 50.9925327],
+      [-114.1346312, 50.9927121]
+    ]]]
+  }
+}

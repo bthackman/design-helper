@@ -1,0 +1,119 @@
+<svg viewBox="0 0 800 690" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+<defs>
+<pattern id="shdA" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="8" stroke="#7C8DA6" stroke-width="1.6" opacity="0.45"/></pattern>
+</defs>
+<rect width="800" height="690" fill="#FDFCFA"/>
+<text x="24" y="26" fill="#2C2C2A" font-size="15" font-weight="600">Sun sections — 6831 Livingstone Dr SW</text>
+<text x="24" y="42" fill="#5F5E5A" font-size="10">Computed angles from sun study 2026-07-11 · proportions true (9 px/m) · heights ⚠ est. (trees ~18 m, neighbour ridge ~5 m) → OQ-13</text>
+
+<!-- ============ SECTION A : N-S ============ -->
+<text x="24" y="68" fill="#444441" font-size="11.5" font-weight="600">Section A — N–S through the south side yard (noon sun) · looking W</text>
+<!-- winter shadow wedge -->
+<path d="M135,245 L240,274 L240,290 L135,290 Z" fill="#7C8DA6" opacity="0.22"/>
+<!-- grade -->
+<line x1="60" y1="290" x2="740" y2="290" stroke="#444441" stroke-width="2.5"/>
+<rect x="60" y="290" width="680" height="10" fill="#E4E0D6"/>
+<text x="66" y="285" fill="#8A8880" font-size="10">S</text>
+<text x="726" y="285" fill="#8A8880" font-size="10">N</text>
+<!-- neighbour bungalow -->
+<path d="M90,290 L90,263 L135,245 L180,263 L180,290 Z" fill="#B9B5AC" stroke="#5F5E5A"/>
+<text x="135" y="305" fill="#5F5E5A" font-size="9" text-anchor="middle">S neighbour ⚠ ridge 5.0 m, ~12 m from our wall</text>
+<!-- future infill ghost -->
+<rect x="90" y="212" width="90" height="78" fill="none" stroke="#B0483A" stroke-width="1.2" stroke-dasharray="5 4"/>
+<line x1="180" y1="212" x2="240" y2="229" stroke="#B0483A" stroke-width="1.2" stroke-dasharray="5 4"/>
+<line x1="215" y1="222" x2="450" y2="150" stroke="#B0483A" stroke-width="0.7"/>
+<text x="456" y="146" fill="#B0483A" font-size="9">⚠ future 8.6 m infill: its winter ray passes 6.7 m up our wall —</text>
+<text x="456" y="157" fill="#B0483A" font-size="9" opacity="0.9">a single storey loses ALL S winter sun. Don't bet the plan on this side</text>
+<!-- property line -->
+<line x1="210" y1="290" x2="210" y2="230" stroke="#8A8880" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="210" y="224" fill="#8A8880" font-size="8.5" text-anchor="middle">PL</text>
+<!-- our house -->
+<line x1="240" y1="290" x2="240" y2="259" stroke="#444441" stroke-width="5"/>
+<rect x="240" y="256" width="220" height="6" fill="#444441"/>
+<text x="470" y="262" fill="#5F5E5A" font-size="9">our house — single-storey core, wall 3.4 m</text>
+<!-- windows on S wall -->
+<rect x="237" y="272" width="6" height="11" fill="#BFDCEF" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="237" y="263" width="6" height="8" fill="#FBE7B8" stroke="#5F5E5A" stroke-width="0.8"/>
+<!-- overhang -->
+<rect x="233" y="261" width="10" height="3" fill="#444441"/>
+<circle cx="235" cy="262" r="7" fill="none" stroke="#C43C2E" stroke-width="1.6"/>
+<!-- winter ray -->
+<line x1="85" y1="231" x2="240" y2="274" stroke="#5B84C4" stroke-width="2"/>
+<circle cx="78" cy="229" r="9" fill="#E3B341"/>
+<text x="150" y="240" fill="#3D5470" font-size="9.5" font-weight="600">WINTER NOON 15.6°</text>
+<line x1="243" y1="277" x2="300" y2="316" stroke="#8A8880" stroke-width="0.7"/>
+<text x="306" y="320" fill="#3D5470" font-size="9">winter ray crosses our wall at 1.7 m ⚠ — glazing below is winter-shaded;</text>
+<text x="306" y="331" fill="#3D5470" font-size="9">clerestory band above 1.7 m gets noon sun ✓</text>
+<text x="306" y="344" fill="#8A8880" font-size="9">equinox noon 39.0° — shoulder seasons behave like neither: check both</text>
+<!-- summer ray -->
+<line x1="203" y1="200" x2="235" y2="261" stroke="#D97706" stroke-width="2"/>
+<line x1="235" y1="261" x2="240" y2="271" stroke="#D97706" stroke-width="1.2" stroke-dasharray="3 2"/>
+<circle cx="199" cy="193" r="11" fill="#E3B341"/>
+<text x="196" y="178" fill="#8A5A10" font-size="9.5" font-weight="600">SUMMER NOON 62.4°</text>
+<line x1="235" y1="262" x2="300" y2="215" stroke="#C43C2E" stroke-width="0.9"/>
+<text x="304" y="212" fill="#C43C2E" font-size="9">optimal overhang ≈ 0.52 m per 1.0 m of glass</text>
+<text x="304" y="223" fill="#C43C2E" font-size="9">(blocks 62.4°, admits 15.6° — the 47° between is free shading)</text>
+<text x="140" y="285" fill="#3D5470" font-size="8.5">winter shadow 3.6×h</text>
+
+<!-- ============ SECTION B : E-W ============ -->
+<text x="24" y="368" fill="#444441" font-size="11.5" font-weight="600">Section B — E–W through the wellness terrace · looking N</text>
+<!-- winter shade wedge from canopy -->
+<path d="M170,443 L262,461 L262,605 L170,605 Z" fill="#7C8DA6" opacity="0.18"/>
+<path d="M170,443 L262,461 L262,605 L170,605 Z" fill="url(#shdA)"/>
+<!-- grade -->
+<line x1="60" y1="605" x2="740" y2="605" stroke="#444441" stroke-width="2.5"/>
+<rect x="60" y="605" width="680" height="10" fill="#E4E0D6"/>
+<text x="66" y="600" fill="#8A8880" font-size="10">W</text>
+<text x="726" y="600" fill="#8A8880" font-size="10">E</text>
+<!-- forest -->
+<line x1="112" y1="605" x2="112" y2="480" stroke="#5C4A36" stroke-width="5"/>
+<line x1="152" y1="605" x2="152" y2="500" stroke="#5C4A36" stroke-width="4"/>
+<ellipse cx="118" cy="470" rx="52" ry="30" fill="#0F6E56" opacity="0.85"/>
+<ellipse cx="152" cy="490" rx="38" ry="26" fill="#128763" opacity="0.85"/>
+<ellipse cx="128" cy="450" rx="40" ry="22" fill="#0F6E56" opacity="0.9"/>
+<text x="120" y="630" fill="#085041" font-size="9" text-anchor="middle">Weaselhead forest wall ⚠ ~18 m</text>
+<!-- rear PL -->
+<line x1="195" y1="605" x2="195" y2="430" stroke="#8A8880" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="195" y="424" fill="#8A8880" font-size="8.5" text-anchor="middle">rear PL</text>
+<!-- terrace + pool -->
+<rect x="205" y="596" width="45" height="9" fill="#378ADD" opacity="0.7"/>
+<path d="M212,590 q3,-5 0,-9 M224,588 q3,-5 0,-10 M236,590 q3,-5 0,-9" stroke="#8A8880" stroke-width="1.2" fill="none" opacity="0.8"/>
+<text x="228" y="645" fill="#3D5470" font-size="9" text-anchor="middle">pool: the -20°C swim happens in</text>
+<text x="228" y="656" fill="#3D5470" font-size="9" text-anchor="middle">blue shade + steam — by design (D2/D3)</text>
+<text x="228" y="555" fill="#1F3550" font-size="9" text-anchor="middle" font-weight="600">terrace band 7.5 m</text>
+<!-- house -->
+<line x1="262" y1="605" x2="262" y2="574" stroke="#444441" stroke-width="5"/>
+<line x1="370" y1="605" x2="370" y2="574" stroke="#444441" stroke-width="5"/>
+<rect x="262" y="571" width="108" height="6" fill="#444441"/>
+<text x="316" y="566" fill="#5F5E5A" font-size="9" text-anchor="middle">house</text>
+<rect x="367" y="580" width="6" height="20" fill="#FBE7B8" stroke="#5F5E5A" stroke-width="0.8"/>
+<!-- street + across-street bungalow -->
+<rect x="397" y="605" width="34" height="10" fill="#D8D4CA"/>
+<text x="414" y="630" fill="#8A8880" font-size="8.5" text-anchor="middle">street</text>
+<path d="M460,605 L460,580 L500,560 L540,580 L540,605 Z" fill="#B9B5AC" stroke="#5F5E5A"/>
+<text x="500" y="630" fill="#5F5E5A" font-size="8.5" text-anchor="middle">across-street ⚠</text>
+<!-- winter afternoon ray (blocked, passes high) -->
+<line x1="170" y1="443" x2="730" y2="552" stroke="#5B84C4" stroke-width="1.6" stroke-dasharray="6 4"/>
+<circle cx="96" cy="429" r="9" fill="#E3B341" opacity="0.55"/>
+<text x="290" y="470" fill="#3D5470" font-size="9.5" font-weight="600">winter sun (max 15.6°) NEVER clears the canopy from W or SW</text>
+<text x="290" y="482" fill="#3D5470" font-size="9">→ terrace + west rooms: zero direct winter sun (grazes 5.7 m above roof)</text>
+<!-- summer pm ray -->
+<line x1="145" y1="415" x2="297" y2="574" stroke="#D97706" stroke-width="2"/>
+<circle cx="137" cy="407" r="11" fill="#E3B341"/>
+<text x="160" y="384" fill="#8A5A10" font-size="9.5" font-weight="600">SUMMER 3 PM 45.8°</text>
+<text x="160" y="396" fill="#8A5A10" font-size="9">first ray to clear canopy lands on the roof —</text>
+<text x="160" y="408" fill="#8A5A10" font-size="9">terrace gets direct sun only near midday, from the S</text>
+<!-- winter morning ray -->
+<line x1="700" y1="517" x2="500" y2="560" stroke="#5B84C4" stroke-width="2"/>
+<line x1="500" y1="560" x2="373" y2="588" stroke="#5B84C4" stroke-width="2"/>
+<circle cx="708" cy="514" r="9" fill="#E3B341"/>
+<text x="782" y="474" fill="#3D5470" font-size="9.5" font-weight="600" text-anchor="end">WINTER MORNING (SE, low)</text>
+<text x="782" y="486" fill="#3D5470" font-size="9" text-anchor="end">clears street + bungalows →</text>
+<text x="782" y="498" fill="#3D5470" font-size="9" text-anchor="end">E front is the reliable winter face ✓</text>
+<!-- takeaway -->
+<rect x="440" y="382" width="336" height="66" fill="#F1EFE8" stroke="#C9C5BA"/>
+<text x="452" y="399" fill="#2C2C2A" font-size="9.5" font-weight="600">Takeaway for massing (feeds D2 + D4):</text>
+<text x="452" y="412" fill="#444441" font-size="9">· winter light enters at E (morning) + high-S clerestory (noon) only</text>
+<text x="452" y="424" fill="#444441" font-size="9">· terrace: sun = summer midday; winter = shade + steam, embrace it</text>
+<text x="452" y="436" fill="#444441" font-size="9">· overhang 0.52 m/m of S glass = free summer shading, zero winter cost</text>
+</svg>

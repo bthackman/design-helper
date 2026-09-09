@@ -1,0 +1,15 @@
+{
+  "render_after_delete_GB": {
+    "threw": true,
+    "name": "TypeError",
+    "message": "Cannot read properties of undefined (reading 'level')",
+    "stack": "TypeError: Cannot read properties of undefined (reading 'level')\n    at file:///C:/Users/BHackman/OneDrive%20-%20DIALOG/BHackman%20Drive/00_AI/Claude/Design%20Process%20Tool/Projects/Nonimuss-Residence/4_Space-Planning/Test-Fit-Studio.html:248:52\n    at Array.map (<anonymous>)\n    at adjacencyResults (file:///C:/Users/BHackman/OneDrive%20-%20DIALOG/BHackman%20Drive/00_AI/Claude/Design%20Process%20Tool/Projects/Nonimuss-Residence/4_Space-Planning/Test-Fit-Studio.html:247:20)\n    at renderPanels (file:///C:/Users/BHackman/OneDrive%20-%20DIALOG/BHackman%20Drive/00_AI/Claude/Design%20Process%20Tool/Projects/Nonimuss-Residence/4_Space-Planning/Test-Fit-Studio.html:540:15)\n    at render (file:///C:/Users/BHackman/OneDrive%20-%20DIALOG/BHackman%20Drive/00_AI/Claude/Design%20Process%20Tool/Projects/Nonimuss-Residence/4_Space-Planning/Test-Fit-Studio.html:501:3)\n    at eval (eval at evaluate (:311:30), <anonymous>:3:15)\n    at UtilityScript.evaluate (<anonymous>:318:18)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+  },
+  "buildExportData_after_delete_GB": {
+    "threw": true,
+    "name": "TypeError",
+    "message": "Cannot read properties of undefined (reading 'level')"
+  },
+  "console": [],
+  "page_errors": []
+}

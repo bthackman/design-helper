@@ -1,0 +1,70 @@
+<svg viewBox="0 0 640 470" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Segoe UI, Arial, sans-serif">
+<title>Nonimuss ground floor plan v3, bedrooms in opposite north corners with a reading den between</title>
+<desc>Ground floor: main bedroom NW, guest suite NE, a reading den of the great room buffering between them, social great room to the south opening west to the pool, mech at SE, entry mudroom on the east. North up.</desc>
+<rect x="0" y="0" width="640" height="470" fill="#f8f6f0"/>
+<text x="28" y="30" font-size="15" fill="#1c1a17" font-weight="bold">GROUND FLOOR v3 — bedrooms flank a reading den (1 m = 22 px)</text>
+<text x="70" y="52" font-size="10.5" fill="#5f7a3f" font-weight="bold">◄ W  forest / reservoir</text>
+<text x="510" y="52" font-size="10.5" fill="#7a5b1e" font-weight="bold" text-anchor="end">street / entry  E ►</text>
+<rect x="70" y="60" width="132" height="308" fill="#9cc4dd" stroke="#4f7d99" stroke-width="2"/>
+<line x1="82" y1="80" x2="82" y2="348" stroke="#dff0fa" stroke-width="3"/>
+<text x="136" y="204" font-size="11" fill="#20323d" text-anchor="middle" font-weight="bold">Pool hall</text>
+<text x="136" y="219" font-size="8.6" fill="#33505f" text-anchor="middle">6 × 14 m · off-cap</text>
+<rect x="202" y="240" width="44" height="72" fill="#c9b4de" stroke="#8163a3" stroke-width="2"/>
+<text x="224" y="270" font-size="8.4" fill="#37244a" text-anchor="middle" font-weight="bold">Link</text>
+<text x="224" y="282" font-size="7.6" fill="#4a3560" text-anchor="middle">wet·stair↑</text>
+<rect x="246" y="111" width="255" height="205" fill="none" stroke="#3a352a" stroke-width="2.5"/>
+<rect x="246" y="206" width="170" height="110" fill="#ecd2a0" stroke="#b58f48" stroke-width="1.4"/>
+<rect x="354" y="111" width="62" height="95" fill="#e6c98f" stroke="#b58f48" stroke-width="1.4" stroke-dasharray="4 3"/>
+<text x="331" y="258" font-size="11" fill="#3a2f16" text-anchor="middle" font-weight="bold">Great room</text>
+<text x="331" y="272" font-size="8.2" fill="#5a4a24" text-anchor="middle">kitchen · dining(8) · living</text>
+<text x="331" y="284" font-size="8.2" fill="#7a6738" text-anchor="middle">~46 m² incl. den</text>
+<text x="385" y="150" font-size="8.4" fill="#6a5320" text-anchor="middle" font-weight="bold">reading</text>
+<text x="385" y="162" font-size="8.4" fill="#6a5320" text-anchor="middle">den</text>
+<text x="385" y="176" font-size="7" fill="#8a7330" text-anchor="middle">N-lit buffer</text>
+<rect x="246" y="111" width="108" height="95" fill="#dcc6ab" stroke="#b09468" stroke-width="1.4"/>
+<text x="300" y="146" font-size="9.4" fill="#3a352a" text-anchor="middle">Main bed + ensuite</text>
+<text x="300" y="159" font-size="8" fill="#6b6459" text-anchor="middle">~22 · quiet NW</text>
+<line x1="300" y1="182" x2="342" y2="182" stroke="#b09468" stroke-width="1"/>
+<text x="321" y="197" font-size="7.2" fill="#8a8272" text-anchor="middle">ensuite</text>
+<rect x="416" y="111" width="85" height="67" fill="#dcc6ab" stroke="#b09468" stroke-width="1.4"/>
+<text x="458" y="136" font-size="9" fill="#3a352a" text-anchor="middle">Guest room</text>
+<text x="458" y="149" font-size="7.8" fill="#6b6459" text-anchor="middle">~12 · = future main</text>
+<text x="458" y="160" font-size="7.4" fill="#8a8272" text-anchor="middle">E-morning sun</text>
+<rect x="416" y="178" width="85" height="36" fill="#cdd3cb" stroke="#93a08f" stroke-width="1.4"/>
+<text x="458" y="195" font-size="8.2" fill="#3a352a" text-anchor="middle">Guest bath</text>
+<text x="458" y="207" font-size="7.2" fill="#6b6459" text-anchor="middle">~6 · roll-in + steam</text>
+<rect x="416" y="214" width="85" height="52" fill="#cdd3cb" stroke="#93a08f" stroke-width="1.4"/>
+<text x="458" y="236" font-size="8.4" fill="#3a352a" text-anchor="middle">Mudroom</text>
+<text x="458" y="248" font-size="7.6" fill="#6b6459" text-anchor="middle">entry ~8 · gear ×2</text>
+<rect x="416" y="266" width="85" height="50" fill="#cdd3cb" stroke="#93a08f" stroke-width="1.4"/>
+<text x="458" y="288" font-size="8.2" fill="#3a352a" text-anchor="middle">Mech / laundry</text>
+<text x="458" y="300" font-size="7.4" fill="#6b6459" text-anchor="middle">~8 · storage</text>
+<line x1="540" y1="240" x2="503" y2="240" stroke="#7a5b1e" stroke-width="2.4"/>
+<polygon points="503,234 503,246 493,240" fill="#7a5b1e"/>
+<text x="544" y="243" font-size="8.6" fill="#7a5b1e">enter</text>
+<g stroke="#c08a3a" stroke-width="1.6" stroke-dasharray="4 3" fill="none" opacity="0.9">
+<path d="M416 240 L390 245 L360 250"/>
+<path d="M340 240 L300 206"/>
+<path d="M360 230 L385 206"/>
+<path d="M385 160 L416 150"/>
+<path d="M300 250 L246 262"/>
+</g>
+<text x="331" y="304" font-size="8.2" fill="#7a6f92" text-anchor="middle">main bed ↔ guest: buffered by the reading den, no shared wall</text>
+<g>
+<line x1="600" y1="122" x2="600" y2="74" stroke="#1c1a17" stroke-width="2.4"/>
+<polygon points="594,86 606,86 600,68" fill="#1c1a17"/>
+<circle cx="600" cy="134" r="10" fill="none" stroke="#1c1a17" stroke-width="1.4"/>
+<text x="600" y="138" font-size="11" fill="#1c1a17" text-anchor="middle" font-weight="bold">N</text>
+</g>
+<g>
+<line x1="70" y1="418" x2="180" y2="418" stroke="#1c1a17" stroke-width="2"/>
+<line x1="70" y1="413" x2="70" y2="423" stroke="#1c1a17" stroke-width="2"/>
+<line x1="125" y1="414" x2="125" y2="422" stroke="#1c1a17" stroke-width="1.4"/>
+<line x1="180" y1="413" x2="180" y2="423" stroke="#1c1a17" stroke-width="2"/>
+<text x="70" y="437" font-size="8.6" fill="#3a352a">0</text>
+<text x="123" y="437" font-size="8.6" fill="#3a352a">2.5</text>
+<text x="178" y="437" font-size="8.6" fill="#3a352a">5 m</text>
+</g>
+<text x="345" y="333" font-size="8.6" fill="#a06a2a" text-anchor="middle">↓ S — high winter-noon sun · neighbour</text>
+<text x="250" y="437" font-size="8.4" fill="#8a8272">- - - movement through the hub (no corridors) · great room opens W to link/pool</text>
+</svg>

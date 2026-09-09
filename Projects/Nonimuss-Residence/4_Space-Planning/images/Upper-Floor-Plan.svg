@@ -1,0 +1,47 @@
+<svg viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Segoe UI, Arial, sans-serif">
+<title>Nonimuss upper floor plan, scaled</title>
+<desc>Scaled upper floor: the office as a white box over the west end of the pool with a reservoir view, the rest of the pool open to below, and the link carrying the stair and a short bridge to the office. The house is single-storey and has no upper floor.</desc>
+<rect x="0" y="0" width="640" height="420" fill="#f8f6f0"/>
+<text x="28" y="30" font-size="15" fill="#1c1a17" font-weight="bold">UPPER FLOOR — scaled (1 m = 22 px)</text>
+<text x="70" y="52" font-size="10.5" fill="#5f7a3f" font-weight="bold">◄ W  forest / reservoir</text>
+<text x="510" y="52" font-size="10.5" fill="#7a5b1e" font-weight="bold" text-anchor="end">street  E ►</text>
+<rect x="70" y="60" width="132" height="308" fill="#e6eef4" stroke="#8fb0c4" stroke-width="2" stroke-dasharray="7 4"/>
+<g stroke="#c3d4e0" stroke-width="1">
+<line x1="70" y1="90" x2="202" y2="150"/><line x1="70" y1="150" x2="202" y2="210"/>
+<line x1="70" y1="210" x2="202" y2="270"/><line x1="70" y1="270" x2="202" y2="330"/>
+<line x1="70" y1="120" x2="202" y2="60"/><line x1="70" y1="300" x2="202" y2="240"/>
+</g>
+<text x="150" y="315" font-size="9.4" fill="#3f5b6a" text-anchor="middle">open to below</text>
+<text x="150" y="328" font-size="8.4" fill="#5a7684" text-anchor="middle">(pool hall)</text>
+<rect x="116" y="178" width="76" height="72" fill="#f2f0ea" stroke="#8a8168" stroke-width="2"/>
+<text x="154" y="206" font-size="9.6" fill="#3a352a" text-anchor="middle" font-weight="bold">Office</text>
+<text x="154" y="219" font-size="7.8" fill="#6b6459" text-anchor="middle">~11 m² · 3.4 × 3.3</text>
+<text x="154" y="231" font-size="7.6" fill="#8a8272" text-anchor="middle">over pool</text>
+<line x1="116" y1="245" x2="86" y2="245" stroke="#4f7d99" stroke-width="1.8"/>
+<polygon points="86,241 86,249 78,245" fill="#4f7d99"/>
+<text x="100" y="258" font-size="7.4" fill="#4f7d99" text-anchor="middle">reservoir view</text>
+<rect x="202" y="182" width="44" height="88" fill="#c9b4de" stroke="#8163a3" stroke-width="2"/>
+<text x="224" y="212" font-size="8.4" fill="#37244a" text-anchor="middle" font-weight="bold">Link</text>
+<text x="224" y="224" font-size="7.6" fill="#4a3560" text-anchor="middle">stair ↑</text>
+<text x="224" y="236" font-size="7.6" fill="#4a3560" text-anchor="middle">bridge →</text>
+<rect x="192" y="200" width="10" height="30" fill="#d8c8ea" stroke="#8163a3" stroke-width="1.2"/>
+<rect x="246" y="111" width="255" height="205" fill="#f0ede4" stroke="#c3bca8" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text x="373" y="205" font-size="10" fill="#9a927c" text-anchor="middle">House below</text>
+<text x="373" y="220" font-size="8.6" fill="#a89e86" text-anchor="middle">single-storey — no upper floor</text>
+<g>
+<line x1="600" y1="120" x2="600" y2="72" stroke="#1c1a17" stroke-width="2.4"/>
+<polygon points="594,84 606,84 600,66" fill="#1c1a17"/>
+<circle cx="600" cy="132" r="10" fill="none" stroke="#1c1a17" stroke-width="1.4"/>
+<text x="600" y="136" font-size="11" fill="#1c1a17" text-anchor="middle" font-weight="bold">N</text>
+</g>
+<g>
+<line x1="70" y1="378" x2="180" y2="378" stroke="#1c1a17" stroke-width="2"/>
+<line x1="70" y1="373" x2="70" y2="383" stroke="#1c1a17" stroke-width="2"/>
+<line x1="125" y1="374" x2="125" y2="382" stroke="#1c1a17" stroke-width="1.4"/>
+<line x1="180" y1="373" x2="180" y2="383" stroke="#1c1a17" stroke-width="2"/>
+<text x="70" y="396" font-size="8.6" fill="#3a352a">0</text>
+<text x="123" y="396" font-size="8.6" fill="#3a352a">2.5</text>
+<text x="178" y="396" font-size="8.6" fill="#3a352a">5 m</text>
+</g>
+<text x="300" y="378" font-size="8.4" fill="#8a8272">office reached from the link stair — not from the house (protects D5)</text>
+</svg>

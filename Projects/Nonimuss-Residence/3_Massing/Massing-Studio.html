@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Nonimuss Residence — Massing Studio</title>
+<style>
+  :root{--ink:#1c1c1c;--panel:rgba(255,255,255,.94);--line:#c9c2b0;--good:#4c9a5a;--warn:#d98a2b;--bad:#c8503c;}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);background:#eae6da;overflow:hidden}
+  #view{position:fixed;inset:0}
+  canvas{display:block}
+  .panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.10);backdrop-filter:blur(4px)}
+  #topbar{top:12px;left:12px;right:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:9px 12px}
+  #topbar h1{font-size:14px;margin:0 10px 0 0;font-weight:700}
+  .grp{display:flex;gap:5px;align-items:center}
+  .lab{font-size:10.5px;color:#6b6459;margin-right:2px}
+  button{font:inherit;font-size:12px;padding:5px 10px;border:1px solid #b9b19c;background:#fff;border-radius:7px;cursor:pointer;color:#2b2b2b}
+  button:hover{background:#f3efe4}
+  button.on{background:#5b6b7a;color:#fff;border-color:#46545f}
+  /* left: steer + metrics */
+  #left{top:64px;left:12px;width:270px;max-height:calc(100vh - 80px);overflow:auto;padding:12px 14px;font-size:12px}
+  #left h2{font-size:13px;margin:0 0 6px}
+  #left h3{font-size:11px;margin:12px 0 5px;color:#6b6459;text-transform:uppercase;letter-spacing:.04em}
+  select,input[type=range]{width:100%}
+  select{font:inherit;font-size:12px;padding:4px;border-radius:6px;border:1px solid #b9b19c;margin-bottom:6px}
+  .slider{margin:5px 0}
+  .slider label{display:flex;justify-content:space-between;font-size:11px;color:#4a4a4a}
+  .metric{display:flex;justify-content:space-between;padding:2px 0;font-size:11.5px}
+  .bar{height:8px;border-radius:5px;background:#e4ddca;overflow:hidden;margin:3px 0 8px}
+  .bar > i{display:block;height:100%;border-radius:5px}
+  .drv{margin:5px 0}
+  .drv .row{display:flex;justify-content:space-between;font-size:11px}
+  .cap-note{font-size:10.5px;color:#6b6459;margin-top:-3px}
+  /* right: section + trade-space */
+  #right{top:64px;right:12px;width:330px;max-height:calc(100vh - 80px);overflow:auto;padding:10px 12px}
+  #right h3{font-size:11px;margin:4px 0 5px;color:#6b6459;text-transform:uppercase;letter-spacing:.04em}
+  #sectionCanvas{width:100%;height:170px;background:#f4f1ea;border:1px solid var(--line);border-radius:7px}
+  #tradeWrap{height:210px;position:relative}
+  .foot{font-size:10px;color:#8a8375;margin-top:6px;line-height:1.4}
+  #hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:#7a7365;background:rgba(255,255,255,.72);padding:4px 10px;border-radius:6px}
+</style>
+</head>
+<body>
+<div id="view"></div>
+
+<div class="panel" id="topbar">
+  <h1>Nonimuss — Massing Studio</h1>
+  <div class="grp"><span class="lab">Scheme</span>
+    <button id="bA" onclick="setScheme('A')">A</button>
+    <button id="bB" class="on" onclick="setScheme('B')">B</button>
+    <button id="bC" onclick="setScheme('C')">C</button>
+  </div>
+  <div class="grp"><span class="lab">View</span>
+    <button onclick="setView('plan')">Plan</button>
+    <button onclick="setView('iso')">Iso</button>
+    <button onclick="setView('persp')">Persp</button>
+  </div>
+  <div class="grp"><button onclick="resetScheme()">↺ Reset scheme</button>
+    <button onclick="exportState()" title="Copy your edits to share with Claude">⧉ Export / share edits</button>
+    <button onclick="exportJSON()" title="Download massing.json for the Rhino / Revit receivers (current scheme)">⤓ Export JSON (Rhino/Revit)</button>
+    <button onclick="saveForSync()" title="Save massing-interchange.json to a real file — Test-Fit Studio reads this to sync its cap numbers">💾 Save for Test-Fit sync</button>
+    <span class="lab" id="syncStatus" style="margin-left:2px">not yet saved</span></div>
+  <div class="grp"><button onclick="syncFromTestFit()" title="Read testfit-interchange.json (saved from Test-Fit Studio) and compare its placed-room footprint against this scheme's House/Office boxes">↻ Sync from Test-Fit</button>
+    <span class="lab" id="tfSyncStatus" style="margin-left:2px">not yet synced</span></div>
+</div>
+
+<div id="exportModal" style="display:none;position:fixed;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center">
+  <div class="panel" style="position:relative;width:min(560px,92vw);padding:16px 18px">
+    <h2 style="margin:0 0 4px;font-size:15px">Your massing state</h2>
+    <div id="exportMsg" style="font-size:11.5px;color:#4c9a5a;margin-bottom:8px">Copy this and paste it into the chat so Claude can see your edits.</div>
+    <textarea id="exportText" style="width:100%;height:230px;font:11px ui-monospace,Consolas,monospace;border:1px solid #b9b19c;border-radius:7px;padding:8px;resize:vertical"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+      <button onclick="document.getElementById('exportText').select();document.execCommand&&document.execCommand('copy')">Select &amp; copy</button>
+      <button class="on" onclick="closeExport()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEFT: steer + live metrics -->
+<div class="panel" id="left">
+  <h2 id="schemeName">B — The Breezeway</h2>
+  <h3>Steer a volume</h3>
+  <select id="volPick" onchange="pickVol()"></select>
+  <div id="sliders"></div>
+  <div class="grp" style="margin-top:4px"><button onclick="rot90()">⟳ Rotate 90°</button></div>
+
+  <h3>Cap &amp; metrics</h3>
+  <div class="metric"><span>Dwelling floor</span><b id="mDwell">–</b></div>
+  <div class="bar"><i id="capBar"></i></div>
+  <div class="cap-note" id="capNote"></div>
+  <div class="cap-note" id="tfSyncNote" style="display:none"></div>
+  <div class="metric"><span>Pool (off-cap)</span><b id="mPool">–</b></div>
+  <div class="metric"><span>Lot coverage</span><b id="mCov">–</b></div>
+  <div class="metric"><span>Enclosed volume</span><b id="mVol">–</b></div>
+  <div class="metric"><span>Façade (envelope)</span><b id="mFac">–</b></div>
+  <div class="metric"><span>Glazed façade</span><b id="mGlaz">–</b></div>
+  <div class="metric"><span>Build simplicity</span><b id="mSimp">–</b></div>
+
+  <h3>Driver proxies (concept-grade)</h3>
+  <div id="drivers"></div>
+  <div class="foot">Scores are geometric heuristics that move as you steer — a live gut-check, not real analysis.</div>
+</div>
+
+<!-- RIGHT: section + trade-space -->
+<div class="panel" id="right">
+  <h3>Section <span style="text-transform:none;color:#8a8375">— sun-tested</span></h3>
+  <div class="grp" style="margin-bottom:5px">
+    <button id="secNS" class="on" onclick="setSection('NS')">N–S (sun)</button>
+    <button id="secEW" onclick="setSection('EW')">E–W (forest)</button>
+    <span class="lab" style="margin-left:6px">cut</span>
+  </div>
+  <input type="range" id="cutSlider" min="0" max="100" value="45" oninput="drawSection()"/>
+  <canvas id="sectionCanvas" width="600" height="340"></canvas>
+  <div class="foot" id="secNote"></div>
+
+  <h3 style="margin-top:12px">Trade-space</h3>
+  <div id="tradeWrap"><canvas id="tradeCanvas"></canvas></div>
+  <div class="foot">Cap-safety (x) × wellness continuity D2 (y); bubble = winter thermal D3. ★ = your live edit.</div>
+</div>
+
+<div id="hint">drag to orbit · scroll to zoom · steer volumes on the left</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ===== lot geometry (metres). x=East(+), z=South(+), y=up. Forest=West(x=0). =====
+const LOT=[[0,0],[45.83,0],[45.83,19.83],[0,32.83]];
+const CX=22.9, CZ=16.4;
+function shoelace(p){let s=0;for(let i=0;i<p.length;i++){const j=(i+1)%p.length;s+=p[i][0]*p[j][1]-p[j][0]*p[i][1];}return Math.abs(s)/2;}
+const LOT_AREA=shoelace(LOT);
+const CAP=120; // m² dwelling
+const WINTER_ALT=15.6, SUMMER_ALT=62.4; // solar noon altitudes (deg), lat 50.99°N
+const LAT_LONG=[50.99256,-114.13498]; // [lat,lon] — parcel centroid, from 2_Site/data/parcel_6831-Livingstone-Dr-SW.geojson
+
+// ===== default schemes =====
+const DEFAULTS={
+ A:{name:"A — One Roof", boxes:[
+   {id:"House",type:"house",x:18,z:4,w:20,d:6,h:4.2},
+   {id:"Pool", type:"pool", x:10,z:10,w:14,d:6,h:4.2},
+   {id:"Gym",  type:"gym",  x:30,z:14,w:5,d:5,h:3},
+   {id:"Terrace",type:"terr",x:10,z:16,w:14,d:5,h:0.12}]},
+ B:{name:"B — The Breezeway (2-storey)", boxes:[
+   {id:"Pool",   type:"pool",  x:8, z:6, w:6, d:14,h:4.5},
+   {id:"House",  type:"house", x:18,z:5, w:11.6,d:9.3, h:4},
+   {id:"Office", type:"office",x:8, z:10,w:3.7, d:3, h:3, base:4.5},
+   {id:"Link",   type:"link",  x:14,z:9, w:4, d:4, h:7.5},
+   {id:"Gym",    type:"gym",   x:8, z:22,w:5, d:5, h:3},
+   {id:"Terrace",type:"terr",  x:8, z:20,w:14,d:6, h:0.12}]},
+ C:{name:"C — House & Pavilion", boxes:[
+   {id:"Pool", type:"pool", x:8,z:5,w:6,d:14,h:5,clerestory:true},
+   {id:"House",type:"house",x:28,z:5,w:12,d:10,h:4},
+   {id:"Gym",  type:"gym",  x:8,z:20,w:5,d:5,h:3},
+   {id:"Court",type:"terr", x:14,z:5,w:14,d:10,h:0.1}]},
+};
+const COLOR={house:0x5b6b7a,office:0xf2f0ea,pool:0x7fb0d0,link:0xb49bd0,gym:0x9aa39a,terr:0xe6d9b8};
+const GLAZ0={pool:50,house:30,office:40,link:50,gym:10,terr:0}; // default glazing % per type
+const glazOf=b=>b.glaz!==undefined?b.glaz:(GLAZ0[b.type]||0);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const LSKEY="nonimuss-massing-work-v2";
+let curKey="B";
+// per-scheme working copies — edits persist when you switch A/B/C and survive reload
+let WORK={A:clone(DEFAULTS.A.boxes),B:clone(DEFAULTS.B.boxes),C:clone(DEFAULTS.C.boxes)};
+function loadWork(){try{const s=localStorage.getItem(LSKEY);if(s){const p=JSON.parse(s);['A','B','C'].forEach(k=>{if(Array.isArray(p[k])&&p[k].length)WORK[k]=p[k];});}}catch(e){}}
+function saveWork(){try{localStorage.setItem(LSKEY,JSON.stringify(WORK));}catch(e){}}
+let state=WORK[curKey];      // state is a live reference into WORK — edits stick
+let selIdx=1;
+let sectionAxis="NS";
+
+// ===== metrics + driver proxies =====
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const DWELL=["house","office"], COND=["house","office","pool","link"], FOOT=["house","office","pool","link","gym"];
+const areaOfTypes=ts=>state.filter(b=>ts.includes(b.type)).reduce((s,b)=>s+b.w*b.d,0);
+const areaOf=t=>state.filter(b=>b.type===t).reduce((s,b)=>s+b.w*b.d,0);
+function findBox(t){return state.find(b=>b.type===t);}
+function gapBetween(a,b){ // planar gap between two boxes (0 if overlapping/touching)
+  const dx=Math.max(0, Math.max(a.x-(b.x+b.w), b.x-(a.x+a.w)));
+  const dz=Math.max(0, Math.max(a.z-(b.z+b.d), b.z-(a.z+a.d)));
+  return Math.hypot(dx,dz);
+}
+function metrics(){
+  const dwell=areaOfTypes(DWELL), pool=areaOf("pool"), gym=areaOf("gym"), link=areaOf("link"); // dwell counts every storey
+  const coverage=state.filter(b=>FOOT.includes(b.type)&&(b.base||0)<0.1).reduce((s,b)=>s+b.w*b.d,0)/LOT_AREA*100; // ground footprint only
+  const volume=state.filter(b=>FOOT.includes(b.type)).reduce((s,b)=>s+b.w*b.d*b.h,0);
+  const cnd=state.filter(b=>COND.includes(b.type));
+  const facade=cnd.reduce((s,b)=>s+2*(b.w+b.d)*b.h,0);
+  let effLoss=0,glzF=0; cnd.forEach(b=>{const p=2*(b.w+b.d)*b.h,g=glazOf(b)/100;effLoss+=p*((1-g)+g*3.5);glzF+=p*g;}); // glass loses ~3.5× a wall
+  const glazedPct=facade>0?glzF/facade*100:0;
+  const nVol=state.filter(b=>FOOT.includes(b.type)).length;
+  const storeys=state.some(b=>DWELL.includes(b.type)&&(b.base||0)>0.1)?2:1;
+  return {dwell,pool,gym,link,coverage,volume,facade,effLoss,glazedPct,nVol,storeys};
+}
+function drivers(){
+  const m=metrics();
+  const cond=state.filter(b=>COND.includes(b.type));
+  // D1 forest proximity (weighted by footprint; closer to west x=0 = better)
+  let wA=0,wS=0; cond.forEach(b=>{const near=clamp(1-(b.x-7.5)/20,0,1);const a=b.w*b.d;wA+=a;wS+=a*near;});
+  const D1=clamp(100*(wS/(wA||1)),0,100);
+  // D2 wellness continuity: pool<->house via link
+  const pool=findBox("pool"),house=findBox("house"),link=findBox("link");
+  let D2=20;
+  if(pool&&house){
+    const g=gapBetween(pool,house);
+    if(link && gapBetween(link,pool)<1.4 && gapBetween(link,house)<1.4) D2=94;      // linked threshold
+    else if(g<1.0) D2=82;                                                            // attached, no ritual
+    else D2=clamp(92-g*11,8,90);                                                     // detached, must cross
+  }
+  // D3 winter thermal: driven by glazing-weighted envelope heat loss + volume count
+  const D3=clamp(100-0.05*(m.effLoss-360)-(m.nVol-2)*4,0,100);
+  // D4 sun: house east-ness + elevated room clearing forest + glazing admitted (daylight)
+  let D4=20; if(house){D4=clamp((house.x+house.w/2-14)/26*100*0.75+20,0,92);}
+  if(state.some(b=>DWELL.includes(b.type)&&(b.base||0)>0.1)) D4=clamp(D4+16,0,100);
+  const dw=state.filter(b=>DWELL.includes(b.type)); const avgG=dw.length?dw.reduce((s,b)=>s+glazOf(b),0)/dw.length:0;
+  D4=clamp(D4+avgG/100*10,0,100);
+  // D5 step-free / zero-corridor: penalise long-thin link, upper storeys (core stays on ground → modest), and many volumes
+  let D5=92; if(link){const asp=Math.max(link.w,link.d)/Math.min(link.w,link.d); D5-=clamp((asp-1.5)*22,0,42);}
+  if(m.storeys>1) D5-=10;
+  D5=clamp(D5-(m.nVol-2)*5,0,100);
+  // OQ-6 cap-safety: pool separated from dwelling AND the link small enough to read as a threshold, not a wing
+  let CAP6=40;
+  if(pool&&house){const g=gapBetween(pool,house);
+    if(g<0.6)CAP6=30; else if(link)CAP6=80; else CAP6=clamp(55+g*8,55,96);}
+  if(link) CAP6-=clamp((link.w*link.d-20)*2,0,45);   // oversized "link" is really a wing → cap risk
+  CAP6=clamp(CAP6,0,100);
+  return {D1,D2,D3,D4,D5,CAP6};
+}
+
+// ===== THREE scene =====
+const view=document.getElementById('view');
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0xeae6da);
+scene.fog=new THREE.Fog(0xeae6da,95,190);
+const camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.5,600);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+view.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff,0x9a936f,0.75));
+const sun=new THREE.DirectionalLight(0xfff2d8,0.85);
+sun.position.set(CX-6,26,CZ+34); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+const ss=60; Object.assign(sun.shadow.camera,{left:-ss,right:ss,top:ss,bottom:-ss,near:1,far:170}); scene.add(sun);
+
+function toWorld(x,z){return [x-CX,z-CZ];}
+// ground
+const shape=new THREE.Shape();
+LOT.forEach((p,i)=>{const[wx,wz]=toWorld(p[0],p[1]);i?shape.lineTo(wx,wz):shape.moveTo(wx,wz);});
+shape.closePath();
+const lotGeo=new THREE.ShapeGeometry(shape); lotGeo.rotateX(Math.PI/2);
+const lot=new THREE.Mesh(lotGeo,new THREE.MeshLambertMaterial({color:0xd8d2c2,side:THREE.DoubleSide}));
+lot.receiveShadow=true; scene.add(lot);
+const lp=LOT.map(p=>{const[wx,wz]=toWorld(p[0],p[1]);return new THREE.Vector3(wx,0.02,wz);}); lp.push(lp[0].clone());
+scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lp),new THREE.LineBasicMaterial({color:0x6b6459})));
+// setback
+const SB=[[7.5,1.2],[42.83,1.2],[42.83,17.0],[7.5,27.5]];
+const sp=SB.map(p=>{const[wx,wz]=toWorld(p[0],p[1]);return new THREE.Vector3(wx,0.03,wz);}); sp.push(sp[0].clone());
+const sbl=new THREE.Line(new THREE.BufferGeometry().setFromPoints(sp),new THREE.LineDashedMaterial({color:0x9a8f6f,dashSize:1.1,gapSize:0.8}));
+sbl.computeLineDistances(); scene.add(sbl);
+// forest
+const forest=new THREE.Group();
+const trunkMat=new THREE.MeshLambertMaterial({color:0x6a5334}),leafMat=new THREE.MeshLambertMaterial({color:0x6f9a5a});
+for(let z=0;z<=33;z+=2.4){const jx=-1.5-Math.random()*3.5;const[wx,wz]=toWorld(jx,z+(Math.random()-.5));const hh=9+Math.random()*7;
+  const tr=new THREE.Mesh(new THREE.CylinderGeometry(.3,.4,hh*.4,6),trunkMat); tr.position.set(wx,hh*.2,wz); forest.add(tr);
+  const cn=new THREE.Mesh(new THREE.ConeGeometry(1.8+Math.random(),hh,7),leafMat); cn.position.set(wx,hh*.55,wz); cn.castShadow=true; forest.add(cn);}
+scene.add(forest);
+// labels
+function makeLabel(t,c){const cv=document.createElement('canvas');cv.width=256;cv.height=64;const g=cv.getContext('2d');
+  g.font='bold 34px Segoe UI, Arial';g.textAlign='center';g.textBaseline='middle';
+  g.lineWidth=6;g.strokeStyle='rgba(255,255,255,.9)';g.strokeText(t,128,32);g.fillStyle=c||'#3a352a';g.fillText(t,128,32);
+  const tx=new THREE.CanvasTexture(cv);tx.anisotropy=4;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true}));s.scale.set(9,2.25,1);return s;}
+function placeLabel(t,x,z,y,c){const s=makeLabel(t,c);const[wx,wz]=toWorld(x,z);s.position.set(wx,y||3,wz);scene.add(s);}
+placeLabel('FOREST (W)',-4,16,6,'#3f6b2e'); placeLabel('STREET (E)',49,10,3,'#5a5344');
+placeLabel('N ↑',22.9,-4,3,'#333'); placeLabel('S neighbour',22.9,36,2.5,'#8a5a5a');
+
+// building group (rebuilt on edit)
+let bgroup=new THREE.Group(); scene.add(bgroup);
+// Test-Fit ghost group — Stage 0 (2026-09-09), see renderTestFitSync()/rebuildGhosts() below.
+let ghostGroup=new THREE.Group(); scene.add(ghostGroup);
+function disposeGroup(g){g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose&&o.material.dispose();});g.clear();}
+function rebuild(){
+  disposeGroup(bgroup);
+  state.forEach((b,i)=>{
+    const[wx,wz]=toWorld(b.x+b.w/2,b.z+b.d/2);const flat=b.h<0.5;
+    const geo=new THREE.BoxGeometry(b.w,b.h,b.d);
+    const gz=glazOf(b)/100;
+    const baseCol=new THREE.Color(COLOR[b.type]).lerp(new THREE.Color(0xbfd8e8),flat?0:gz*0.4);
+    const mat=new THREE.MeshLambertMaterial({color:baseCol,transparent:(gz>0||b.type==='link'),opacity:flat?1:(b.type==='link'?0.5:1-gz*0.5)});
+    const m=new THREE.Mesh(geo,mat); m.position.set(wx,(b.base||0)+b.h/2,wz); m.castShadow=!flat; m.receiveShadow=true; bgroup.add(m);
+    const eg=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color: i===selIdx?0xd98a2b:0x2b2b2b,transparent:true,opacity:i===selIdx?0.95:(flat?0.25:0.55)}));
+    eg.position.copy(m.position); if(i===selIdx&&!flat){eg.scale.set(1.02,1.02,1.02);} bgroup.add(eg);
+    if(b.clerestory){const cg=new THREE.BoxGeometry(b.w*.9,.5,b.d*.35);const cm=new THREE.Mesh(cg,new THREE.MeshLambertMaterial({color:0xdfeaf3,transparent:true,opacity:.85}));cm.position.set(wx,(b.base||0)+b.h+.25,wz);bgroup.add(cm);}
+  });
+}
+
+// ===== camera orbit =====
+let target=new THREE.Vector3(0,2,0), sph={r:64,theta:0.42,phi:0.95};
+function applyCam(){const{r,theta,phi}=sph;camera.position.set(target.x+r*Math.sin(phi)*Math.sin(theta),target.y+r*Math.cos(phi),target.z+r*Math.sin(phi)*Math.cos(theta));camera.lookAt(target);}
+const VIEWS={plan:{r:74,theta:0,phi:0.06},iso:{r:64,theta:0.72,phi:0.92},persp:{r:50,theta:0.4,phi:1.28}};
+function setView(v){sph={...VIEWS[v]};applyCam();}
+let drag=false,px=0,py=0;
+renderer.domElement.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;py=e.clientY;});
+addEventListener('pointerup',()=>drag=false);
+addEventListener('pointermove',e=>{if(!drag)return;sph.theta-=(e.clientX-px)*.008;sph.phi=clamp(sph.phi-(e.clientY-py)*.008,0.05,1.52);px=e.clientX;py=e.clientY;applyCam();});
+renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();sph.r=clamp(sph.r*(1+Math.sign(e.deltaY)*.08),20,150);applyCam();},{passive:false});
+
+// ===== steer UI =====
+function fillVolPicker(){
+  const sel=document.getElementById('volPick'); sel.innerHTML='';
+  state.forEach((b,i)=>{const o=document.createElement('option');o.value=i;o.textContent=b.id+' ('+b.type+')';sel.appendChild(o);});
+  sel.value=selIdx;
+}
+function pickVol(){selIdx=+document.getElementById('volPick').value;buildSliders();rebuild();}
+const SLIDE=[["x","East–West",0,44,0.5],["z","North–South",0,32,0.5],["w","Width (E-W)",2,25,0.5],["d","Depth (N-S)",2,20,0.5],["h","Height",0.1,8,0.1],["base","Base / level (stack)",0,6,0.5],["glaz","Glazing %",0,100,25]];
+function buildSliders(){
+  const b=state[selIdx],box=document.getElementById('sliders');box.innerHTML='';
+  SLIDE.forEach(([k,lab,mn,mx,st])=>{
+    const wrap=document.createElement('div');wrap.className='slider';
+    const cur=(k==='glaz')?glazOf(b):((+b[k])||0), dp=(k==='glaz')?0:1;
+    wrap.innerHTML=`<label>${lab}<span id="v_${k}">${cur.toFixed(dp)}</span></label>`;
+    const inp=document.createElement('input');inp.type='range';inp.min=mn;inp.max=mx;inp.step=st;inp.value=cur;
+    inp.oninput=()=>{b[k]=+inp.value;document.getElementById('v_'+k).textContent=(+inp.value).toFixed(dp);rebuild();refresh();};
+    wrap.appendChild(inp);box.appendChild(wrap);
+  });
+}
+function rot90(){const b=state[selIdx];const w=b.w;b.w=b.d;b.d=w;buildSliders();rebuild();refresh();}
+function resetScheme(){WORK[curKey]=clone(DEFAULTS[curKey].boxes);state=WORK[curKey];selIdx=Math.min(selIdx,state.length-1);fillVolPicker();buildSliders();rebuild();refresh();}
+function setScheme(k){curKey=k;state=WORK[k];selIdx=Math.min(selIdx,state.length-1);   // keep this scheme's edits
+  ['A','B','C'].forEach(id=>document.getElementById('b'+id).classList.toggle('on',id===k));
+  document.getElementById('schemeName').textContent=DEFAULTS[k].name;
+  fillVolPicker();buildSliders();rebuild();refresh();}
+
+// ===== live metric + driver display =====
+function barColor(v){return v>=70?'var(--good)':v>=45?'var(--warn)':'var(--bad)';}
+function refresh(){
+  const m=metrics(),d=drivers();
+  document.getElementById('mDwell').textContent=m.dwell.toFixed(0)+' / '+CAP+' m²';
+  const pct=clamp(m.dwell/CAP*100,0,140);
+  const cb=document.getElementById('capBar'); cb.style.width=Math.min(pct,100)+'%';
+  cb.style.background=m.dwell<=CAP?'var(--good)':'var(--bad)';
+  document.getElementById('capNote').textContent=m.dwell<=CAP?('✓ '+(CAP-m.dwell).toFixed(0)+' m² under cap'):('✗ '+(m.dwell-CAP).toFixed(0)+' m² OVER — trim the dwelling');
+  document.getElementById('capNote').style.color=m.dwell<=CAP?'#4c9a5a':'#c8503c';
+  document.getElementById('mPool').textContent=m.pool.toFixed(0)+' m²';
+  document.getElementById('mCov').textContent=m.coverage.toFixed(1)+'% (max 45)';
+  document.getElementById('mVol').textContent=m.volume.toFixed(0)+' m³';
+  document.getElementById('mFac').textContent=m.facade.toFixed(0)+' m²';
+  document.getElementById('mGlaz').textContent=m.glazedPct.toFixed(0)+'% glazed';
+  document.getElementById('mSimp').textContent=m.nVol+' vol · '+m.storeys+'-storey '+(m.nVol<=2?'· simple':m.nVol<=4?'· moderate':'· complex');
+  const D=[["D1 forest",d.D1],["D2 wellness",d.D2],["D3 winter",d.D3],["D4 sun",d.D4],["D5 step-free",d.D5],["OQ-6 cap-safe",d.CAP6]];
+  document.getElementById('drivers').innerHTML=D.map(([n,v])=>
+    `<div class="drv"><div class="row"><span>${n}</span><b>${v.toFixed(0)}</b></div><div class="bar"><i style="width:${v}%;background:${barColor(v)}"></i></div></div>`).join('');
+  drawSection(); updateTrade(); saveWork(); renderTestFitSync();
+}
+
+// ===== SECTION renderer =====
+function schemeDrivers(boxes){const old=state;state=boxes;const d=drivers();state=old;return d;}
+function drawSection(){
+  const cv=document.getElementById('sectionCanvas'),g=cv.getContext('2d');
+  const W=cv.width,H=cv.height; g.clearRect(0,0,W,H);
+  const groundY=H-46, pad=28;
+  const cut=+document.getElementById('cutSlider').value/100;
+  // axis mapping
+  let axMin,axMax,cutVal,horizLabel;
+  if(sectionAxis==="NS"){axMin=-2;axMax=34;cutVal=cut*44;horizLabel="N ← → S   (cut at x="+cutVal.toFixed(0)+"m E)";}
+  else{axMin=-6;axMax=47;cutVal=cut*32;horizLabel="W(forest) ← → E(street)   (cut at z="+cutVal.toFixed(0)+"m S)";}
+  const sx=v=>pad+(v-axMin)/(axMax-axMin)*(W-2*pad);
+  const sh=hh=>hh*7.0; // height scale px/m
+  // sky
+  g.fillStyle='#eef1f4';g.fillRect(0,0,W,groundY);
+  // ground
+  g.strokeStyle='#8a8064';g.lineWidth=2;g.beginPath();g.moveTo(0,groundY);g.lineTo(W,groundY);g.stroke();
+  g.fillStyle='#6b6459';g.font='10px Segoe UI';g.fillText(horizLabel,pad,H-8);
+  // forest + neighbour context
+  if(sectionAxis==="EW"){ // forest wall at west (x<0)
+    g.fillStyle='rgba(111,154,90,.55)';const fx=sx(-2);g.beginPath();g.moveTo(sx(-6),groundY);g.lineTo(sx(-6),groundY-sh(17));g.lineTo(fx,groundY-sh(15));g.lineTo(fx,groundY);g.closePath();g.fill();
+    g.fillStyle='#3f6b2e';g.font='9px Segoe UI';g.fillText('forest ~15–17 m',sx(-6)+2,groundY-sh(15)-4);
+  } else { // south neighbour block at high z
+    g.fillStyle='rgba(150,120,120,.5)';const nx0=sx(33),nx1=sx(36);g.fillRect(nx0,groundY-sh(5),nx1-nx0,sh(5));
+    g.fillStyle='#8a5a5a';g.font='9px Segoe UI';g.fillText('S neighbour ~5 m',nx0-8,groundY-sh(5)-4);
+  }
+  // volumes intersected by cut
+  state.forEach(b=>{
+    let a0,a1,inCut;
+    if(sectionAxis==="NS"){inCut=(cutVal>=b.x&&cutVal<=b.x+b.w);a0=b.z;a1=b.z+b.d;}
+    else{inCut=(cutVal>=b.z&&cutVal<=b.z+b.d);a0=b.x;a1=b.x+b.w;}
+    if(!inCut)return;
+    const col='#'+COLOR[b.type].toString(16).padStart(6,'0');
+    const x0=sx(a0),x1=sx(a1),bot=groundY-sh(b.base||0),top=bot-sh(b.h);
+    g.fillStyle=b.type==='link'?'rgba(180,155,208,.6)':col;g.fillRect(x0,top,x1-x0,sh(b.h));
+    const gz=glazOf(b)/100; if(gz>0&&b.h>0.6){g.fillStyle='rgba(150,195,225,'+(gz*0.5).toFixed(2)+')';g.fillRect(x0,top,x1-x0,sh(b.h));}
+    g.strokeStyle='#2b2b2b';g.lineWidth=1;g.strokeRect(x0,top,x1-x0,sh(b.h));
+    if(b.h>0.6){g.fillStyle=(b.type==='office'||b.type==='terr')?'#333':'#fff';g.font='9px Segoe UI';g.fillText(b.id+(gz>0?' '+(gz*100).toFixed(0)+'%g':''),x0+3,top+12);}
+    if(b.clerestory){g.fillStyle='rgba(223,234,243,.95)';g.fillRect(x0+(x1-x0)*0.3,top-6,(x1-x0)*0.4,6);}
+  });
+  // sun rays
+  function ray(altDeg,color,label,fromSouth){
+    const alt=altDeg*Math.PI/180;const slope=Math.tan(alt);
+    g.strokeStyle=color;g.setLineDash([5,4]);g.lineWidth=1.5;g.beginPath();
+    if(sectionAxis==="NS"){ // sun from south (right)
+      const x1=sx(34),y1=groundY-sh(2)-260*slope; // start high on south
+      g.moveTo(x1,Math.max(4,y1));const x2=sx(-2);const y2=y1+(x1-x2)*slope*0/1; // draw descending toward north
+      // draw a straight ray descending to the left
+      const run=x1-sx(-2);const drop=run*slope;g.lineTo(sx(-2),y1+drop);
+    } else { // EW: low western sun blocked by forest (from left/west, ascending to east)
+      const x1=sx(-6),y1=groundY-sh(1);const run=sx(47)-x1;g.moveTo(x1,y1);g.lineTo(sx(47),y1-run*slope);
+    }
+    g.stroke();g.setLineDash([]);
+    g.fillStyle=color;g.font='9px Segoe UI';
+    if(sectionAxis==="NS")g.fillText(label,sx(24),Math.max(12,groundY-sh(2)-120*slope));
+  }
+  if(sectionAxis==="NS"){ray(SUMMER_ALT,'#e0a92b','summer '+SUMMER_ALT+'°',true);ray(WINTER_ALT,'#d0631f','winter '+WINTER_ALT+'°',true);}
+  else{ray(8,'#d0631f','low W sun → blocked by forest',false);}
+  // note
+  const note=document.getElementById('secNote');
+  note.innerHTML = sectionAxis==="NS"
+    ? "Winter noon sun rakes in at only <b>15.6°</b> from the south — anything the neighbour or a deep plan blocks stays in winter shade. Push glazing high-south / clerestory to catch it (L1, L5)."
+    : "The forest wall (W) blocks low western sun: the rear face gets <b>no direct winter sun</b>. Daylight the plan from the roof and the east, not the forest (L5).";
+}
+function setSection(a){sectionAxis=a;document.getElementById('secNS').classList.toggle('on',a==='NS');document.getElementById('secEW').classList.toggle('on',a==='EW');drawSection();}
+
+// ===== TRADE-SPACE (Chart.js) =====
+let chart;
+function schemePoint(key,boxes){const d=schemeDrivers(boxes);return {x:d.CAP6,y:d.D2,r:6+d.D3/10,key};}
+function updateTrade(){
+  const pts=[
+    {...schemePoint('A',DEFAULTS.A.boxes),c:'#9aa39a'},
+    {...schemePoint('B',DEFAULTS.B.boxes),c:'#5b6b7a'},
+    {...schemePoint('C',DEFAULTS.C.boxes),c:'#7fb0d0'},
+  ];
+  const live=schemeDrivers(state);const livePt={x:live.CAP6,y:live.D2,r:8+live.D3/10};
+  const data={datasets:[
+    {label:'A / B / C',data:pts.map(p=>({x:p.x,y:p.y,r:p.r,key:p.key})),backgroundColor:pts.map(p=>p.c),borderColor:'#333',borderWidth:1},
+    {label:'★ live',data:[livePt],backgroundColor:'#d98a2b',borderColor:'#8a5410',borderWidth:2,pointStyle:'star'},
+  ]};
+  const opts={responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:{title:{display:true,text:'cap-safety (OQ-6) →'},min:0,max:100},y:{title:{display:true,text:'wellness continuity D2 →'},min:0,max:100}},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const k=c.raw.key||'live';return k+'  cap '+c.raw.x.toFixed(0)+' / D2 '+c.raw.y.toFixed(0);}}}}};
+  if(!chart){chart=new Chart(document.getElementById('tradeCanvas'),{type:'bubble',data,options:opts});}
+  else{chart.data=data;chart.update();}
+}
+
+// ===== export current state (so it can be shared back to Claude) =====
+function buildSummary(){
+  const order=["A","B","C"];const save=[curKey,selIdx];let out="NONIMUSS MASSING — STUDIO STATE ("+new Date().toISOString().slice(0,16).replace('T',' ')+")\n";
+  order.forEach(k=>{state=WORK[k];const m=metrics(),d=drivers();
+    out+="\n== Scheme "+k+" — "+DEFAULTS[k].name.replace(/^[ABC] — /,'')+" ==\n";
+    WORK[k].filter(b=>b.type!=='terr').forEach(b=>{out+="  "+b.id.padEnd(8)+" x"+b.x+" z"+b.z+" · "+b.w+"×"+b.d+"×"+b.h+"m"+((b.base||0)>0?" +"+b.base+"m up":"")+" · "+(b.w*b.d).toFixed(0)+" m² · glaz "+glazOf(b)+"%\n";});
+    out+="  → dwelling "+m.dwell.toFixed(0)+"/120 m² ("+(m.dwell<=120?"OK":"OVER")+"), pool "+m.pool.toFixed(0)+", coverage "+m.coverage.toFixed(1)+"%, "+m.nVol+" volumes\n";
+    out+="  → D1 "+d.D1.toFixed(0)+" · D2 "+d.D2.toFixed(0)+" · D3 "+d.D3.toFixed(0)+" · D4 "+d.D4.toFixed(0)+" · D5 "+d.D5.toFixed(0)+" · OQ6 "+d.CAP6.toFixed(0)+"\n";});
+  state=WORK[save[0]];selIdx=save[1];
+  out+="\n--- JSON (paste this to restore or share) ---\n"+JSON.stringify(WORK);
+  return out;
+}
+function exportState(){
+  const txt=buildSummary();const ta=document.getElementById('exportText');ta.value=txt;
+  document.getElementById('exportModal').style.display='flex';ta.focus();ta.select();
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>{document.getElementById('exportMsg').textContent='Copied to clipboard — paste it to Claude.';},()=>{document.getElementById('exportMsg').textContent='Select all & copy (Ctrl/Cmd+C), then paste to Claude.';});}
+}
+function closeExport(){document.getElementById('exportModal').style.display='none';}
+
+// ===== interchange export (massing.json → Rhino / Revit receivers) =====
+// Emits the CURRENT scheme as the neutral interchange defined in Massing-Export-Roadmap.md.
+function buildInterchange(){
+  const key=curKey, boxes=WORK[key];
+  const vols=boxes.map(b=>({
+    id:b.id, type:b.type,
+    x:+b.x, z:+b.z, w:+b.w, d:+b.d, h:+b.h,
+    base:+(b.base||0), glaz:glazOf(b),
+    ...(b.clerestory?{clerestory:true}:{})
+  }));
+  // storeys inferred from distinct base elevations present in this scheme
+  const bases=[...new Set(boxes.map(b=>+(b.base||0)))].sort((a,b)=>a-b);
+  const storeys=bases.map((e,i)=>({name:"L"+(i+1),elev:+e.toFixed(2)}));
+  // metrics of the exported scheme (metrics() reads the global `state`)
+  const save=[curKey,selIdx]; state=WORK[key]; const m=metrics(); state=WORK[save[0]]; selIdx=save[1];
+  return {
+    schema:"massing-interchange/v1",
+    project:"Nonimuss-Residence",
+    scheme:key,
+    schemeName:DEFAULTS[key].name,
+    generated:new Date().toISOString(),
+    units:"m",
+    axes:{x:"East",z:"South",y:"Up",note:"North is -z. Boxes are axis-aligned; w = E–W extent, d = N–S extent (any rotation is baked into w/d). x,z = SW corner of the box in plan."},
+    site:{
+      origin:[0,0],
+      northDeg:0,
+      latLong:LAT_LONG,
+      lotPolygon:LOT,
+      setbackPolygon:SB,
+      lotArea:+LOT_AREA.toFixed(1),
+      storeys:storeys
+    },
+    program:{ dwellingCap:CAP, coverageMaxPct:45 },
+    metrics:{ dwelling:+m.dwell.toFixed(1), pool:+m.pool.toFixed(1), coveragePct:+m.coverage.toFixed(1), storeys:m.storeys, volumeCount:m.nVol },
+    volumes:vols
+  };
+}
+function exportJSON(){
+  const txt=JSON.stringify(buildInterchange(),null,2);
+  const blob=new Blob([txt],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download="nonimuss-massing-"+curKey+".json";
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},120);
+}
+
+// ===== save-for-sync (File System Access API — a real file Test-Fit Studio can read) =====
+function idbOpenMS(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('ms-handles',1);
+    req.onupgradeneeded=()=>{req.result.createObjectStore('handles');};
+    req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error);
+  });
+}
+async function idbGetMS(key){
+  const db=await idbOpenMS();
+  return new Promise((res,rej)=>{
+    const rq=db.transaction('handles','readonly').objectStore('handles').get(key);
+    rq.onsuccess=()=>res(rq.result||null); rq.onerror=()=>rej(rq.error);
+  });
+}
+async function idbSetMS(key,val){
+  const db=await idbOpenMS();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('handles','readwrite'); tx.objectStore('handles').put(val,key);
+    tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error);
+  });
+}
+let syncFileHandle=null;
+async function saveForSync(){
+  const statusEl=document.getElementById('syncStatus');
+  try{
+    if(!window.showSaveFilePicker){
+      statusEl.textContent='needs Chrome/Edge — falling back to download';
+      exportJSON();
+      return;
+    }
+    if(!syncFileHandle){
+      const stored=await idbGetMS('sync-file-handle');
+      if(stored && (await stored.requestPermission({mode:'readwrite'}))==='granted') syncFileHandle=stored;
+    }
+    if(!syncFileHandle){
+      syncFileHandle=await window.showSaveFilePicker({suggestedName:'massing-interchange.json', types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+      await idbSetMS('sync-file-handle', syncFileHandle);
+    }
+    const writable=await syncFileHandle.createWritable();
+    await writable.write(JSON.stringify(buildInterchange(),null,2));
+    await writable.close();
+    statusEl.textContent='saved '+new Date().toLocaleTimeString()+' ('+syncFileHandle.name+')';
+  }catch(err){
+    if(err.name!=='AbortError'){ console.error(err); statusEl.textContent='save failed — see console'; }
+  }
+}
+
+// ===== sync-from-Test-Fit (reverse direction — read Test-Fit's placed-room footprint,
+// compare against this scheme's boxes; advisory only, never auto-applies a box resize,
+// since the 2026-09-09 House-footprint fix showed one box's growth can force another
+// box (Office) to shrink to hold the cap — a judgment call, not a mechanical write) =====
+let testFitFileHandle=null, testFitSync=null;
+async function syncFromTestFit(){
+  const statusEl=document.getElementById('tfSyncStatus');
+  try{
+    if(!window.showOpenFilePicker){ statusEl.textContent='needs Chrome/Edge for file sync'; return; }
+    if(!testFitFileHandle){
+      const stored=await idbGetMS('testfit-file-handle');
+      if(stored && (await stored.requestPermission({mode:'read'}))==='granted') testFitFileHandle=stored;
+    }
+    if(!testFitFileHandle){
+      [testFitFileHandle]=await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+      await idbSetMS('testfit-file-handle', testFitFileHandle);
+    }
+    const file=await testFitFileHandle.getFile();
+    const data=JSON.parse(await file.text());
+    if(data.type!=='test-fit-interchange/v1'){ statusEl.textContent='that file is not a test-fit-interchange/v1 save'; return; }
+    // bounding box + net area of on-cap, non-illustrative rooms, grouped by level —
+    // the bbox is what Massing's single rectangular volume per level would need to be
+    // to contain the actual room layout; net area is the program area alone (< bbox,
+    // since a bbox also covers internal circulation/wall thickness the rooms don't).
+    const byLevel={};
+    Object.values(data.rooms||{}).forEach(r=>{
+      if(!r.onCap || r.illustrative) return;
+      const lv=r.level||'Ground';
+      const b=byLevel[lv]||(byLevel[lv]={net:0,minX:Infinity,minY:Infinity,maxX:-Infinity,maxY:-Infinity});
+      b.net+=r.w*r.h;
+      b.minX=Math.min(b.minX,r.x); b.minY=Math.min(b.minY,r.y);
+      b.maxX=Math.max(b.maxX,r.x+r.w); b.maxY=Math.max(b.maxY,r.y+r.h);
+    });
+    Object.keys(byLevel).forEach(lv=>{
+      const b=byLevel[lv];
+      b.bboxW=+(b.maxX-b.minX).toFixed(2); b.bboxD=+(b.maxY-b.minY).toFixed(2);
+      b.bboxArea=+(b.bboxW*b.bboxD).toFixed(1); b.net=+b.net.toFixed(1);
+    });
+    testFitSync={time:new Date().toLocaleTimeString(), fileName:testFitFileHandle.name, byLevel};
+    statusEl.textContent='synced '+testFitSync.time+' ('+testFitFileHandle.name+')';
+    refresh();
+  }catch(err){
+    if(err.name!=='AbortError'){ console.error(err); statusEl.textContent='sync failed — see console'; }
+  }
+}
+function renderTestFitSync(){
+  const el=document.getElementById('tfSyncNote');
+  if(!testFitSync){ el.style.display='none'; return; }
+  const ground=state.find(b=>b.type==='house'&&(b.base||0)<0.1);
+  const upper=state.find(b=>b.type==='office'&&(b.base||0)>0.1);
+  const lines=[];
+  [['Ground','House',ground],['Upper','Office',upper]].forEach(([lv,label,box])=>{
+    const tf=testFitSync.byLevel[lv];
+    if(!box||!tf) return;
+    const boxArea=+(box.w*box.d).toFixed(1), delta=+(tf.bboxArea-boxArea).toFixed(1);
+    const verdict=Math.abs(delta)<1 ? 'match' : (delta>0 ? '+'+delta+' m² short — box may need to grow' : delta+' m² — box has slack');
+    lines.push(label+' ('+lv+'): Test-Fit rooms need ~'+tf.bboxArea+' m² ('+tf.bboxW+'×'+tf.bboxD+' bbox, '+tf.net+' m² net program) vs '+label+' box '+boxArea+' m² — '+verdict);
+  });
+  if(!lines.length){ el.style.display='none'; return; }
+  el.style.display='block'; el.style.color='#8a6d3b';
+  el.innerHTML='<b>Test-Fit sync ('+testFitSync.time+'):</b><br>'+lines.join('<br>')+
+    '<br><span style="font-size:9.5px;color:#8a8375">advisory only — box dims are not auto-resized; axis correspondence between the two tools\' coordinate systems is assumed, not verified</span>';
+  rebuildGhosts();
+}
+// Test-Fit ghost wireframe — Stage 0 (2026-09-09): upgrades the sync advisory from text-only
+// to something actually visible, per Ben's own bar ("if you can't see the change, it's not
+// working"). Anchored at the REAL box's own (x,z) position — same origin, drawn at the size
+// Test-Fit's rooms actually need instead of the box's current size — never an invented
+// cross-tool coordinate mapping (axis correspondence between the two tools is unverified).
+// Advisory only: never writes into `state` — same rule as the text note above it.
+function rebuildGhosts(){
+  disposeGroup(ghostGroup);
+  if(!testFitSync) return;
+  const ground=state.find(b=>b.type==='house'&&(b.base||0)<0.1);
+  const upper=state.find(b=>b.type==='office'&&(b.base||0)>0.1);
+  [['Ground',ground],['Upper',upper]].forEach(([lv,box])=>{
+    const tf=testFitSync.byLevel[lv];
+    if(!box||!tf) return;
+    const w=tf.bboxW, d=tf.bboxD;
+    const[wx,wz]=toWorld(box.x+w/2, box.z+d/2);
+    const geo=new THREE.BoxGeometry(w,0.06,d);
+    const edges=new THREE.EdgesGeometry(geo);
+    const line=new THREE.LineSegments(edges,new THREE.LineDashedMaterial({color:0x8a6d3b,dashSize:0.6,gapSize:0.4}));
+    line.computeLineDistances();
+    line.position.set(wx,(box.base||0)+0.05,wz);
+    ghostGroup.add(line);
+    const lbl=makeLabel('Test-Fit '+lv+' needs '+w.toFixed(1)+'×'+d.toFixed(1)+'m','#8a6d3b');
+    lbl.position.set(wx,(box.base||0)+1.1,wz); lbl.scale.set(7,1.75,1);
+    ghostGroup.add(lbl);
+  });
+}
+
+// ===== responsive panel offset =====
+// #topbar wraps to a second row below ~1560px (a common laptop width is 1440px) since its
+// button groups don't fit on one line at #topbar's own font size. #left/#right used a
+// hardcoded top:64px sized for the single-row (~49px) case, so at a narrower width the
+// wrapped second row rendered UNDERNEATH #left, making its buttons (e.g. "Sync from
+// Test-Fit") physically unclickable — found via real click-through testing 2026-09-09.
+// Fix: measure the topbar's actual rendered height and position both side panels below it.
+function layoutPanels(){
+  const tb=document.getElementById('topbar');
+  const top=Math.round(tb.getBoundingClientRect().height+12+12); // topbar's own 12px top offset + a 12px gap
+  ['left','right'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.top=top+'px';
+    el.style.maxHeight='calc(100vh - '+(top+16)+'px)';
+  });
+}
+
+// ===== boot =====
+loadWork(); state=WORK[curKey];
+setView('iso'); fillVolPicker(); buildSliders(); rebuild(); refresh(); applyCam();
+layoutPanels();
+(function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);layoutPanels();});
+</script>
+</body>
+</html>

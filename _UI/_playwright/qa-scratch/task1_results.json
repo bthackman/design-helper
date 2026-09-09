@@ -1,0 +1,408 @@
+{
+  "massing_before": {
+    "dwell": "119 / 120 m\u00b2",
+    "state": [
+      {
+        "id": "Pool",
+        "type": "pool",
+        "x": 8,
+        "z": 6,
+        "w": 6,
+        "d": 14,
+        "h": 4.5
+      },
+      {
+        "id": "House",
+        "type": "house",
+        "x": 18,
+        "z": 5,
+        "w": 11.6,
+        "d": 9.3,
+        "h": 4
+      },
+      {
+        "id": "Office",
+        "type": "office",
+        "x": 8,
+        "z": 10,
+        "w": 3.7,
+        "d": 3,
+        "h": 3,
+        "base": 4.5
+      },
+      {
+        "id": "Link",
+        "type": "link",
+        "x": 14,
+        "z": 9,
+        "w": 4,
+        "d": 4,
+        "h": 7.5
+      },
+      {
+        "id": "Gym",
+        "type": "gym",
+        "x": 8,
+        "z": 22,
+        "w": 5,
+        "d": 5,
+        "h": 3
+      },
+      {
+        "id": "Terrace",
+        "type": "terr",
+        "x": 8,
+        "z": 20,
+        "w": 14,
+        "d": 6,
+        "h": 0.12
+      }
+    ],
+    "curKey": "B"
+  },
+  "delete_office": {
+    "ok": true,
+    "idx": 2
+  },
+  "massing_after": {
+    "dwell": "108 / 120 m\u00b2",
+    "capNote": "\u2713 12 m\u00b2 under cap",
+    "mSimp": "4 vol \u00b7 1-storey \u00b7 moderate",
+    "state": [
+      {
+        "id": "Pool",
+        "type": "pool",
+        "x": 8,
+        "z": 6,
+        "w": 6,
+        "d": 14,
+        "h": 4.5
+      },
+      {
+        "id": "House",
+        "type": "house",
+        "x": 18,
+        "z": 5,
+        "w": 11.6,
+        "d": 9.3,
+        "h": 4
+      },
+      {
+        "id": "Link",
+        "type": "link",
+        "x": 14,
+        "z": 9,
+        "w": 4,
+        "d": 4,
+        "h": 7.5
+      },
+      {
+        "id": "Gym",
+        "type": "gym",
+        "x": 8,
+        "z": 22,
+        "w": 5,
+        "d": 5,
+        "h": 3,
+        "base": 4.5
+      },
+      {
+        "id": "Terrace",
+        "type": "terr",
+        "x": 8,
+        "z": 20,
+        "w": 14,
+        "d": 6,
+        "h": 0.12
+      }
+    ]
+  },
+  "massing_save_status": "saved 10:32:18 AM (massing-QA.json)",
+  "massing_console": [
+    "[warning] [.WebGL-0x54b4001b5600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x54b4001b5600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x54b4001b5600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x54b4001b5600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "massing_errors": [],
+  "testfit_before": {
+    "rooms": {
+      "GR": {
+        "label": "Great room (hub)",
+        "level": "Ground",
+        "cluster": "Hub",
+        "onCap": true,
+        "illustrative": false,
+        "x": 0,
+        "y": 4,
+        "w": 11,
+        "h": 4.2
+      },
+      "MB": {
+        "label": "Main bed + ensuite",
+        "level": "Ground",
+        "cluster": "Private",
+        "onCap": true,
+        "illustrative": false,
+        "x": 0,
+        "y": 8.2,
+        "w": 5.5,
+        "h": 4
+      },
+      "GU": {
+        "label": "Guest / family room",
+        "level": "Ground",
+        "cluster": "Private",
+        "onCap": true,
+        "illustrative": false,
+        "x": 7,
+        "y": 0,
+        "w": 4,
+        "h": 3
+      },
+      "GB": {
+        "label": "Guest bath (roll-in)",
+        "level": "Ground",
+        "cluster": "Private",
+        "onCap": true,
+        "illustrative": false,
+        "x": 7,
+        "y": 3,
+        "w": 6,
+        "h": 1
+      },
+      "MU": {
+        "label": "Mudroom / entry",
+        "level": "Ground",
+        "cluster": "Service",
+        "onCap": true,
+        "illustrative": false,
+        "x": 11,
+        "y": 4.3,
+        "w": 2,
+        "h": 4
+      },
+      "ML": {
+        "label": "Mech / laundry",
+        "level": "Ground",
+        "cluster": "Service",
+        "onCap": true,
+        "illustrative": false,
+        "x": 11,
+        "y": 8.3,
+        "w": 2,
+        "h": 4
+      },
+      "LK": {
+        "label": "Link / threshold",
+        "level": "Ground",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": false,
+        "x": -3,
+        "y": 4,
+        "w": 3,
+        "h": 5.3,
+        "stairBox": {
+          "x": -1.3,
+          "y": 4.5,
+          "w": 1,
+          "h": 4.3
+        }
+      },
+      "PL": {
+        "label": "Pool hall",
+        "level": "Ground",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": false,
+        "x": -17,
+        "y": 4,
+        "w": 14,
+        "h": 6
+      },
+      "OF": {
+        "label": "Office (Arnold)",
+        "level": "Upper",
+        "cluster": "Work",
+        "onCap": true,
+        "illustrative": false,
+        "x": -3,
+        "y": 4,
+        "w": 3,
+        "h": 3.67
+      },
+      "LKU": {
+        "label": "Upper link (stair/bridge)",
+        "level": "Upper",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": false,
+        "x": 0,
+        "y": 4,
+        "w": 2,
+        "h": 3,
+        "stairBox": {
+          "x": 0.5,
+          "y": 4.3,
+          "w": 1,
+          "h": 2.4
+        }
+      },
+      "VOID": {
+        "label": "Open-to-below (over pool)",
+        "level": "Upper",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": true,
+        "x": -17,
+        "y": 4,
+        "w": 14,
+        "h": 5
+      }
+    },
+    "mFullDwelling": "113.2 / 120 m\u00b2 (placeholder)"
+  },
+  "testfit_after_sync": {
+    "rooms": {
+      "GR": {
+        "label": "Great room (hub)",
+        "level": "Ground",
+        "cluster": "Hub",
+        "onCap": true,
+        "illustrative": false,
+        "x": 0,
+        "y": 4,
+        "w": 11,
+        "h": 4.2
+      },
+      "MB": {
+        "label": "Main bed + ensuite",
+        "level": "Ground",
+        "cluster": "Private",
+        "onCap": true,
+        "illustrative": false,
+        "x": 0,
+        "y": 8.2,
+        "w": 5.5,
+        "h": 4
+      },
+      "GU": {
+        "label": "Guest / family room",
+        "level": "Ground",
+        "cluster": "Private",
+        "onCap": true,
+        "illustrative": false,
+        "x": 7,
+        "y": 0,
+        "w": 4,
+        "h": 3
+      },
+      "GB": {
+        "label": "Guest bath (roll-in)",
+        "level": "Ground",
+        "cluster": "Private",
+        "onCap": true,
+        "illustrative": false,
+        "x": 7,
+        "y": 3,
+        "w": 6,
+        "h": 1
+      },
+      "MU": {
+        "label": "Mudroom / entry",
+        "level": "Ground",
+        "cluster": "Service",
+        "onCap": true,
+        "illustrative": false,
+        "x": 11,
+        "y": 4.3,
+        "w": 2,
+        "h": 4
+      },
+      "ML": {
+        "label": "Mech / laundry",
+        "level": "Ground",
+        "cluster": "Service",
+        "onCap": true,
+        "illustrative": false,
+        "x": 11,
+        "y": 8.3,
+        "w": 2,
+        "h": 4
+      },
+      "LK": {
+        "label": "Link / threshold",
+        "level": "Ground",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": false,
+        "x": -3,
+        "y": 4,
+        "w": 3,
+        "h": 5.3,
+        "stairBox": {
+          "x": -1.3,
+          "y": 4.5,
+          "w": 1,
+          "h": 4.3
+        }
+      },
+      "PL": {
+        "label": "Pool hall",
+        "level": "Ground",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": false,
+        "x": -17,
+        "y": 4,
+        "w": 14,
+        "h": 6
+      },
+      "OF": {
+        "label": "Office (Arnold)",
+        "level": "Upper",
+        "cluster": "Work",
+        "onCap": true,
+        "illustrative": false,
+        "x": -3,
+        "y": 4,
+        "w": 3,
+        "h": 3.67
+      },
+      "LKU": {
+        "label": "Upper link (stair/bridge)",
+        "level": "Upper",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": false,
+        "x": 0,
+        "y": 4,
+        "w": 2,
+        "h": 3,
+        "stairBox": {
+          "x": 0.5,
+          "y": 4.3,
+          "w": 1,
+          "h": 2.4
+        }
+      },
+      "VOID": {
+        "label": "Open-to-below (over pool)",
+        "level": "Upper",
+        "cluster": "Wellness",
+        "onCap": false,
+        "illustrative": true,
+        "x": -17,
+        "y": 4,
+        "w": 14,
+        "h": 5
+      }
+    },
+    "mFullDwelling": "113.2 / 120 m\u00b2",
+    "capNote": "Circulation (~8 m\u00b2) absorbed into the hub, per D5. Ground target synced from massing scheme B (10:32:20 AM).",
+    "massingSyncStatus": "synced: scheme B, massing places 107.9 m\u00b2, 10:32:20 AM"
+  },
+  "testfit_console": [],
+  "testfit_errors": []
+}

@@ -1,0 +1,86 @@
+{
+  "rotate_90": {
+    "before": {
+      "w": 4,
+      "d": 4
+    },
+    "after": {
+      "w": 4,
+      "d": 4
+    }
+  },
+  "driver_bars_before_glazing_change": [
+    "D1 forest71",
+    "D2 wellness94",
+    "D3 winter54",
+    "D4 sun68",
+    "D5 step-free67",
+    "OQ-6 cap-safe80"
+  ],
+  "driver_bars_after_glazing_change": [
+    "D1 forest71",
+    "D2 wellness94",
+    "D3 winter44",
+    "D4 sun70",
+    "D5 step-free67",
+    "OQ-6 cap-safe80"
+  ],
+  "scheme_switch": {
+    "A": {
+      "name": "A \u2014 One Roof",
+      "dwell": "120 / 120 m\u00b2"
+    },
+    "A_edited": {
+      "dwell": "144 / 120 m\u00b2",
+      "capNote": "\u2717 24 m\u00b2 OVER \u2014 trim the dwelling"
+    },
+    "C": {
+      "name": "C \u2014 House & Pavilion",
+      "dwell": "120 / 120 m\u00b2"
+    },
+    "A_after_revisit": {
+      "dwell": "144 / 120 m\u00b2"
+    }
+  },
+  "massing_console": [
+    "[warning] [.WebGL-0xcc4001b4a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0xcc4001b4a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0xcc4001b4a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0xcc4001b4a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "massing_errors": [],
+  "drag_GR": {
+    "before": {
+      "x": 0,
+      "y": 4
+    },
+    "after": {
+      "x": 1.03125,
+      "y": 4.6875
+    }
+  },
+  "resize_MB": {
+    "before": {
+      "w": 5.5,
+      "h": 4
+    },
+    "after": {
+      "w": 6.1875,
+      "h": 4.4296875
+    }
+  },
+  "add_window_via_palette": {
+    "before": 5,
+    "after": 6
+  },
+  "delete_window_via_ui": {
+    "before": 6,
+    "after": 5
+  },
+  "scenario_demo_violation_count": {
+    "safe": 0,
+    "demo": 1
+  },
+  "testfit_console": [],
+  "testfit_errors": []
+}

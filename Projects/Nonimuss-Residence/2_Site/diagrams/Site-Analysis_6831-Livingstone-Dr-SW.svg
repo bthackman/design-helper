@@ -1,0 +1,110 @@
+<svg viewBox="0 0 800 660" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+<defs>
+<marker id="aD" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#444441"/></marker>
+<marker id="aO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2703E"/></marker>
+<marker id="aB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5B84C4"/></marker>
+<marker id="aP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A5FA8"/></marker>
+<marker id="aI" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#534AB7"/></marker>
+<marker id="aS" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#D97706"/></marker>
+<pattern id="shade" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="8" stroke="#7C8DA6" stroke-width="2" opacity="0.5"/></pattern>
+</defs>
+<rect width="800" height="660" fill="#FDFCFA"/>
+<text x="24" y="28" fill="#2C2C2A" font-size="16" font-weight="600">Site analysis — 6831 Livingstone Dr SW</text>
+<text x="24" y="45" fill="#5F5E5A" font-size="10.5">Sun · wind · acoustic · context — concept-grade, computed 2026-07-11 · N up · schematic geometry, not survey</text>
+
+<!-- street -->
+<rect x="616" y="95" width="34" height="385" fill="#EDEAE3"/>
+<text x="633" y="295" fill="#8A8880" font-size="10.5" text-anchor="middle" transform="rotate(90 633 295)">Livingstone Dr SW (local, quiet)</text>
+
+<!-- forest / park west of lot -->
+<rect x="60" y="95" width="137" height="385" fill="#E1F5EE"/>
+<g fill="#0F6E56" opacity="0.8">
+<circle cx="105" cy="140" r="11"/><circle cx="155" cy="170" r="13"/><circle cx="90" cy="220" r="12"/><circle cx="150" cy="255" r="10"/><circle cx="112" cy="305" r="13"/><circle cx="165" cy="345" r="11"/><circle cx="95" cy="390" r="12"/><circle cx="148" cy="430" r="12"/><circle cx="178" cy="120" r="9"/><circle cx="182" cy="290" r="9"/><circle cx="176" cy="405" r="9"/>
+</g>
+<text x="128" y="452" fill="#085041" font-size="10.5" text-anchor="middle">Weaselhead edge (S-R district)</text>
+<text x="128" y="465" fill="#085041" font-size="9.5" text-anchor="middle">forest wall, trees ⚠ est. 15–20 m</text>
+
+<!-- parcel -->
+<path d="M610,130 L610,309 L473,309 L197,426 L197,130 Z" fill="#F1EFE8" stroke="#444441" stroke-width="2"/>
+
+<!-- rear wellness band (7.5 m) -->
+<path d="M197,130 L264,130 L264,395 L197,426 Z" fill="#CDEBDD"/>
+<path d="M197,130 L264,130 L264,395 L197,426 Z" fill="url(#shade)"/>
+<text x="222" y="262" fill="#085041" font-size="9.5" text-anchor="middle" transform="rotate(-90 222 262)">rear band 7.5 m — terrace zone (no bldg; pool OK)</text>
+<text x="245" y="262" fill="#3D5470" font-size="9.5" text-anchor="middle" transform="rotate(-90 245 262)">winter: FULL SHADE (forest wall vs 15.6° sun)</text>
+
+<!-- buildable envelope -->
+<path d="M583,141 L583,282 L466,282 L264,368 L264,141 Z" fill="none" stroke="#534AB7" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text x="290" y="162" fill="#534AB7" font-size="10.5">buildable envelope after setbacks (~1,016 m²)</text>
+<text x="290" y="176" fill="#8A8880" font-size="9.5">front 3.0 · rear 7.5 · sides 1.2 / 3.0 m</text>
+
+<!-- neighbour S + winter shadow -->
+<rect x="480" y="330" width="105" height="46" fill="#E4E0D6" stroke="#8A8880"/>
+<line x1="480" y1="353" x2="585" y2="353" stroke="#8A8880" stroke-dasharray="3 3"/>
+<text x="533" y="390" fill="#5F5E5A" font-size="9.5" text-anchor="middle">S neighbour ⚠ ridge ~5 m</text>
+<text x="533" y="403" fill="#3D5470" font-size="8.5" text-anchor="middle">future 8.6–11 m infill → shadow ~31 m ⚠ not future-proof</text>
+<path d="M480,330 L480,168 L585,168 L585,330 Z" fill="#7C8DA6" opacity="0.28"/>
+<path d="M480,168 L585,168" stroke="#3D5470" stroke-width="1.4" stroke-dasharray="5 3"/>
+<text x="533" y="225" fill="#3D5470" font-size="9.5" text-anchor="middle">winter-noon shadow</text>
+<text x="533" y="238" fill="#3D5470" font-size="9.5" text-anchor="middle">~18 m N of ridge (3.6×h)</text>
+
+<!-- lot dimensions -->
+<text x="403" y="122" fill="#5F5E5A" font-size="10" text-anchor="middle">N side 45.9 m</text>
+<text x="189" y="278" fill="#5F5E5A" font-size="10" text-anchor="middle" transform="rotate(-90 189 278)">rear (forest) 32.9 m</text>
+<text x="603" y="222" fill="#5F5E5A" font-size="10" text-anchor="middle" transform="rotate(-90 603 222)">front 19.9 m</text>
+<text x="330" y="390" fill="#5F5E5A" font-size="10" transform="rotate(-23 330 390)">S side jogged 15.2 + 32.5 m</text>
+<text x="452" y="470" fill="#8A5A10" font-size="10">reliable winter apertures: E front + high-S clerestory</text>
+
+<!-- SUN -->
+<line x1="350" y1="570" x2="350" y2="505" stroke="#D97706" stroke-width="2.4" marker-end="url(#aS)"/>
+<circle cx="350" cy="588" r="9" fill="#E3B341"/>
+<g fill="#8A5A10" font-size="10">
+<text x="372" y="572">winter noon alt 15.6° — shadows 3.6×h</text>
+<text x="372" y="586">equinox 39° · summer 62.4°</text>
+<text x="372" y="600">azimuths: winter 129°↔231° · summer 51°↔309°</text>
+<text x="372" y="614">daylength 7.7 h winter · 16.3 h summer</text>
+</g>
+
+<!-- WIND -->
+<g stroke="#C2703E" stroke-width="4" fill="none" opacity="0.85">
+<line x1="30" y1="555" x2="130" y2="495" marker-end="url(#aO)"/>
+<line x1="18" y1="592" x2="115" y2="534" marker-end="url(#aO)"/>
+</g>
+<text x="24" y="614" fill="#9A4E1C" font-size="10.5" font-weight="600">prevailing W–SW · Chinook gusts 80+ km/h ⚠</text>
+<text x="24" y="627" fill="#9A4E1C" font-size="9.5">long fetch over reservoir gap — shelter the terrace (winter)</text>
+<text x="24" y="644" fill="#5F5E5A" font-size="9">summer: admit breeze (mosquitos) → shelter must be seasonal / operable, not fixed walls</text>
+<line x1="748" y1="66" x2="695" y2="118" stroke="#5B84C4" stroke-width="3" fill="none" opacity="0.9" marker-end="url(#aB)"/>
+<text x="790" y="52" fill="#3D5470" font-size="10" text-anchor="end">N–NE cold-snap wind (-20°C+)</text>
+<text x="790" y="64" fill="#3D5470" font-size="9" text-anchor="end">no entries on N/NE face</text>
+
+<!-- ACOUSTIC -->
+<line x1="35" y1="395" x2="115" y2="400" stroke="#8A5FA8" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#aP)"/>
+<text x="24" y="372" fill="#6B4788" font-size="10">SW Ring Rd hum · 2.9 km WSW,</text>
+<text x="24" y="385" fill="#6B4788" font-size="10">upwind ⚠ verify by ear</text>
+<line x1="430" y1="72" x2="452" y2="100" stroke="#8A5FA8" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#aP)"/>
+<text x="428" y="64" fill="#6B4788" font-size="10" text-anchor="end">Glenmore Tr · 1.5 km NNW (minor, still nights)</text>
+<text x="128" y="500" fill="#0F6E56" font-size="10" text-anchor="middle">♪ birdsong / owls / coyotes</text>
+<text x="128" y="513" fill="#0F6E56" font-size="10" text-anchor="middle">— aim quiet rooms W</text>
+
+<!-- CONTEXT callouts -->
+<line x1="718" y1="205" x2="662" y2="205" stroke="#534AB7" stroke-width="1.4" marker-end="url(#aI)"/>
+<text x="790" y="188" fill="#443C93" font-size="10" text-anchor="end">NE 0.8–1.0 km: school · shops ⚠</text>
+<text x="790" y="201" fill="#443C93" font-size="10" text-anchor="end">bus ~400 m (66 Ave ⚠)</text>
+<line x1="62" y1="332" x2="102" y2="332" stroke="#534AB7" stroke-width="1.4" marker-end="url(#aI)"/>
+<text x="24" y="294" fill="#443C93" font-size="10">wetlands 0.7 km WSW —</text>
+<text x="24" y="307" fill="#443C93" font-size="10">habitat ✓ / mosquitos at</text>
+<text x="24" y="320" fill="#443C93" font-size="10">summer dusk ✗ (screens)</text>
+
+<!-- north arrow + scale -->
+<g transform="translate(766,120)"><line x1="0" y1="22" x2="0" y2="-6" stroke="#444441" stroke-width="2" marker-end="url(#aD)"/><text x="0" y="38" fill="#444441" font-size="11" text-anchor="middle">N</text></g>
+<g transform="translate(672,595)"><line x1="0" y1="0" x2="90" y2="0" stroke="#444441" stroke-width="2"/><line x1="0" y1="-4" x2="0" y2="4" stroke="#444441" stroke-width="2"/><line x1="45" y1="-3" x2="45" y2="3" stroke="#444441" stroke-width="1.5"/><line x1="90" y1="-4" x2="90" y2="4" stroke="#444441" stroke-width="2"/><text x="45" y="16" fill="#444441" font-size="10" text-anchor="middle">0 — 5 — 10 m</text></g>
+
+<!-- legend -->
+<g transform="translate(650,485)" font-size="9" fill="#5F5E5A">
+<rect x="0" y="0" width="14" height="10" fill="#CDEBDD"/><rect x="0" y="0" width="14" height="10" fill="url(#shade)"/><text x="19" y="8">terrace / winter shade</text>
+<rect x="0" y="15" width="14" height="10" fill="#7C8DA6" opacity="0.28"/><text x="19" y="23">neighbour winter shadow</text>
+<line x1="0" y1="34" x2="14" y2="34" stroke="#534AB7" stroke-width="1.5" stroke-dasharray="5 3"/><text x="19" y="37">buildable envelope</text>
+<line x1="0" y1="48" x2="14" y2="48" stroke="#8A5FA8" stroke-width="1.5" stroke-dasharray="4 3"/><text x="19" y="51">noise source</text>
+<text x="0" y="66" fill="#8A8880">⚠ = estimated / verify (OQ-13)</text>
+</g>
+</svg>

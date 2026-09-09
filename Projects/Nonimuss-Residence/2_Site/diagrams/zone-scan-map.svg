@@ -1,0 +1,26 @@
+<svg viewBox="0 0 700 560" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+<rect x="0" y="0" width="700" height="560" fill="#FDFCFA"/>
+<path d="M 0 23 C 60 55, 100 70, 133 90 C 200 130, 240 165, 267 181 C 300 200, 340 220, 383 237 C 420 252, 435 262, 450 271 C 500 285, 540 288, 567 294 C 610 305, 625 320, 633 339 C 645 370, 648 400, 650 430" fill="none" stroke="#378ADD" stroke-width="5" opacity="0.75"/>
+<path d="M 150 497 C 190 475, 230 460, 267 452 C 300 444, 330 430, 350 423 C 380 418, 420 415, 448 416" fill="none" stroke="#378ADD" stroke-width="4" opacity="0.75"/>
+<ellipse cx="477" cy="417" rx="32" ry="17" fill="#378ADD" opacity="0.55"/>
+<path d="M 505 405 C 520 390, 545 360, 567 339 C 578 325, 582 314, 584 305" fill="none" stroke="#378ADD" stroke-width="4" opacity="0.75"/>
+<text x="60" y="80" fill="#5F5E5A" font-size="11" transform="rotate(28 60 80)">Bow River</text>
+<text x="175" y="500" fill="#5F5E5A" font-size="11">Elbow River</text>
+<text x="472" y="452" fill="#5F5E5A" font-size="11" text-anchor="middle">Glenmore Reservoir</text>
+<text x="400" y="497" fill="#5F5E5A" font-size="11" text-anchor="middle">Tsuut'ina Nation</text>
+<g><ellipse cx="117" cy="113" rx="55" ry="30" fill="#F1EFE8" stroke="#5F5E5A"/><text x="117" y="110" text-anchor="middle" fill="#444441" font-size="13" font-weight="500">D</text><text x="117" y="126" text-anchor="middle" fill="#5F5E5A" font-size="11">Bearspaw</text></g>
+<g><ellipse cx="295" cy="185" rx="48" ry="28" fill="#F1EFE8" stroke="#5F5E5A"/><text x="295" y="182" text-anchor="middle" fill="#444441" font-size="13" font-weight="500">A</text><text x="295" y="198" text-anchor="middle" fill="#5F5E5A" font-size="11">Bowness</text></g>
+<g><ellipse cx="330" cy="443" rx="60" ry="24" fill="#E1F5EE" stroke="#0F6E56"/><text x="305" y="440" text-anchor="middle" fill="#085041" font-size="13" font-weight="500">C</text><text x="336" y="454" text-anchor="middle" fill="#0F6E56" font-size="11">Elbow corridor</text></g>
+<g><ellipse cx="433" cy="404" rx="40" ry="22" fill="#E1F5EE" stroke="#0F6E56"/><text x="433" y="401" text-anchor="middle" fill="#085041" font-size="13" font-weight="500">B</text><text x="433" y="415" text-anchor="middle" fill="#0F6E56" font-size="11">Weaselhead</text></g>
+<rect x="557" y="296" width="10" height="10" fill="none" stroke="#5F5E5A" stroke-width="1.5"/><text x="573" y="305" fill="#5F5E5A" font-size="11">Downtown</text>
+<circle cx="450" cy="383" r="5" fill="#534AB7"/><text x="458" y="379" fill="#2C2C2A" font-size="11">MRU</text>
+<circle cx="579" cy="347" r="5" fill="#534AB7"/><text x="591" y="351" fill="#2C2C2A" font-size="11">MNP Centre</text>
+<circle cx="440" cy="231" r="5" fill="#534AB7"/><text x="450" y="227" fill="#2C2C2A" font-size="11">U of C</text>
+<circle cx="502" cy="391" r="5" fill="#534AB7"/><text x="512" y="388" fill="#2C2C2A" font-size="11">Glenmore Pool</text>
+<circle cx="266" cy="80" r="5" fill="#534AB7"/><text x="276" y="76" fill="#2C2C2A" font-size="11">Shane Homes YMCA</text>
+<g><rect x="20" y="527" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/><text x="40" y="538" fill="#5F5E5A" font-size="11">shortlisted — drill down</text></g>
+<g><rect x="205" y="527" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/><text x="225" y="538" fill="#5F5E5A" font-size="11">scanned + cut</text></g>
+<circle cx="352" cy="534" r="5" fill="#534AB7"/><text x="364" y="538" fill="#5F5E5A" font-size="11">client venues</text>
+<line x1="465" y1="534" x2="495" y2="534" stroke="#378ADD" stroke-width="4" opacity="0.75"/><text x="503" y="538" fill="#5F5E5A" font-size="11">rivers + reservoir</text>
+<text x="20" y="18" fill="#444441" font-size="12" font-weight="500">Nonimuss Residence — site zone scan, Calgary (schematic, real coordinates) · 2026-07-05</text>
+</svg>

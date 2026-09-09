@@ -817,6 +817,27 @@ function openPhase(key) {
       return;
     }
   }
+  if (key === 'space-planning') {
+    const studio = projectFiles.find(f => /^4_Space-Planning\/Test-Fit-Studio\.html$/.test(f.path));
+    if (studio) {
+      const toolbar = document.createElement('div'); toolbar.className = 'viewer-toolbar';
+      toolbar.innerHTML = '<span class="path">4_Space-Planning/Test-Fit-Studio.html</span>';
+      const iframe = document.createElement('iframe');
+      iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/4_Space-Planning/Test-Fit-Studio.html';
+      iframe.addEventListener('load', () => {
+        // Same best-effort bridge as the Massing Studio iframe below — unverified,
+        // no-op if Test-Fit Studio has no listener for these message types.
+        try {
+          iframe.contentWindow.postMessage({ type: 'pw:theme', theme: 'dark' }, '*');
+          const changed = (parsed.moved || []).filter(m => m.path.startsWith('4_Space-Planning/')).map(m => m.path);
+          if (changed.length) iframe.contentWindow.postMessage({ type: 'pw:files-changed', paths: changed }, '*');
+        } catch {}
+      });
+      viewer.appendChild(toolbar);
+      viewer.appendChild(iframe);
+      return;
+    }
+  }
   const dir = SpineParse.PHASES.find(p => p.key === key).dir;
   const docs = projectFiles.filter(f => f.path.startsWith(dir + '/') && f.path.endsWith('.md') &&
     !/05_Close-Out/.test(f.path));

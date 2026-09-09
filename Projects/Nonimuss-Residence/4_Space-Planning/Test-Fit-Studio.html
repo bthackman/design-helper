@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Nonimuss Residence — Test-Fit Studio</title>
+<style>
+  :root{--ink:#1c1c1c;--panel:rgba(255,255,255,.94);--line:#c9c2b0;--good:#4c9a5a;--warn:#d98a2b;--bad:#c8503c;}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);background:#eae6da;overflow:hidden}
+  #view{position:fixed;inset:0}
+  svg{display:block;width:100%;height:100%}
+  .panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.10);backdrop-filter:blur(4px)}
+  #topbar{top:12px;left:12px;right:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:9px 12px;z-index:5}
+  #topbar h1{font-size:14px;margin:0 10px 0 0;font-weight:700}
+  .grp{display:flex;gap:5px;align-items:center}
+  .lab{font-size:10.5px;color:#6b6459;margin-right:2px}
+  button{font:inherit;font-size:12px;padding:5px 10px;border:1px solid #b9b19c;background:#fff;border-radius:7px;cursor:pointer;color:#2b2b2b}
+  button:hover{background:#f3efe4}
+  button.on{background:#5b6b7a;color:#fff;border-color:#46545f}
+  button.iconbtn{padding:2px 7px;font-size:12px;border-radius:6px;line-height:1.4}
+  #left{top:64px;left:12px;width:290px;max-height:calc(100vh - 80px);z-index:4;transition:width .15s}
+  #right{top:64px;right:12px;width:340px;max-height:calc(100vh - 80px);z-index:4;transition:width .15s}
+  #left.collapsed, #right.collapsed{width:auto}
+  .panelHead{display:flex;justify-content:space-between;align-items:center;padding:9px 12px 0}
+  .panelHead h2{font-size:13px;margin:0}
+  .panelBody{padding:6px 14px 12px;overflow:auto;max-height:calc(100vh - 130px);font-size:12px}
+  .collapsed .panelBody{display:none}
+  #left h3,#right h3{font-size:11px;margin:12px 0 5px;color:#6b6459;text-transform:uppercase;letter-spacing:.04em}
+  .metric{display:flex;justify-content:space-between;padding:2px 0;font-size:11.5px}
+  .bar{height:8px;border-radius:5px;background:#e4ddca;overflow:hidden;margin:3px 0 6px}
+  .bar > i{display:block;height:100%;border-radius:5px}
+  .cap-note,.foot{font-size:10.5px;color:#6b6459;line-height:1.4;margin-top:2px}
+  .room-row{display:flex;justify-content:space-between;padding:2px 0;font-size:11px}
+  .room-row .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  table.pairs{width:100%;border-collapse:collapse;font-size:10.6px}
+  table.pairs td{padding:2px 3px;border-bottom:1px solid #eee5d4;vertical-align:top}
+  .ok{color:var(--good);font-weight:600}
+  .bad{color:var(--bad);font-weight:600}
+  .info{color:#8a8375}
+  .banner{background:#fbead9;border:1px solid #e0b877;border-radius:7px;padding:7px 9px;font-size:10.6px;margin-bottom:8px;line-height:1.4}
+  .viol{background:#fbe4e0;border:1px solid #e0a394;border-radius:7px;padding:6px 8px;font-size:10.6px;margin:4px 0}
+  .softnote{background:#fdf3d9;border:1px solid #e5c876;border-radius:7px;padding:6px 8px;font-size:10.6px;margin:4px 0}
+  #hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:#7a7365;background:rgba(255,255,255,.72);padding:4px 10px;border-radius:6px;z-index:4}
+</style>
+</head>
+<body>
+<div id="view"><svg id="svg" viewBox="-18 -1 33 15.5"></svg></div>
+
+<div class="panel" id="topbar">
+  <h1>Nonimuss — Test-Fit Studio</h1>
+  <div class="grp"><span class="lab">Level</span>
+    <button id="bGround" class="on" onclick="setLevel('Ground')">Ground</button>
+    <button id="bUpper" onclick="setLevel('Upper')">Upper</button>
+  </div>
+  <div class="grp"><span class="lab">Scenario</span>
+    <button id="bSafe" class="on" onclick="setScenario('safe')" title="Kitchen casework on GR's north wall — free of doors, matching the current corrected layout">Current (safe)</button>
+    <button id="bDemo" onclick="setScenario('demo')" title="Kitchen casework moved onto the GR–Mudroom doorway, to demonstrate the live check catching it">Demo: casework on a door</button>
+  </div>
+  <div class="grp"><button onclick="fitView()" title="Reset pan/zoom to fit this level">⤢ Fit view</button>
+    <button onclick="exportJSON()" title="Copy test-fit-interchange/v1 JSON to share with Claude">⧉ Export / share state</button></div>
+  <div class="grp"><button onclick="saveOwnState()" title="Save your rooms/doors/windows/casework to a real file, so closing the tab doesn't lose it">💾 Save</button>
+    <button onclick="loadOwnState()" title="Reload from that saved file">📂 Load</button>
+    <span class="lab" id="ownSaveStatus">not yet saved</span></div>
+  <div class="grp"><button onclick="syncFromMassing()" title="Read massing-interchange.json (saved from Massing Studio) and update the cap targets below">↻ Sync from massing</button>
+    <span class="lab" id="massingSyncStatus">not yet synced</span></div>
+</div>
+
+<div id="exportModal" style="display:none;position:fixed;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center">
+  <div class="panel" style="position:relative;width:min(560px,92vw);padding:16px 18px">
+    <h2 style="margin:0 0 4px;font-size:15px">test-fit-interchange/v1</h2>
+    <div style="font-size:11.5px;color:#4c9a5a;margin-bottom:8px">Copy this and paste it into the chat.</div>
+    <textarea id="exportText" style="width:100%;height:260px;font:11px ui-monospace,Consolas,monospace;border:1px solid #b9b19c;border-radius:7px;padding:8px;resize:vertical"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+      <button onclick="document.getElementById('exportText').select();document.execCommand&&document.execCommand('copy')">Select &amp; copy</button>
+      <button class="on" onclick="document.getElementById('exportModal').style.display='none'">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="left">
+  <div class="panelHead"><h2>Program &amp; cap</h2><button class="iconbtn" onclick="togglePanel('left')" id="leftToggle">−</button></div>
+  <div class="panelBody" id="leftBody">
+    <div id="roomList"></div>
+
+    <h3 id="capHeading">Ground dwelling cap</h3>
+    <div class="metric"><span>Placed on-cap (this level)</span><b id="mCap">–</b></div>
+    <div class="bar"><i id="capBar"></i></div>
+    <div class="cap-note" id="capNote"></div>
+    <div class="metric" style="margin-top:6px"><span>Off-cap accessory (this level)</span><b id="mOffCap">–</b></div>
+    <div class="metric" style="border-top:1px solid #e4ddca;margin-top:6px;padding-top:5px"><span><b>Full dwelling, both levels</b></span><b id="mFullDwelling">–</b></div>
+
+    <h3>Add opening</h3>
+    <div class="grp" style="margin-bottom:5px">
+      <button id="palDoor" class="on" onclick="setPaletteType('door')">Door</button>
+      <button id="palWindow" onclick="setPaletteType('window')">Window</button>
+      <button id="palEntry" onclick="setPaletteType('entry')">Entry</button>
+    </div>
+    <select id="palRoom" style="width:100%;font:inherit;font-size:12px;padding:4px;border-radius:6px;border:1px solid #b9b19c;margin-bottom:5px"></select>
+    <select id="palWall" style="width:100%;font:inherit;font-size:12px;padding:4px;border-radius:6px;border:1px solid #b9b19c;margin-bottom:5px">
+      <option value="N">North wall</option><option value="E">East wall</option><option value="S">South wall</option><option value="W">West wall</option>
+    </select>
+    <button style="width:100%" onclick="addOpening()">+ Add to wall midpoint</button>
+    <div class="foot">New openings default to a sensible width, then drag the two small square handles to stretch, the round handle to slide, or the ⌫ button to delete.</div>
+
+    <h3>Not yet placed</h3>
+    <div id="notPlaced" style="font-size:11px;color:#6b6459;line-height:1.5"></div>
+
+    <h3>Violations &amp; notes</h3>
+    <div id="violList"></div>
+
+    <div class="foot">Schematic block diagram — proportions approximate the program table, not a scaled architectural plan. Rooms drag freely; doors/windows/casework slide along the wall they're already assigned to (like a door), but don't re-snap to a different wall if dragged off it. Each door/window has a round slide handle, two square stretch handles, and a red × to delete. The upper link's stair hatching is a location marker only — not a calculated stair (no rise/run/going check).</div>
+  </div>
+</div>
+
+<div class="panel" id="right">
+  <div class="panelHead"><h2 style="font-size:13px">Checks</h2><button class="iconbtn" onclick="togglePanel('right')" id="rightToggle">−</button></div>
+  <div class="panelBody" id="rightBody">
+    <div class="banner" id="discrepancyBanner"></div>
+
+    <h3>Adjacency (from Program-Test-Fit.md's matrix)</h3>
+    <table class="pairs" id="adjTable"></table>
+
+    <h3>Hub clearance — Great Room walls</h3>
+    <div id="hubClearance" style="font-size:11px"></div>
+    <div class="foot">Merges each wall's door keep-clear bands + fixed casework spans (per the circulation-first rule), same idea as a veranda-loop check, applied to GR as the zero-corridor hub (D5). Ground level only — the hub is on Ground.</div>
+  </div>
+</div>
+
+<div id="hint">scroll to zoom · drag empty canvas to pan · round handle slides a door/window, square handles stretch it, red × deletes it</div>
+
+<script>
+/* ---------- data (current best-understood state, from Program-Test-Fit.md) ---------- */
+const CLUSTER_COLOR = {
+  Hub:'#c9b28a', Private:'#a9c4b0', Service:'#b7b0c9', Wellness:'#8fb6c9', Work:'#c9a98a'
+};
+const ROOMS = {
+  GR:  {label:'Great room (hub)',   level:'Ground', cluster:'Hub',      onCap:true,  illustrative:false, x:0,   y:4.0, w:11.0, h:4.2},
+  MB:  {label:'Main bed + ensuite', level:'Ground', cluster:'Private',  onCap:true,  illustrative:false, x:0,   y:8.2, w:5.5,  h:4.0},
+  GU:  {label:'Guest / family room',level:'Ground', cluster:'Private',  onCap:true,  illustrative:false, x:7.0, y:0.0, w:4.0,  h:3.0},
+  GB:  {label:'Guest bath (roll-in)',level:'Ground',cluster:'Private',  onCap:true,  illustrative:false, x:7.0, y:3.0, w:6.0,  h:1.0},
+  MU:  {label:'Mudroom / entry',    level:'Ground', cluster:'Service',  onCap:true,  illustrative:false, x:11.0,y:4.3, w:2.0,  h:4.0},
+  ML:  {label:'Mech / laundry',     level:'Ground', cluster:'Service',  onCap:true,  illustrative:false, x:11.0,y:8.3, w:2.0,  h:4.0},
+  LK:  {label:'Link / threshold',   level:'Ground', cluster:'Wellness', onCap:false, illustrative:false, x:-3.0,y:4.0, w:3.0,  h:5.3, stairBox:{x:-1.3,y:4.5,w:1.0,h:4.3}},
+  PL:  {label:'Pool hall',          level:'Ground', cluster:'Wellness', onCap:false, illustrative:false, x:-17.0,y:4.0,w:14.0, h:6.0},
+  OF:  {label:'Office (Arnold)',    level:'Upper',  cluster:'Work',     onCap:true,  illustrative:false, x:-3.0,y:4.0, w:3.0,  h:3.67},
+  LKU: {label:'Upper link (stair/bridge)', level:'Upper', cluster:'Wellness', onCap:false, illustrative:false, x:0.0, y:4.0, w:2.0, h:3.0, stairBox:{x:0.5,y:4.3,w:1.0,h:2.4}},
+  VOID:{label:'Open-to-below (over pool)', level:'Upper', cluster:'Wellness', onCap:false, illustrative:true,  x:-17.0,y:4.0,w:14.0, h:5.0}
+};
+const GROUND_CAP_DEFAULT = 108; // refined house-plate footprint per Program-Test-Fit.md — placeholder until synced
+const DWELLING_CAP_FULL_DEFAULT = 120; // full dwelling cap, both levels combined — placeholder until synced
+let GROUND_CAP = GROUND_CAP_DEFAULT, DWELLING_CAP_FULL = DWELLING_CAP_FULL_DEFAULT;
+let massingSync = null; // {time, scheme, schemeName, dwellingGFA, dwellingCap, groundFootprint} once synced
+
+// matrix pairs from Program-Test-Fit.md's adjacency table (plus OF's row, plus one inferred Upper pair — flagged below)
+const ADJ_PAIRS = [
+  ['GR','MB','req'], ['GR','GU','req'], ['GR','MU','req'], ['GR','LK','req'],
+  ['GU','GB','req'], ['MU','ML','req'], ['LK','PL','req'],
+  ['MB','GU','sep'], ['MB','GB','sep'], ['MB','MU','sep'], ['MB','ML','sep'], ['MB','LK','sep'], ['MB','PL','sep'],
+  ['GU','MU','sep'], ['GU','ML','sep'], ['GU','LK','sep'], ['GU','PL','sep'],
+  ['GB','MB','sep'], ['GB','MU','sep'], ['GB','LK','sep'],
+  ['MU','GB','sep'],
+  ['GR','GB','pref'], ['GR','ML','pref'], ['MU','LK','pref'], ['MU','PL','pref'],
+  ['GB','ML','pref'], ['GB','PL','pref'], ['ML','MB','pref'],
+  ['OF','GR','sep'], ['OF','MB','sep'], ['OF','GU','sep'], ['OF','GB','sep'], ['OF','MU','sep'], ['OF','ML','sep'],
+  ['OF','LK','stack'], ['OF','PL','stack'],
+  ['OF','LKU','req'] // inferred from the level-scheme prose ("upper link = stair/bridge to office"), not the original matrix table
+];
+const GR_HUB_WALLS = ['N','E','S','W'];
+
+const DOORS_BASE = [
+  {id:'d-GR-MB', room:'GR', wall:'S', center:2.75, width:0.9,  note:'GR ↔ Main bed (hub access)'},
+  {id:'d-GR-MU', room:'GR', wall:'E', center:6.25, width:0.9,  note:'GR ↔ Mudroom'},
+  {id:'d-GR-LK', room:'GR', wall:'W', center:6.1,  width:1.5,  note:'GR ↔ Link (widened, inhabited wellness threshold)'},
+  {id:'d-GU-GB', room:'GU', wall:'S', center:9.0,  width:1.5,  note:'Guest ↔ Guest bath (roll-in, barrier-free)'},
+  {id:'d-MU-ML', room:'MU', wall:'S', center:12.0, width:0.9,  note:'Mudroom ↔ Mech/laundry'},
+  {id:'d-MB-LK', room:'MB', wall:'W', center:8.75, width:0.9,  note:'Main bed ↔ Link — PRIVATE DOOR added by the 2026-07-26 roster review, not in the original matrix'}
+];
+
+// windows/exterior openings — seeded from driver-relevant language in Program-Test-Fit.md, not from a formal table (none exists). Placement is schematic like everything else here.
+const WINDOWS_BASE = [
+  {id:'w-GR-S',   room:'GR', wall:'S', center:8.25,  width:3.0, type:'window', label:'South glazing — winter sun (D4)'},
+  {id:'w-MB-W',   room:'MB', wall:'W', center:10.75, width:2.0, type:'window', label:'West window — filtered forest/pool-court view (D1)'},
+  {id:'w-GU-E',   room:'GU', wall:'E', center:1.5,   width:1.5, type:'window', label:'East window — morning light'},
+  {id:'ent-MU-E', room:'MU', wall:'E', center:6.3,   width:1.0, type:'entry',  label:'Front entry (exterior)'},
+  {id:'w-OF-W',   room:'OF', wall:'W', center:5.835, width:1.8, type:'window', label:'West window — reservoir/forest view (OQ-5, canopy-filtered per OQ-13)'}
+];
+
+const FURN_SAFE = [{id:'kitchen', room:'GR', wall:'N', center:5.5, length:4.0, depth:0.6, fixed:true, label:'Kitchen casework'}];
+const FURN_DEMO = [{id:'kitchen', room:'GR', wall:'E', center:6.25, length:3.0, depth:0.6, fixed:true, label:'Kitchen casework (moved onto the GR–Mudroom door, for demonstration)'}];
+
+const NOT_PLACED = [
+  {label:'Circulation — notional', area:8, reason:'Zero-corridor target (D5): absorbed into the hub rather than placed as its own room.'}
+];
+
+/* ---------- mutable state ---------- */
+let rooms = JSON.parse(JSON.stringify(ROOMS));
+let doors = JSON.parse(JSON.stringify(DOORS_BASE));
+let windows_ = JSON.parse(JSON.stringify(WINDOWS_BASE));
+let scenario = 'safe';
+let furniture = JSON.parse(JSON.stringify(FURN_SAFE)); // Ground-only in v1
+let currentLevel = 'Ground';
+let view = {x:-18,y:-1,w:33,h:15.5};
+const MIN_W = 4, MAX_W = 90;
+const MIN_OPENING = 0.3; // minimum door/window width when resizing
+let openingCounter = 1;
+function newOpeningId(prefix){ return prefix+'-new-'+(openingCounter++); }
+
+/* ---------- geometry helpers ---------- */
+function rectGap(a,b){
+  const ax2=a.x+a.w, ay2=a.y+a.h, bx2=b.x+b.w, by2=b.y+b.h;
+  const dx=Math.max(b.x-ax2, a.x-bx2, 0);
+  const dy=Math.max(b.y-ay2, a.y-by2, 0);
+  return Math.sqrt(dx*dx+dy*dy);
+}
+function wallInfo(room, wall){
+  const r = rooms[room];
+  if(wall==='N') return {axis:'x', fixed:r.y,       start:r.x, end:r.x+r.w};
+  if(wall==='S') return {axis:'x', fixed:r.y+r.h,   start:r.x, end:r.x+r.w};
+  if(wall==='W') return {axis:'y', fixed:r.x,        start:r.y, end:r.y+r.h};
+  /* E */          return {axis:'y', fixed:r.x+r.w,  start:r.y, end:r.y+r.h};
+}
+function interval(centerOrItem, half){
+  return [centerOrItem-half, centerOrItem+half];
+}
+function mergeIntervals(ivs){
+  if(!ivs.length) return [];
+  const s = ivs.slice().sort((a,b)=>a[0]-b[0]);
+  const out=[s[0].slice()];
+  for(let i=1;i<s.length;i++){
+    const last = out[out.length-1];
+    if(s[i][0] <= last[1]) last[1] = Math.max(last[1], s[i][1]);
+    else out.push(s[i].slice());
+  }
+  return out;
+}
+function residualSegments(wallStart, wallEnd, merged){
+  const clipped = merged.map(iv=>[Math.max(iv[0],wallStart), Math.min(iv[1],wallEnd)]).filter(iv=>iv[1]>iv[0]);
+  const segs=[]; let cursor=wallStart;
+  for(const iv of clipped){ if(iv[0]>cursor) segs.push(iv[0]-cursor); cursor=Math.max(cursor,iv[1]); }
+  if(wallEnd>cursor) segs.push(wallEnd-cursor);
+  return segs;
+}
+
+/* ---------- checks ---------- */
+function adjacencyResults(){
+  // Guard against a pair naming a room that no longer exists (e.g. deleted via direct state
+  // edit — there's no UI control for room deletion yet, but ADJ_PAIRS is a static list that
+  // doesn't know that). A missing room has nothing to evaluate, so its pairs are simply
+  // omitted rather than crashing render()/buildExportData() with an unguarded lookup.
+  return ADJ_PAIRS.filter(([a,b])=>rooms[a] && rooms[b]).map(([a,b,type])=>{
+    const crossLevel = rooms[a].level !== rooms[b].level;
+    if(crossLevel) return {a,b,type,gap:null,status:'info',violation:false,crossLevel:true};
+    const gap = rectGap(rooms[a], rooms[b]);
+    let status='info', violation=false;
+    if(type==='req'){ violation = gap>1.0; status = violation?'bad':'ok'; }
+    else if(type==='sep'){ violation = gap<=1.0; status = violation?'bad':'ok'; }
+    return {a,b,type,gap,status,violation,crossLevel:false};
+  });
+}
+function caseworkDoorViolations(){
+  const out=[];
+  for(const f of furniture){
+    if(!f.fixed) continue;
+    const fSpan = interval(f.center, f.length/2);
+    for(const d of doors){
+      if(d.room!==f.room || d.wall!==f.wall) continue;
+      const dSpan = interval(d.center, d.width/2);
+      const overlap = Math.min(fSpan[1],dSpan[1]) - Math.max(fSpan[0],dSpan[0]);
+      if(overlap>0) out.push({furniture:f, door:d, overlap});
+    }
+  }
+  return out;
+}
+function caseworkWindowNotes(){
+  const out=[];
+  for(const f of furniture){
+    if(!f.fixed) continue;
+    const fSpan = interval(f.center, f.length/2);
+    for(const w of windows_){
+      if(w.room!==f.room || w.wall!==f.wall) continue;
+      const wSpan = interval(w.center, w.width/2);
+      const overlap = Math.min(fSpan[1],wSpan[1]) - Math.max(fSpan[0],wSpan[0]);
+      if(overlap>0) out.push({furniture:f, window:w, overlap});
+    }
+  }
+  return out;
+}
+function hubClearance(){
+  return GR_HUB_WALLS.map(wall=>{
+    const wi = wallInfo('GR', wall);
+    const doorBands = doors.filter(d=>d.room==='GR'&&d.wall===wall).map(d=>interval(d.center,d.width/2));
+    const furnBands  = furniture.filter(f=>f.room==='GR'&&f.wall===wall).map(f=>interval(f.center,f.length/2));
+    const merged = mergeIntervals([...doorBands, ...furnBands]);
+    const segs = residualSegments(wi.start, wi.end, merged);
+    return {wall, length:wi.end-wi.start, segs};
+  });
+}
+function onCapArea(level){
+  return Object.values(rooms).filter(r=>r.onCap && r.level===level && !r.illustrative).reduce((s,r)=>s+r.w*r.h,0);
+}
+// Bounding-box center of this level's own on-cap rooms — the anchor point for the Massing
+// ghost overlay below. Deliberately NOT a cross-tool coordinate mapping (Massing's x,z vs
+// this tool's x,y has never been verified to correspond) — the ghost is centered on this
+// tool's own trusted room layout instead, so an axis mismatch can't put it somewhere
+// misleading, only somewhere whose SIZE (not position) carries the real signal.
+function onCapBBox(level){
+  const items = Object.values(rooms).filter(r=>r.onCap && r.level===level && !r.illustrative);
+  if(!items.length) return null;
+  const minX=Math.min(...items.map(r=>r.x)), maxX=Math.max(...items.map(r=>r.x+r.w));
+  const minY=Math.min(...items.map(r=>r.y)), maxY=Math.max(...items.map(r=>r.y+r.h));
+  return {cx:(minX+maxX)/2, cy:(minY+maxY)/2};
+}
+function offCapArea(level){
+  return Object.values(rooms).filter(r=>!r.onCap && r.level===level && !r.illustrative).reduce((s,r)=>s+r.w*r.h,0);
+}
+
+/* ---------- rendering ---------- */
+const svg = document.getElementById('svg');
+function el(tag,attrs){ const e=document.createElementNS('http://www.w3.org/2000/svg',tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+function roomsOnLevel(){ return Object.entries(rooms).filter(([id,r])=>r.level===currentLevel); }
+function doorsOnLevel(){ return doors.filter(d=>rooms[d.room] && rooms[d.room].level===currentLevel); }
+function windowsOnLevel(){ return windows_.filter(w=>rooms[w.room] && rooms[w.room].level===currentLevel); }
+function furnitureOnLevel(){ return furniture.filter(f=>rooms[f.room] && rooms[f.room].level===currentLevel); }
+
+function drawStairSymbol(g, box, dirLabel, roomId){
+  const runAxisIsY = box.h >= box.w;
+  const bgRect = el('rect',{x:box.x,y:box.y,width:box.w,height:box.h, fill:'rgba(255,255,255,0.55)', stroke:'#8a8375','stroke-width':0.03,'stroke-dasharray':'0.09,0.06', rx:0.04, cursor:'move'});
+  bgRect.addEventListener('pointerdown', e=>{ e.stopPropagation(); startDrag(e,'stairbox',roomId); });
+  g.appendChild(bgRect);
+
+  const runLen = runAxisIsY ? box.h : box.w;
+  const treadSpacing = 0.28; // schematic tread depth — real spacing, not a fixed line count
+  const nTreads = Math.max(4, Math.round(runLen/treadSpacing));
+  for(let i=1;i<nTreads;i++){
+    const t = i/nTreads;
+    if(runAxisIsY){
+      const ty = box.y + t*box.h;
+      g.appendChild(el('line',{x1:box.x, y1:ty, x2:box.x+box.w, y2:ty, stroke:'#5b5646', 'stroke-width':0.018}));
+    } else {
+      const tx = box.x + t*box.w;
+      g.appendChild(el('line',{x1:tx, y1:box.y, x2:tx, y2:box.y+box.h, stroke:'#5b5646', 'stroke-width':0.018}));
+    }
+  }
+
+  // break line ~55% along the run — standard convention for "the flight continues past this plan cut"
+  const bt = 0.55, zig = 0.11;
+  if(runAxisIsY){
+    const by = box.y + bt*box.h;
+    g.appendChild(el('polyline',{points:`${box.x},${by-zig} ${box.x+box.w*0.33},${by+zig} ${box.x+box.w*0.67},${by-zig} ${box.x+box.w},${by+zig}`, fill:'none', stroke:'#8a8375','stroke-width':0.035}));
+  } else {
+    const bx = box.x + bt*box.w;
+    g.appendChild(el('polyline',{points:`${bx-zig},${box.y} ${bx+zig},${box.y+box.h*0.33} ${bx-zig},${box.y+box.h*0.67} ${bx+zig},${box.y+box.h}`, fill:'none', stroke:'#8a8375','stroke-width':0.035}));
+  }
+
+  // direction arrow along the run, labeled UP (Ground) / DN (Upper)
+  const margin = Math.min(0.35, runLen*0.12);
+  if(runAxisIsY){
+    const cx = box.x+box.w/2, startY = box.y+box.h-margin, endY = box.y+margin;
+    g.appendChild(el('line',{x1:cx,y1:startY,x2:cx,y2:endY+0.14, stroke:'#2b2b2b','stroke-width':0.03}));
+    g.appendChild(el('polygon',{points:`${cx-0.08},${endY+0.14} ${cx+0.08},${endY+0.14} ${cx},${endY}`, fill:'#2b2b2b'}));
+    const lbl = el('text',{x:cx, y:startY+0.28, 'font-size':0.2, fill:'#2b2b2b','font-weight':700,'text-anchor':'middle'});
+    lbl.textContent = dirLabel;
+    g.appendChild(lbl);
+  } else {
+    const cy = box.y+box.h/2, startX = box.x+box.w-margin, endX = box.x+margin;
+    g.appendChild(el('line',{x1:startX,y1:cy,x2:endX+0.14,y2:cy, stroke:'#2b2b2b','stroke-width':0.03}));
+    g.appendChild(el('polygon',{points:`${endX+0.14},${cy-0.08} ${endX+0.14},${cy+0.08} ${endX},${cy}`, fill:'#2b2b2b'}));
+    const lbl = el('text',{x:startX+0.05, y:cy-0.12, 'font-size':0.2, fill:'#2b2b2b','font-weight':700,'text-anchor':'end'});
+    lbl.textContent = dirLabel;
+    g.appendChild(lbl);
+  }
+
+  const capLbl = el('text',{x:box.x+box.w/2, y:box.y-0.15, 'font-size':0.2, fill:'#4a463c','font-weight':700,'text-anchor':'middle'});
+  capLbl.textContent = 'STAIR';
+  g.appendChild(capLbl);
+
+  // rotate handle — swaps width/height around the box's own center
+  const rx = box.x+box.w+0.16, ry = box.y-0.16;
+  const rotBtn = el('circle',{cx:rx,cy:ry,r:0.15,fill:'#5b6b7a',stroke:'#3d4750','stroke-width':0.02,cursor:'pointer'});
+  const rotIcon = el('text',{x:rx,y:ry+0.07,'font-size':0.2,fill:'#fff','text-anchor':'middle'});
+  rotIcon.textContent = '⟳';
+  rotBtn.addEventListener('pointerdown', e=>{ e.stopPropagation(); e.preventDefault(); rotateStair(roomId); });
+  rotIcon.addEventListener('pointerdown', e=>{ e.stopPropagation(); e.preventDefault(); rotateStair(roomId); });
+  g.appendChild(rotBtn); g.appendChild(rotIcon);
+}
+function rotateStair(roomId){
+  const r = rooms[roomId];
+  const box = r.stairBox;
+  const cx = box.x+box.w/2, cy = box.y+box.h/2;
+  const newW = box.h, newH = box.w;
+  let newX = cx-newW/2, newY = cy-newH/2;
+  newX = Math.max(r.x, Math.min(r.x+r.w-newW, newX));
+  newY = Math.max(r.y, Math.min(r.y+r.h-newH, newY));
+  box.x=newX; box.y=newY; box.w=newW; box.h=newH;
+  render();
+}
+
+function render(){
+  svg.innerHTML='';
+  applyView();
+  const caseworkViol = caseworkDoorViolations();
+  const caseworkSoft = caseworkWindowNotes();
+
+  // pan background (must be first / bottom of paint order)
+  const bg = el('rect',{x:-2000,y:-2000,width:4000,height:4000,fill:'transparent',style:'cursor:grab'});
+  bg.addEventListener('pointerdown', e=>startPan(e));
+  svg.appendChild(bg);
+
+  // rooms
+  for(const [id,r] of roomsOnLevel()){
+    const g = el('g',{});
+    const rect = el('rect',{x:r.x,y:r.y,width:r.w,height:r.h,rx:0.12,
+      fill:CLUSTER_COLOR[r.cluster]||'#ccc', stroke:'#5b5646', 'stroke-width':0.05,
+      'fill-opacity': r.illustrative?0.35:0.85, 'stroke-dasharray': r.illustrative?'0.15,0.1':'none', cursor:'move'});
+    rect.addEventListener('pointerdown', e=>startDrag(e,'room',id));
+    g.appendChild(rect);
+    const t1 = el('text',{x:r.x+0.15,y:r.y+0.4,'font-size':0.34,fill:'#2b2b2b','font-weight':700}); t1.textContent=id;
+    const t2 = el('text',{x:r.x+0.15,y:r.y+0.78,'font-size':0.24,fill:'#4a463c'}); t2.textContent=r.label+' · '+Math.round(r.w*r.h*10)/10+' m²'+(r.onCap?'':' (off-cap)')+(r.illustrative?' — illustrative only':'');
+    g.appendChild(t1); g.appendChild(t2);
+    if(!r.illustrative){
+      const hx=r.x+r.w, hy=r.y+r.h;
+      const handle = el('circle',{cx:hx,cy:hy,r:0.16,fill:'#5b6b7a',cursor:'nwse-resize'});
+      handle.addEventListener('pointerdown', e=>{ e.stopPropagation(); startDrag(e,'resize',id); });
+      g.appendChild(handle);
+    }
+    if(r.stairBox){
+      drawStairSymbol(g, r.stairBox, r.level==='Ground'?'UP':'DN', id);
+    }
+    svg.appendChild(g);
+  }
+
+  // doors
+  for(const d of doorsOnLevel()){
+    const wi = wallInfo(d.room, d.wall);
+    let x0,y0,dx,dy;
+    if(wi.axis==='x'){ x0=d.center; y0=wi.fixed; dy = (d.wall==='N')? d.width : -d.width; dx=0; }
+    else { y0=d.center; x0=wi.fixed; dx = (d.wall==='W')? d.width : -d.width; dy=0; }
+    const g = el('g',{});
+    let path;
+    if(wi.axis==='x') path = `M ${x0-d.width/2} ${y0} A ${d.width} ${d.width} 0 0 ${dy>0?1:0} ${x0-d.width/2} ${y0+dy}`;
+    else path = `M ${x0} ${y0-d.width/2} A ${d.width} ${d.width} 0 0 ${dx>0?0:1} ${x0+dx} ${y0-d.width/2}`;
+    g.appendChild(el('path',{d:path, fill:'none', stroke:'#3a6b8a', 'stroke-width':0.04, 'stroke-dasharray':'0.08,0.06'}));
+    const opening = wi.axis==='x' ? el('line',{x1:x0-d.width/2,y1:y0,x2:x0+d.width/2,y2:y0,stroke:'#fff','stroke-width':0.1})
+                                   : el('line',{x1:x0,y1:y0-d.width/2,x2:x0,y2:y0+d.width/2,stroke:'#fff','stroke-width':0.1});
+    g.appendChild(opening);
+    const handle = el('circle',{cx:x0, cy:y0, r:0.13, fill:'#3a6b8a', cursor: wi.axis==='x'?'ew-resize':'ns-resize'});
+    handle.addEventListener('pointerdown', e=>{ e.stopPropagation(); startDrag(e,'door',d.id); });
+    g.appendChild(handle);
+    // end-resize handles
+    const endA = wi.axis==='x' ? [x0-d.width/2,y0] : [x0,y0-d.width/2];
+    const endB = wi.axis==='x' ? [x0+d.width/2,y0] : [x0,y0+d.width/2];
+    const hA = el('rect',{x:endA[0]-0.09,y:endA[1]-0.09,width:0.18,height:0.18,fill:'#fff',stroke:'#3a6b8a','stroke-width':0.04,cursor: wi.axis==='x'?'ew-resize':'ns-resize'});
+    hA.addEventListener('pointerdown', e=>{ e.stopPropagation(); startResize(e,'door',d.id,'A'); });
+    const hB = el('rect',{x:endB[0]-0.09,y:endB[1]-0.09,width:0.18,height:0.18,fill:'#fff',stroke:'#3a6b8a','stroke-width':0.04,cursor: wi.axis==='x'?'ew-resize':'ns-resize'});
+    hB.addEventListener('pointerdown', e=>{ e.stopPropagation(); startResize(e,'door',d.id,'B'); });
+    g.appendChild(hA); g.appendChild(hB);
+    // delete button, offset into the room
+    const delOff = 0.35;
+    const dx0 = wi.axis==='x' ? 0 : (d.wall==='W'? delOff : -delOff);
+    const dy0 = wi.axis==='x' ? (d.wall==='N'? delOff : -delOff) : 0;
+    const delBtn = el('circle',{cx:x0+dx0,cy:y0+dy0,r:0.13,fill:'#c8503c',stroke:'#7a2e22','stroke-width':0.02,cursor:'pointer'});
+    const delX = el('text',{x:x0+dx0,y:y0+dy0+0.07,'font-size':0.2,fill:'#fff','text-anchor':'middle'}); delX.textContent='×';
+    delBtn.addEventListener('pointerdown', e=>{ e.stopPropagation(); e.preventDefault(); doors=doors.filter(x=>x.id!==d.id); render(); });
+    delX.addEventListener('pointerdown', e=>{ e.stopPropagation(); e.preventDefault(); doors=doors.filter(x=>x.id!==d.id); render(); });
+    g.appendChild(delBtn); g.appendChild(delX);
+    svg.appendChild(g);
+  }
+
+  // windows / entries
+  for(const w of windowsOnLevel()){
+    const wi = wallInfo(w.room, w.wall);
+    let x1,y1,x2,y2;
+    if(wi.axis==='x'){ x1=w.center-w.width/2; x2=w.center+w.width/2; y1=y2=wi.fixed; }
+    else { y1=w.center-w.width/2; y2=w.center+w.width/2; x1=x2=wi.fixed; }
+    const color = w.type==='entry' ? '#8a5a3a' : '#3a8aa8';
+    const g = el('g',{});
+    const line = el('line',{x1,y1,x2,y2,stroke:color,'stroke-width':0.16,'stroke-linecap':'round'});
+    const handle = el('circle',{cx:(x1+x2)/2, cy:(y1+y2)/2, r:0.12, fill:color, cursor: wi.axis==='x'?'ew-resize':'ns-resize'});
+    handle.addEventListener('pointerdown', e=>{ e.stopPropagation(); startDrag(e,'window',w.id); });
+    g.appendChild(line); g.appendChild(handle);
+    // end-resize handles
+    const hA = el('rect',{x:x1-0.09,y:y1-0.09,width:0.18,height:0.18,fill:'#fff',stroke:color,'stroke-width':0.04,cursor: wi.axis==='x'?'ew-resize':'ns-resize'});
+    hA.addEventListener('pointerdown', e=>{ e.stopPropagation(); startResize(e,'window',w.id,'A'); });
+    const hB = el('rect',{x:x2-0.09,y:y2-0.09,width:0.18,height:0.18,fill:'#fff',stroke:color,'stroke-width':0.04,cursor: wi.axis==='x'?'ew-resize':'ns-resize'});
+    hB.addEventListener('pointerdown', e=>{ e.stopPropagation(); startResize(e,'window',w.id,'B'); });
+    g.appendChild(hA); g.appendChild(hB);
+    // delete button, offset into the room
+    const cx=(x1+x2)/2, cy=(y1+y2)/2;
+    const delOff = 0.38;
+    const dx0 = wi.axis==='x' ? 0 : (w.wall==='W'? delOff : -delOff);
+    const dy0 = wi.axis==='x' ? (w.wall==='N'? delOff : -delOff) : 0;
+    const delBtn = el('circle',{cx:cx+dx0,cy:cy+dy0,r:0.13,fill:'#c8503c',stroke:'#7a2e22','stroke-width':0.02,cursor:'pointer'});
+    const delX = el('text',{x:cx+dx0,y:cy+dy0+0.07,'font-size':0.2,fill:'#fff','text-anchor':'middle'}); delX.textContent='×';
+    delBtn.addEventListener('pointerdown', e=>{ e.stopPropagation(); e.preventDefault(); windows_=windows_.filter(x=>x.id!==w.id); render(); });
+    delX.addEventListener('pointerdown', e=>{ e.stopPropagation(); e.preventDefault(); windows_=windows_.filter(x=>x.id!==w.id); render(); });
+    g.appendChild(delBtn); g.appendChild(delX);
+    svg.appendChild(g);
+  }
+
+  // furniture
+  for(const f of furnitureOnLevel()){
+    const wi = wallInfo(f.room, f.wall);
+    let x,y,w,h;
+    if(wi.axis==='x'){ x=f.center-f.length/2; w=f.length; h=f.depth; y = (f.wall==='N')? wi.fixed : wi.fixed-f.depth; }
+    else { y=f.center-f.length/2; h=f.length; w=f.depth; x = (f.wall==='W')? wi.fixed : wi.fixed-f.depth; }
+    const hardFlag = caseworkViol.some(v=>v.furniture.id===f.id);
+    const softFlag = caseworkSoft.some(v=>v.furniture.id===f.id);
+    const rect = el('rect',{x,y,width:w,height:h,fill: hardFlag?'#d9776a':(softFlag?'#e3c56a':'#8a7a5a'), stroke: hardFlag?'#a8352a':'#5b5646','stroke-width':0.05, cursor:'move'});
+    rect.addEventListener('pointerdown', e=>startDrag(e,'furniture',f.id));
+    svg.appendChild(rect);
+    const lbl = el('text',{x:x+0.1,y:y+h+0.35,'font-size':0.22,fill: hardFlag?'#a8352a':'#4a463c','font-weight':hardFlag?700:400});
+    lbl.textContent = (hardFlag?'⚠ ':'') + f.label;
+    svg.appendChild(lbl);
+  }
+
+  // Massing ghost overlay — Stage 0 (2026-09-09): upgrades the sync from a text-only
+  // advisory to something actually visible, per Ben's own bar ("if you can't see the
+  // change, it's not working"). Drawn last so it paints on top; pointer-events:none so it
+  // never blocks dragging rooms/doors underneath.
+  if(massingSync && massingSync.volumesByLevel && massingSync.volumesByLevel[currentLevel]){
+    const vol = massingSync.volumesByLevel[currentLevel];
+    const bbox = onCapBBox(currentLevel);
+    if(bbox){
+      const gx = bbox.cx - vol.w/2, gy = bbox.cy - vol.d/2;
+      const g = el('g',{'pointer-events':'none'});
+      g.appendChild(el('rect',{x:gx,y:gy,width:vol.w,height:vol.d, fill:'none', stroke:'#8a6d3b','stroke-width':0.06,'stroke-dasharray':'0.3,0.18'}));
+      const lbl = el('text',{x:gx,y:gy-0.18,'font-size':0.26,fill:'#8a6d3b','font-weight':700});
+      lbl.textContent = 'Massing '+vol.id+' footprint: '+vol.w+'×'+vol.d+' m — centered over your rooms; position not mapped from Massing\'s site coordinates (axis correspondence unverified)';
+      g.appendChild(lbl);
+      svg.appendChild(g);
+    }
+  }
+
+  renderPanels(caseworkViol, caseworkSoft);
+}
+
+/* ---------- panels ---------- */
+function renderPanels(caseworkViol, caseworkSoft){
+  const roomList = document.getElementById('roomList');
+  roomList.innerHTML='';
+  for(const [id,r] of roomsOnLevel()){
+    const row = document.createElement('div'); row.className='room-row';
+    row.innerHTML = `<span><span class="sw" style="background:${CLUSTER_COLOR[r.cluster]}"></span>${id} — ${r.label}</span><b>${Math.round(r.w*r.h*10)/10} m²${r.onCap?'':' ⓞ'}</b>`;
+    roomList.appendChild(row);
+  }
+  document.getElementById('capHeading').textContent = currentLevel+' dwelling cap';
+  const cap = onCapArea(currentLevel);
+  const capTarget = currentLevel==='Ground' ? GROUND_CAP : null;
+  if(capTarget){
+    document.getElementById('mCap').textContent = Math.round(cap*10)/10+' / '+capTarget+' m²';
+    const pct = Math.min(100, cap/capTarget*100);
+    const bar = document.getElementById('capBar');
+    bar.style.width = pct+'%';
+    bar.style.background = cap>capTarget? 'var(--bad)' : (pct>90? 'var(--warn)':'var(--good)');
+    document.getElementById('capNote').textContent = massingSync
+      ? `Circulation (~8 m²) absorbed into the hub, per D5. Ground target synced from massing scheme ${massingSync.scheme} (${massingSync.time}).`
+      : `Circulation (~8 m²) is absorbed into the hub, per D5. Not yet synced with Massing Studio — this ${GROUND_CAP_DEFAULT} m² is a placeholder.`;
+  } else {
+    document.getElementById('mCap').textContent = Math.round(cap*10)/10+' m² (no separate footprint cap — rides within the full dwelling cap below)';
+    document.getElementById('capBar').style.width='0%';
+    document.getElementById('capNote').textContent = '';
+  }
+  document.getElementById('mOffCap').textContent = Math.round(offCapArea(currentLevel)*10)/10+' m²';
+  document.getElementById('mFullDwelling').textContent = Math.round((onCapArea('Ground')+onCapArea('Upper'))*10)/10+' / '+DWELLING_CAP_FULL+' m²'+(massingSync?'':' (placeholder)');
+  document.getElementById('massingSyncStatus').textContent = massingSync
+    ? `synced: scheme ${massingSync.scheme}, massing places ${massingSync.dwellingGFA} m², ${massingSync.time}`
+    : 'not yet synced';
+
+  const npEl = document.getElementById('notPlaced');
+  npEl.innerHTML = NOT_PLACED.length ? NOT_PLACED.map(n=>`<div style="margin-bottom:6px"><b>${n.label}</b> — ${n.area} m²<br>${n.reason}</div>`).join('') : '<div>Everything from the program table is placed on one level or the other.</div>';
+
+  const violEl = document.getElementById('violList');
+  const adj = adjacencyResults();
+  const badAdj = adj.filter(r=>r.violation);
+  let html='';
+  for(const c of caseworkViol) html += `<div class="viol">⚠ <b>${c.furniture.label}</b> overlaps <b>${c.door.note}</b> by ${(c.overlap).toFixed(2)} m — circulation-first violation.</div>`;
+  for(const c of caseworkSoft) html += `<div class="softnote">◐ <b>${c.furniture.label}</b> may block <b>${c.window.label}</b> (${(c.overlap).toFixed(2)} m overlap) — daylight/view conflict, not a hard circulation violation.</div>`;
+  for(const b of badAdj){
+    const kind = b.type==='req' ? 'required pair too far apart' : 'keep-apart pair too close (schematic)';
+    html += `<div class="viol">⚠ ${b.a} ↔ ${b.b}: ${kind} — ${b.gap.toFixed(2)} m.</div>`;
+  }
+  if(!html) html = '<div class="foot">None on this level — current layout is clean.</div>';
+  violEl.innerHTML = html;
+
+  document.getElementById('discrepancyBanner').innerHTML =
+    `<b>Source discrepancy, flagged not resolved:</b> the adjacency matrix marks MB✗LK (keep apart), but the same document's 2026-07-26 roster-review section adds a private master→link door, incorporated into the current design. This Studio models the private door (current design) and shows the matrix row as a live conflict below — reconcile <code>Program-Test-Fit.md</code>'s matrix next time this phase reopens.`;
+
+  const tbl = document.getElementById('adjTable');
+  const typeLabel = {req:'required', sep:'keep apart', pref:'preferred', stack:'stacked (▲)'};
+  tbl.innerHTML = adj.filter(r=>r.type!=='pref').map(r=>{
+    if(r.crossLevel){
+      return `<tr><td>${r.a}↔${r.b}</td><td class="info">${typeLabel[r.type]}</td><td class="info">different levels — not evaluated</td></tr>`;
+    }
+    const cls = r.status==='bad'?'bad':(r.status==='ok'?'ok':'info');
+    const icon = r.status==='bad'?'⚠':(r.status==='ok'?'✓':'·');
+    return `<tr><td>${r.a}↔${r.b}${r.a==='OF'&&r.b==='LKU'?' *':''}</td><td class="info">${typeLabel[r.type]}</td><td class="${cls}">${icon} ${r.gap.toFixed(2)} m</td></tr>`;
+  }).join('') + `<tr><td>MB↔LK</td><td class="info">private door (addendum)</td><td class="ok">✓ ${rectGap(rooms.MB,rooms.LK).toFixed(2)} m</td></tr>` +
+    `<tr><td colspan="3" class="info" style="padding-top:4px">* OF↔LKU inferred from level-scheme prose, not the original matrix table.</td></tr>`;
+
+  const hub = hubClearance();
+  document.getElementById('hubClearance').innerHTML = hub.map(h=>{
+    const tight = Math.max(0,...h.segs) < 0.6 && h.length>0;
+    return `<div class="metric"><span>${h.wall} wall (${h.length.toFixed(1)} m)</span><b class="${tight?'bad':'ok'}">${h.segs.map(s=>s.toFixed(1)).join(' + ')||'0'} m clear</b></div>`;
+  }).join('');
+}
+
+/* ---------- drag / pan / zoom ---------- */
+let drag=null;
+function toSVGPoint(evt){
+  const pt = svg.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function applyView(){ svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`); }
+function fitView(){
+  const items = roomsOnLevel().map(([id,r])=>r);
+  if(!items.length){ view={x:-18,y:-1,w:33,h:15.5}; applyView(); return; }
+  const xs0=items.map(r=>r.x), xs1=items.map(r=>r.x+r.w), ys0=items.map(r=>r.y), ys1=items.map(r=>r.y+r.h);
+  const minX=Math.min(...xs0)-1.5, maxX=Math.max(...xs1)+1.5, minY=Math.min(...ys0)-1.5, maxY=Math.max(...ys1)+1.5;
+  view = {x:minX, y:minY, w:maxX-minX, h:maxY-minY};
+  applyView();
+}
+function startPan(evt){
+  evt.preventDefault();
+  const rect = svg.getBoundingClientRect();
+  drag = {kind:'pan', startClientX:evt.clientX, startClientY:evt.clientY, origX:view.x, origY:view.y,
+           pxToWorldX: view.w/rect.width, pxToWorldY: view.h/rect.height};
+  window.addEventListener('pointermove', onDrag);
+  window.addEventListener('pointerup', endDrag);
+}
+function startResize(evt, arrayKind, id, which){
+  evt.preventDefault(); evt.stopPropagation();
+  const arr = arrayKind==='door' ? doors : windows_;
+  const item = arr.find(x=>x.id===id);
+  const wi = wallInfo(item.room, item.wall);
+  const p = toSVGPoint(evt);
+  drag = {kind:'resize-opening', arrayKind, id, which, startX:p.x, startY:p.y, wi,
+          origEndA: item.center-item.width/2, origEndB: item.center+item.width/2};
+  window.addEventListener('pointermove', onDrag);
+  window.addEventListener('pointerup', endDrag);
+}
+function startDrag(evt, kind, id){
+  evt.preventDefault(); evt.stopPropagation();
+  const p = toSVGPoint(evt);
+  drag = {kind, id, startX:p.x, startY:p.y};
+  if(kind==='room'||kind==='resize'){ const r=rooms[id]; drag.orig = {x:r.x,y:r.y,w:r.w,h:r.h}; }
+  if(kind==='door'){ const d=doors.find(x=>x.id===id); drag.orig={center:d.center}; drag.wi=wallInfo(d.room,d.wall); }
+  if(kind==='window'){ const w=windows_.find(x=>x.id===id); drag.orig={center:w.center}; drag.wi=wallInfo(w.room,w.wall); }
+  if(kind==='furniture'){ const f=furniture.find(x=>x.id===id); drag.orig={center:f.center}; drag.f=f; }
+  if(kind==='stairbox'){ const r=rooms[id]; drag.orig={x:r.stairBox.x,y:r.stairBox.y}; }
+  window.addEventListener('pointermove', onDrag);
+  window.addEventListener('pointerup', endDrag);
+}
+function onDrag(evt){
+  if(!drag) return;
+  if(drag.kind==='pan'){
+    view.x = drag.origX - (evt.clientX-drag.startClientX)*drag.pxToWorldX;
+    view.y = drag.origY - (evt.clientY-drag.startClientY)*drag.pxToWorldY;
+    applyView();
+    return;
+  }
+  const p = toSVGPoint(evt);
+  const dx = p.x-drag.startX, dy = p.y-drag.startY;
+  if(drag.kind==='room'){ const r=rooms[drag.id]; r.x=drag.orig.x+dx; r.y=drag.orig.y+dy; render(); }
+  else if(drag.kind==='resize'){ const r=rooms[drag.id]; r.w=Math.max(1.2,drag.orig.w+dx); r.h=Math.max(1.2,drag.orig.h+dy); render(); }
+  else if(drag.kind==='door'){
+    const d=doors.find(x=>x.id===drag.id); const wi=drag.wi;
+    const delta = wi.axis==='x'? dx : dy; const half=d.width/2;
+    d.center = Math.min(wi.end-half, Math.max(wi.start+half, drag.orig.center+delta));
+    render();
+  }
+  else if(drag.kind==='window'){
+    const w=windows_.find(x=>x.id===drag.id); const wi=drag.wi;
+    const delta = wi.axis==='x'? dx : dy; const half=w.width/2;
+    w.center = Math.min(wi.end-half, Math.max(wi.start+half, drag.orig.center+delta));
+    render();
+  }
+  else if(drag.kind==='furniture'){
+    const f=drag.f; const wi=wallInfo(f.room,f.wall);
+    const delta = wi.axis==='x'? dx : dy; const half=f.length/2;
+    f.center = Math.min(wi.end-half, Math.max(wi.start+half, drag.orig.center+delta));
+    render();
+  }
+  else if(drag.kind==='stairbox'){
+    const r=rooms[drag.id]; const box=r.stairBox;
+    let nx = drag.orig.x+dx, ny = drag.orig.y+dy;
+    nx = Math.max(r.x, Math.min(r.x+r.w-box.w, nx));
+    ny = Math.max(r.y, Math.min(r.y+r.h-box.h, ny));
+    box.x=nx; box.y=ny;
+    render();
+  }
+  else if(drag.kind==='resize-opening'){
+    const arr = drag.arrayKind==='door' ? doors : windows_;
+    const item = arr.find(x=>x.id===drag.id);
+    const wi = drag.wi;
+    const delta = wi.axis==='x'? dx : dy;
+    if(drag.which==='A'){
+      let endA = drag.origEndA + delta;
+      const endB = drag.origEndB;
+      endA = Math.max(wi.start, Math.min(endB-MIN_OPENING, endA));
+      item.center = (endA+endB)/2; item.width = endB-endA;
+    } else {
+      let endB = drag.origEndB + delta;
+      const endA = drag.origEndA;
+      endB = Math.min(wi.end, Math.max(endA+MIN_OPENING, endB));
+      item.center = (endA+endB)/2; item.width = endB-endA;
+    }
+    render();
+  }
+}
+function endDrag(){
+  drag=null;
+  window.removeEventListener('pointermove', onDrag);
+  window.removeEventListener('pointerup', endDrag);
+}
+svg.addEventListener('wheel', evt=>{
+  evt.preventDefault();
+  const pt = toSVGPoint(evt);
+  const aspect = view.h/view.w;
+  const factor = evt.deltaY < 0 ? 0.9 : 1.1;
+  const newW = Math.min(MAX_W, Math.max(MIN_W, view.w*factor));
+  const newH = newW*aspect;
+  view.x = pt.x - (pt.x-view.x)*(newW/view.w);
+  view.y = pt.y - (pt.y-view.y)*(newH/view.h);
+  view.w = newW; view.h = newH;
+  applyView();
+}, {passive:false});
+
+/* ---------- level / scenario / panel toggles / export ---------- */
+function setLevel(l){
+  currentLevel = l;
+  document.getElementById('bGround').classList.toggle('on', l==='Ground');
+  document.getElementById('bUpper').classList.toggle('on', l==='Upper');
+  populateRoomDropdown();
+  fitView();
+  render();
+}
+let paletteType = 'door';
+function setPaletteType(t){
+  paletteType = t;
+  document.getElementById('palDoor').classList.toggle('on', t==='door');
+  document.getElementById('palWindow').classList.toggle('on', t==='window');
+  document.getElementById('palEntry').classList.toggle('on', t==='entry');
+}
+function populateRoomDropdown(){
+  const sel = document.getElementById('palRoom');
+  const prev = sel.value;
+  sel.innerHTML = roomsOnLevel().filter(([id,r])=>!r.illustrative).map(([id,r])=>`<option value="${id}">${id} — ${r.label}</option>`).join('');
+  if(roomsOnLevel().some(([id])=>id===prev)) sel.value = prev;
+}
+function addOpening(){
+  const room = document.getElementById('palRoom').value;
+  const wall = document.getElementById('palWall').value;
+  if(!room) return;
+  const wi = wallInfo(room, wall);
+  const center = (wi.start+wi.end)/2;
+  if(paletteType==='door'){
+    doors.push({id:newOpeningId('door'), room, wall, center, width:0.9, note:'New door (added via palette)'});
+  } else {
+    const width = paletteType==='window' ? 1.2 : 1.0;
+    const label = paletteType==='window' ? 'New window (added via palette)' : 'New entry (added via palette)';
+    windows_.push({id:newOpeningId(paletteType), room, wall, center, width, type:paletteType, label});
+  }
+  render();
+}
+function setScenario(s){
+  scenario = s;
+  document.getElementById('bSafe').classList.toggle('on', s==='safe');
+  document.getElementById('bDemo').classList.toggle('on', s==='demo');
+  furniture = JSON.parse(JSON.stringify(s==='safe' ? FURN_SAFE : FURN_DEMO));
+  render();
+}
+function togglePanel(which){
+  const p = document.getElementById(which);
+  const collapsed = p.classList.toggle('collapsed');
+  document.getElementById(which+'Toggle').textContent = collapsed ? '+' : '−';
+}
+function buildExportData(){
+  return {
+    type:'test-fit-interchange/v1',
+    project:'Nonimuss-Residence',
+    scenario, level:currentLevel,
+    rooms, doors, windows:windows_, furniture,
+    metrics:{
+      onCapGround: onCapArea('Ground'), onCapUpper: onCapArea('Upper'), groundCap: GROUND_CAP, dwellingCapFull: DWELLING_CAP_FULL,
+      adjacency: adjacencyResults(), caseworkDoorViolations: caseworkDoorViolations(), caseworkWindowNotes: caseworkWindowNotes(), hubClearance: hubClearance()
+    }
+  };
+}
+function exportJSON(){
+  document.getElementById('exportText').value = JSON.stringify(buildExportData(),null,2);
+  document.getElementById('exportModal').style.display='flex';
+}
+
+/* ---------- file-based save/load (own state) + sync (read massing's file) ---------- */
+function idbOpenTF(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('tfs-handles',1);
+    req.onupgradeneeded=()=>{req.result.createObjectStore('handles');};
+    req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error);
+  });
+}
+async function idbGetTF(key){
+  const db=await idbOpenTF();
+  return new Promise((res,rej)=>{
+    const rq=db.transaction('handles','readonly').objectStore('handles').get(key);
+    rq.onsuccess=()=>res(rq.result||null); rq.onerror=()=>rej(rq.error);
+  });
+}
+async function idbSetTF(key,val){
+  const db=await idbOpenTF();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('handles','readwrite'); tx.objectStore('handles').put(val,key);
+    tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error);
+  });
+}
+let ownFileHandle=null, massingFileHandle=null;
+
+async function saveOwnState(){
+  const statusEl=document.getElementById('ownSaveStatus');
+  try{
+    if(!window.showSaveFilePicker){ statusEl.textContent='needs Chrome/Edge for file save'; return; }
+    if(!ownFileHandle){
+      const stored=await idbGetTF('own-save-handle');
+      if(stored && (await stored.requestPermission({mode:'readwrite'}))==='granted') ownFileHandle=stored;
+    }
+    if(!ownFileHandle){
+      ownFileHandle=await window.showSaveFilePicker({suggestedName:'testfit-interchange.json', types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+      await idbSetTF('own-save-handle', ownFileHandle);
+    }
+    const writable=await ownFileHandle.createWritable();
+    await writable.write(JSON.stringify(buildExportData(),null,2));
+    await writable.close();
+    statusEl.textContent='saved '+new Date().toLocaleTimeString()+' ('+ownFileHandle.name+')';
+  }catch(err){
+    if(err.name!=='AbortError'){ console.error(err); statusEl.textContent='save failed — see console'; }
+  }
+}
+async function loadOwnState(){
+  const statusEl=document.getElementById('ownSaveStatus');
+  try{
+    if(!window.showOpenFilePicker){ statusEl.textContent='needs Chrome/Edge for file load'; return; }
+    if(!ownFileHandle){
+      const stored=await idbGetTF('own-save-handle');
+      if(stored && (await stored.requestPermission({mode:'readwrite'}))==='granted') ownFileHandle=stored;
+    }
+    if(!ownFileHandle){
+      [ownFileHandle]=await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+      await idbSetTF('own-save-handle', ownFileHandle);
+    }
+    const file=await ownFileHandle.getFile();
+    const data=JSON.parse(await file.text());
+    if(data.type!=='test-fit-interchange/v1'){ statusEl.textContent='that file is not a test-fit-interchange/v1 save'; return; }
+    rooms=data.rooms; doors=data.doors; windows_=data.windows; furniture=data.furniture;
+    scenario=data.scenario||'safe'; currentLevel=data.level||'Ground';
+    document.getElementById('bSafe').classList.toggle('on', scenario==='safe');
+    document.getElementById('bDemo').classList.toggle('on', scenario==='demo');
+    document.getElementById('bGround').classList.toggle('on', currentLevel==='Ground');
+    document.getElementById('bUpper').classList.toggle('on', currentLevel==='Upper');
+    populateRoomDropdown(); fitView(); render();
+    statusEl.textContent='loaded '+new Date().toLocaleTimeString()+' ('+ownFileHandle.name+')';
+  }catch(err){
+    if(err.name!=='AbortError'){ console.error(err); statusEl.textContent='load failed — see console'; }
+  }
+}
+async function syncFromMassing(){
+  const statusEl=document.getElementById('massingSyncStatus');
+  try{
+    if(!window.showOpenFilePicker){ statusEl.textContent='needs Chrome/Edge for file sync'; return; }
+    if(!massingFileHandle){
+      const stored=await idbGetTF('massing-file-handle');
+      if(stored && (await stored.requestPermission({mode:'read'}))==='granted') massingFileHandle=stored;
+    }
+    if(!massingFileHandle){
+      [massingFileHandle]=await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+      await idbSetTF('massing-file-handle', massingFileHandle);
+    }
+    const file=await massingFileHandle.getFile();
+    const data=JSON.parse(await file.text());
+    if(data.schema!=='massing-interchange/v1'){ statusEl.textContent='that file is not a massing-interchange/v1 save'; return; }
+    DWELLING_CAP_FULL = data.program?.dwellingCap ?? DWELLING_CAP_FULL_DEFAULT;
+    const groundHouse = (data.volumes||[]).find(v=>v.type==='house' && (v.base||0)<0.1);
+    if(groundHouse) GROUND_CAP = +(groundHouse.w*groundHouse.d).toFixed(1);
+    // Stage 0 (2026-09-09): keep each dwelling volume's real w×d too, not just its area, so
+    // the ghost overlay below can draw an actual rectangle per level — first house/office
+    // volume found at each base elevation (Ground = base<0.1, Upper = base>=0.1), matching
+    // the same level-matching convention the rest of this sync already uses.
+    const volumesByLevel = {};
+    (data.volumes||[]).forEach(v=>{
+      if(v.type!=='house' && v.type!=='office') return;
+      const lv = (v.base||0) < 0.1 ? 'Ground' : 'Upper';
+      if(!volumesByLevel[lv]) volumesByLevel[lv] = {id:v.id, w:+v.w, d:+v.d};
+    });
+    massingSync = {
+      time:new Date().toLocaleTimeString(), scheme:data.scheme, schemeName:data.schemeName,
+      dwellingGFA: data.metrics?.dwelling, dwellingCap: DWELLING_CAP_FULL, groundFootprint: GROUND_CAP,
+      volumesByLevel
+    };
+    render();
+  }catch(err){
+    if(err.name!=='AbortError'){ console.error(err); statusEl.textContent='sync failed — see console'; }
+  }
+}
+
+populateRoomDropdown();
+fitView();
+render();
+</script>
+</body>
+</html>

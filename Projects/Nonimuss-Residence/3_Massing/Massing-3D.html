@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Nonimuss Residence — Massing Study (3D)</title>
+<style>
+  :root{ --ink:#1c1c1c; --panel:rgba(255,255,255,.92); --line:#c9c2b0; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);background:#eae6da;overflow:hidden}
+  #app{position:fixed;inset:0}
+  canvas{display:block}
+  .panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:0 4px 14px rgba(0,0,0,.10);backdrop-filter:blur(4px)}
+  #topbar{top:14px;left:14px;right:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  #topbar h1{font-size:15px;margin:0 12px 0 0;font-weight:700}
+  #topbar .grp{display:flex;gap:6px;align-items:center}
+  #topbar .lab{font-size:11px;color:#6b6459;margin-right:2px}
+  button{font:inherit;font-size:12px;padding:6px 11px;border:1px solid #b9b19c;background:#fff;border-radius:7px;cursor:pointer;color:#2b2b2b}
+  button:hover{background:#f3efe4}
+  button.on{background:#5b6b7a;color:#fff;border-color:#46545f}
+  #info{left:14px;bottom:14px;max-width:340px;font-size:12.5px;line-height:1.5}
+  #info h2{margin:0 0 4px;font-size:14px}
+  #info .tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:20px;background:#eee5cf;color:#6b5b2e;margin-bottom:6px}
+  #info ul{margin:6px 0 0;padding-left:16px}
+  #legend{right:14px;bottom:14px;font-size:11.5px;line-height:1.7}
+  #legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:7px;vertical-align:-1px;border:1px solid rgba(0,0,0,.25)}
+  #hint{position:absolute;top:64px;right:16px;font-size:11px;color:#7a7365;background:rgba(255,255,255,.7);padding:4px 9px;border-radius:6px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div class="panel" id="topbar">
+  <h1>Nonimuss Residence — Massing</h1>
+  <div class="grp"><span class="lab">Scheme</span>
+    <button id="bA" onclick="setScheme('A')">A · One Roof</button>
+    <button id="bB" class="on" onclick="setScheme('B')">B · Breezeway</button>
+    <button id="bC" onclick="setScheme('C')">C · Pavilion</button>
+  </div>
+  <div class="grp"><span class="lab">View</span>
+    <button onclick="setView('plan')">Plan</button>
+    <button onclick="setView('iso')">Iso</button>
+    <button onclick="setView('persp')">Perspective</button>
+  </div>
+</div>
+
+<div id="hint">drag to orbit · scroll to zoom</div>
+
+<div class="panel" id="info"></div>
+
+<div class="panel" id="legend">
+  <div><span class="sw" style="background:#5b6b7a"></span>House (120 m² cap)</div>
+  <div><span class="sw" style="background:#7fb0d0"></span>Pool room (~84 m², off-cap)</div>
+  <div><span class="sw" style="background:#b49bd0"></span>Operable link / threshold</div>
+  <div><span class="sw" style="background:#9aa39a"></span>Gym outbuilding</div>
+  <div><span class="sw" style="background:#e6d9b8"></span>Terrace / court</div>
+  <div><span class="sw" style="background:#6f9a5a"></span>Weaselhead forest (W)</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ---------- Lot geometry (metres). Plan x = East(+), plan z = South(+). Y = up. ----------
+// Corners from Site-Details: NW(0,0) NE(45.83,0) SE(45.83,19.83) SW(0,32.83). Forest = West (x=0).
+const LOT = [[0,0],[45.83,0],[45.83,19.83],[0,32.83]];
+const CX = 22.9, CZ = 16.4; // approx lot centre
+
+// ---------- Scheme data: boxes {type,x,z,w,d,h}  (x,z = SW-ish origin corner in plan metres) ----------
+const SCHEMES = {
+  A:{ name:"A — “One Roof”", tag:"PARKED", boxes:[
+      {type:"house",x:18,z:4,w:20,d:6,h:4.2},
+      {type:"pool", x:10,z:10,w:14,d:6,h:4.2},
+      {type:"gym",  x:30,z:14,w:5,d:5,h:3},
+      {type:"terr", x:10,z:16,w:14,d:5,h:0.12},
+    ],
+    notes:["One continuous roof: house bar + vestibuled pool at the forest end.",
+           "Warmest &amp; most compact — but the ~84 m² pool is hardest to argue out of the 120 m² cap.",
+           "Best D3 (winter thermal); weakest OQ-6 (cap)."]},
+  B:{ name:"B — “The Breezeway”", tag:"LOCKED 2026-07-25", boxes:[
+      {type:"pool", x:8, z:6, w:6, d:14, h:5.0, clerestory:true},
+      {type:"house",x:20,z:6, w:15,d:8, h:4.0},
+      {type:"link", x:14,z:9, w:6, d:4, h:3.2},
+      {type:"terr", x:8, z:20,w:14,d:6, h:0.12},
+      {type:"gym",  x:8, z:22,w:5, d:5, h:3.0},
+    ],
+    notes:["Two volumes joined by an operable, insulated link — the link IS the wellness threshold.",
+           "Keeps D2 four-season (enclosable at −20°C) AND the cap argument (pool is a separable structure).",
+           "Refine: link = inhabited room, not a corridor; house pushed east for morning + winter-S light."]},
+  C:{ name:"C — “House &amp; Pavilion”", tag:"PARKED (fallback)", boxes:[
+      {type:"pool", x:8, z:5, w:6, d:14, h:5.0, clerestory:true},
+      {type:"house",x:28,z:5, w:12,d:10,h:4.0},
+      {type:"terr", x:14,z:5, w:14,d:10,h:0.10},
+      {type:"gym",  x:8, z:20,w:5, d:5, h:3.0},
+    ],
+    notes:["Detached pool pavilion at the forest edge; compact house set forward across a sheltered court.",
+           "Safest cap argument + best house daylight — but crossing the open court fails D2 at −20°C.",
+           "Becomes B if the court is enclosed."]},
+};
+const COLOR = {house:0x5b6b7a, pool:0x7fb0d0, link:0xb49bd0, gym:0x9aa39a, terr:0xe6d9b8};
+
+// ---------- Scene ----------
+const app = document.getElementById('app');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xeae6da);
+scene.fog = new THREE.Fog(0xeae6da, 90, 180);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.5, 500);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+app.appendChild(renderer.domElement);
+
+// lights — low sun from the south (winter feel)
+scene.add(new THREE.HemisphereLight(0xffffff, 0x9a936f, 0.75));
+const sun = new THREE.DirectionalLight(0xfff2d8, 0.85);
+sun.position.set(CX-6, 26, CZ+34); // south & up
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+const s=60; sun.shadow.camera.left=-s;sun.shadow.camera.right=s;sun.shadow.camera.top=s;sun.shadow.camera.bottom=-s;
+sun.shadow.camera.near=1;sun.shadow.camera.far=160;
+scene.add(sun);
+
+// ---------- helpers to place a box using plan (x,z) SW origin ----------
+function toWorld(x,z){ return [x - CX, z - CZ]; } // recenters; worldX east, worldZ south
+function addBox(group, b){
+  const [wx, wz] = toWorld(b.x + b.w/2, b.z + b.d/2);
+  const isFlat = b.h < 0.5;
+  const geo = new THREE.BoxGeometry(b.w, b.h, b.d);
+  const mat = new THREE.MeshLambertMaterial({
+    color: COLOR[b.type],
+    transparent: b.type==='link',
+    opacity: b.type==='link' ? 0.55 : 1
+  });
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(wx, b.h/2, wz);
+  m.castShadow = !isFlat; m.receiveShadow = true;
+  group.add(m);
+  // crisp edges
+  const eg = new THREE.LineSegments(new THREE.EdgesGeometry(geo),
+      new THREE.LineBasicMaterial({color:0x2b2b2b, transparent:true, opacity:isFlat?0.25:0.55}));
+  eg.position.copy(m.position); group.add(eg);
+  // clerestory strip on pool (daylight from the roof — L5)
+  if(b.clerestory){
+    const cg = new THREE.BoxGeometry(b.w*0.9, 0.5, b.d*0.35);
+    const cm = new THREE.Mesh(cg, new THREE.MeshLambertMaterial({color:0xdfeaf3, transparent:true, opacity:0.85}));
+    cm.position.set(wx, b.h+0.25, wz); group.add(cm);
+  }
+}
+
+// ---------- lot ground (trapezoid) ----------
+const shape = new THREE.Shape();
+LOT.forEach((p,i)=>{ const [wx,wz]=toWorld(p[0],p[1]); i?shape.lineTo(wx,wz):shape.moveTo(wx,wz); });
+shape.closePath();
+const lotGeo = new THREE.ShapeGeometry(shape);
+lotGeo.rotateX(Math.PI/2); // lay flat (shape is XY -> XZ)
+const lot = new THREE.Mesh(lotGeo, new THREE.MeshLambertMaterial({color:0xd8d2c2, side:THREE.DoubleSide}));
+lot.position.y = 0; lot.receiveShadow = true; scene.add(lot);
+// lot outline
+const lotPts = LOT.map(p=>{const [wx,wz]=toWorld(p[0],p[1]);return new THREE.Vector3(wx,0.02,wz);});
+lotPts.push(lotPts[0].clone());
+scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lotPts),
+      new THREE.LineBasicMaterial({color:0x6b6459})));
+
+// setback outline (rear/W 7.5, front/E 3.0, N 1.2, S 3.0) — approximate inset
+const SB=[[7.5,1.2],[42.83,1.2],[42.83,17.0],[7.5,27.5]];
+const sbPts = SB.map(p=>{const [wx,wz]=toWorld(p[0],p[1]);return new THREE.Vector3(wx,0.03,wz);});
+sbPts.push(sbPts[0].clone());
+const sbMat=new THREE.LineDashedMaterial({color:0x9a8f6f,dashSize:1.1,gapSize:0.8});
+const sbLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(sbPts),sbMat);
+sbLine.computeLineDistances(); scene.add(sbLine);
+
+// ---------- forest on the west edge ----------
+const forest = new THREE.Group();
+const trunkMat=new THREE.MeshLambertMaterial({color:0x6a5334});
+const leafMat =new THREE.MeshLambertMaterial({color:0x6f9a5a});
+for(let z=0; z<=33; z+=2.4){
+  const jx = -1.5 - Math.random()*3.5;
+  const [wx,wz]=toWorld(jx, z + (Math.random()-0.5));
+  const hh = 9 + Math.random()*7;
+  const tr=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.4,hh*0.4,6),trunkMat);
+  tr.position.set(wx, hh*0.2, wz); forest.add(tr);
+  const cn=new THREE.Mesh(new THREE.ConeGeometry(1.8+Math.random(),hh,7),leafMat);
+  cn.position.set(wx, hh*0.55, wz); cn.castShadow=true; forest.add(cn);
+}
+scene.add(forest);
+
+// ---------- world labels (sprites, always face camera) ----------
+function makeLabel(text, color){
+  const c=document.createElement('canvas'); const S=256; c.width=S; c.height=64;
+  const g=c.getContext('2d');
+  g.font='bold 34px Segoe UI, Arial'; g.textAlign='center'; g.textBaseline='middle';
+  g.fillStyle='rgba(255,255,255,0.0)'; g.fillRect(0,0,S,64);
+  g.lineWidth=6; g.strokeStyle='rgba(255,255,255,0.9)'; g.strokeText(text,S/2,32);
+  g.fillStyle=color||'#3a352a'; g.fillText(text,S/2,32);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true}));
+  sp.scale.set(9,2.25,1); return sp;
+}
+function placeLabel(text,x,z,y,color){ const sp=makeLabel(text,color); const [wx,wz]=toWorld(x,z); sp.position.set(wx,y||3,wz); scene.add(sp); }
+placeLabel('FOREST  (W)', -4, 16, 6, '#3f6b2e');
+placeLabel('STREET  (E)', 49, 10, 3, '#5a5344');
+placeLabel('N ↑', 22.9, -4, 3, '#333');
+placeLabel('S neighbour', 22.9, 36, 2.5, '#8a5a5a');
+
+// ---------- build scheme groups ----------
+const groups = {};
+for(const k in SCHEMES){
+  const g=new THREE.Group(); SCHEMES[k].boxes.forEach(b=>addBox(g,b)); g.visible=false; scene.add(g); groups[k]=g;
+}
+
+// ---------- camera orbit (dependency-free) ----------
+let target=new THREE.Vector3(0,2,0);
+let sph={r:62, theta:0.42, phi:0.95}; // radians; phi from +Y
+function applyCam(){
+  const {r,theta,phi}=sph;
+  camera.position.set(
+    target.x + r*Math.sin(phi)*Math.sin(theta),
+    target.y + r*Math.cos(phi),
+    target.z + r*Math.sin(phi)*Math.cos(theta)
+  );
+  camera.lookAt(target);
+}
+const VIEWS={
+  plan:  {r:70, theta:0.0,  phi:0.06},
+  iso:   {r:62, theta:0.72, phi:0.92},
+  persp: {r:48, theta:0.40, phi:1.28},
+};
+function setView(v){ const t=VIEWS[v]; sph={...t}; applyCam(); }
+
+let drag=false, px=0, py=0;
+renderer.domElement.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;py=e.clientY;});
+addEventListener('pointerup',()=>drag=false);
+addEventListener('pointermove',e=>{
+  if(!drag)return;
+  sph.theta -= (e.clientX-px)*0.008;
+  sph.phi   -= (e.clientY-py)*0.008;
+  sph.phi = Math.max(0.05, Math.min(1.52, sph.phi));
+  px=e.clientX; py=e.clientY; applyCam();
+});
+renderer.domElement.addEventListener('wheel',e=>{
+  e.preventDefault(); sph.r *= (1 + Math.sign(e.deltaY)*0.08);
+  sph.r=Math.max(20,Math.min(150,sph.r)); applyCam();
+},{passive:false});
+
+// ---------- UI ----------
+function setScheme(k){
+  for(const g in groups) groups[g].visible=(g===k);
+  ['A','B','C'].forEach(id=>document.getElementById('b'+id).classList.toggle('on',id===k));
+  const s=SCHEMES[k];
+  document.getElementById('info').innerHTML =
+    `<span class="tag">${s.tag}</span><h2>${s.name}</h2><ul>`+
+    s.notes.map(n=>`<li>${n}</li>`).join('')+`</ul>`;
+}
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+
+setScheme('B'); setView('iso');
+(function loop(){ requestAnimationFrame(loop); renderer.render(scene,camera); })();
+</script>
+</body>
+</html>

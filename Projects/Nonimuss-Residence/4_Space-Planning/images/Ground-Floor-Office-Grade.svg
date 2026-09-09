@@ -1,0 +1,141 @@
+<svg viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Segoe UI, Arial, sans-serif">
+<title>Nonimuss single-level ground floor with office at grade</title>
+<desc>Roster-driven redraw: office brought to grade in the NW, master suite in SW with a private door to the link, widened inhabited link with no stair, kitchen island facing the pool, clerestory over the great room, accessible guest suite NE. North up.</desc>
+<rect x="0" y="0" width="900" height="620" fill="#f8f6f0"/>
+<text x="24" y="24" font-size="14.5" fill="#1c1a17" font-weight="bold">GROUND FLOOR — single level, office at grade (1 m = 30 px)</text>
+<text x="60" y="42" font-size="10" fill="#5f7a3f" font-weight="bold">◄ W  forest / reservoir</text>
+<text x="624" y="42" font-size="10" fill="#7a5b1e" font-weight="bold">street / entry  E ►</text>
+<rect x="64" y="200" width="126" height="260" fill="#9cc4dd" fill-opacity="0.55" stroke="#4f7d99" stroke-width="1.6"/>
+<line x1="74" y1="215" x2="74" y2="445" stroke="#dff0fa" stroke-width="3"/>
+<rect x="96" y="300" width="62" height="62" fill="none" stroke="#c9a441" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="127" y="334" font-size="7" fill="#9a7320" text-anchor="middle">roof lantern</text>
+<text x="127" y="344" font-size="7" fill="#9a7320" text-anchor="middle">above (non-hab)</text>
+<text x="127" y="250" font-size="9.5" fill="#20323d" text-anchor="middle">Pool hall</text>
+<text x="127" y="263" font-size="7.6" fill="#33505f" text-anchor="middle">(beyond)</text>
+<rect x="190" y="265" width="60" height="105" fill="#efe7f6" stroke="#8163a3" stroke-width="1.6"/>
+<rect x="200" y="330" width="24" height="24" rx="3" fill="#cdbce0" stroke="#8163a3"/>
+<text x="212" y="346" font-size="6" fill="#37244a" text-anchor="middle">plunge</text>
+<rect x="200" y="285" width="40" height="12" fill="#cdbce0" stroke="#8163a3"/>
+<text x="220" y="294" font-size="6" fill="#37244a" text-anchor="middle">bench</text>
+<text x="220" y="312" font-size="8" fill="#37244a" text-anchor="middle" font-weight="bold">LINK</text>
+<text x="220" y="366" font-size="6.6" fill="#4a3560" text-anchor="middle">wellness room</text>
+<rect x="250" y="168" width="372" height="292" fill="#fdfcf9" stroke="#2b2b2b" stroke-width="3.5"/>
+<g stroke="#2b2b2b" stroke-width="2">
+<line x1="250" y1="319" x2="391" y2="319"/>
+<line x1="391" y1="168" x2="391" y2="460"/>
+<line x1="250" y1="253" x2="391" y2="253"/>
+<line x1="508" y1="168" x2="508" y2="460"/>
+<line x1="508" y1="268" x2="622" y2="268"/>
+<line x1="508" y1="322" x2="622" y2="322"/>
+<line x1="508" y1="391" x2="622" y2="391"/>
+<line x1="330" y1="319" x2="330" y2="389"/>
+<line x1="330" y1="389" x2="391" y2="389"/>
+</g>
+<rect x="401" y="235" width="98" height="120" fill="none" stroke="#c9a441" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="450" y="250" font-size="7" fill="#9a7320" text-anchor="middle">clerestory monitor above (S) — winter sun</text>
+<g stroke="#5c9fc4" stroke-width="3">
+<line x1="300" y1="460" x2="470" y2="460"/>
+<line x1="250" y1="180" x2="250" y2="240"/>
+<line x1="250" y1="330" x2="250" y2="345"/>
+<line x1="300" y1="460" x2="340" y2="460"/>
+<line x1="622" y1="185" x2="622" y2="235"/>
+<line x1="520" y1="168" x2="576" y2="168"/>
+<line x1="410" y1="168" x2="490" y2="168"/>
+</g>
+<g fill="#fdfcf9">
+<rect x="619" y="348" width="6" height="27"/>
+<rect x="505" y="340" width="6" height="26"/>
+<rect x="540" y="388" width="26" height="6"/>
+<rect x="300" y="316" width="28" height="6"/>
+<rect x="247" y="350" width="6" height="28"/>
+<rect x="290" y="250" width="28" height="6"/>
+<rect x="505" y="228" width="6" height="26"/>
+<rect x="520" y="265" width="24" height="6"/>
+</g>
+<g stroke="#4c9a5a" stroke-width="1.1" fill="none" opacity="0.85">
+<path d="M619 375 A27 27 0 0 1 619 348"/>
+<path d="M300 316 A28 28 0 0 0 328 316"/>
+<path d="M247 378 A28 28 0 0 0 247 350"/>
+<path d="M290 250 A28 28 0 0 1 318 250"/>
+<path d="M505 254 A26 26 0 0 1 505 228"/>
+</g>
+<rect x="332" y="321" width="57" height="66" fill="#eef2f4" stroke="#7d95a1"/>
+<rect x="335" y="324" width="24" height="24" fill="#dfeaf0" stroke="#5c6f79"/>
+<rect x="366" y="324" width="18" height="14" fill="none" stroke="#5c6f79"/>
+<rect x="335" y="366" width="36" height="14" fill="#dfeaf0" stroke="#5c6f79"/>
+<text x="360" y="358" font-size="6.4" fill="#5c6f79" text-anchor="middle">ensuite</text>
+<rect x="300" y="402" width="60" height="52" rx="3" fill="#dfe0d6" stroke="#8a8272"/>
+<rect x="300" y="440" width="60" height="14" fill="#eceadf" stroke="#8a8272"/>
+<text x="330" y="428" font-size="7" fill="#3a352a" text-anchor="middle">bed</text>
+<rect x="254" y="395" width="16" height="55" fill="#e0d6c4" stroke="#9a927c"/>
+<text x="262" y="424" font-size="6" fill="#6b6459" text-anchor="middle" transform="rotate(90 262 424)">wardrobe</text>
+<text x="322" y="336" font-size="8.6" fill="#3a352a" font-weight="bold">MASTER ~22</text>
+<text x="256" y="366" font-size="6.2" fill="#8163a3">→ private to plunge</text>
+<rect x="256" y="176" width="60" height="12" fill="#e0d6c4" stroke="#9a927c"/>
+<rect x="256" y="192" width="40" height="16" fill="#dfe4dc" stroke="#7f8c7a"/>
+<text x="276" y="203" font-size="6" fill="#4a5a45" text-anchor="middle">desk</text>
+<rect x="360" y="180" width="10" height="60" fill="#e0d6c4" stroke="#9a927c"/>
+<rect x="322" y="212" width="24" height="22" rx="10" fill="#d9d2c2" stroke="#9a927c"/>
+<text x="300" y="244" font-size="8.4" fill="#3a352a" font-weight="bold">OFFICE ~11</text>
+<text x="300" y="164" font-size="6.4" fill="#8a8272">W forest view · quiet corner</text>
+<rect x="332" y="266" width="56" height="17" rx="3" fill="#d9d2c2" stroke="#9a927c"/>
+<rect x="300" y="290" width="24" height="22" rx="3" fill="#d9d2c2" stroke="#9a927c"/>
+<rect x="340" y="292" width="34" height="18" rx="2" fill="#e8e0cf" stroke="#9a927c"/>
+<text x="352" y="262" font-size="7.4" fill="#6b6459" text-anchor="middle">living → opens W to pool</text>
+<rect x="400" y="446" width="100" height="14" fill="#cdd3cb" stroke="#7f8c7a"/>
+<rect x="410" y="400" width="60" height="18" rx="2" fill="#dfe4dc" stroke="#7f8c7a"/>
+<circle cx="430" cy="453" r="5" fill="none" stroke="#5c6f79" stroke-width="1.3"/>
+<rect x="486" y="447" width="16" height="13" fill="#e8e4da" stroke="#7f8c7a"/>
+<text x="440" y="413" font-size="6.8" fill="#4a5a45" text-anchor="middle">island → faces pool</text>
+<text x="452" y="440" font-size="7.6" fill="#4a5a45" text-anchor="end">kitchen</text>
+<rect x="410" y="330" width="60" height="60" rx="3" fill="#e3d4b6" stroke="#9a7d45"/>
+<g fill="#d9d2c2" stroke="#9a927c">
+<rect x="414" y="318" width="13" height="9"/><rect x="431" y="318" width="13" height="9"/><rect x="448" y="318" width="13" height="9"/>
+<rect x="414" y="392" width="13" height="9"/><rect x="431" y="392" width="13" height="9"/><rect x="448" y="392" width="13" height="9"/>
+<rect x="398" y="346" width="9" height="13"/><rect x="470" y="346" width="9" height="13"/></g>
+<text x="440" y="365" font-size="7.6" fill="#6b5320" text-anchor="middle">dining 8</text>
+<rect x="405" y="180" width="90" height="10" fill="#e0d6c4" stroke="#9a927c"/>
+<rect x="418" y="200" width="22" height="20" rx="9" fill="#d9d2c2" stroke="#9a927c"/>
+<rect x="460" y="200" width="22" height="20" rx="9" fill="#d9d2c2" stroke="#9a927c"/>
+<text x="450" y="235" font-size="7.4" fill="#6a5320" text-anchor="middle">reading nook</text>
+<text x="449" y="300" font-size="9" fill="#3a2f16" text-anchor="middle" font-weight="bold">GREAT ROOM ~46</text>
+<rect x="518" y="176" width="58" height="50" rx="3" fill="#dfe0d6" stroke="#8a8272"/>
+<rect x="518" y="176" width="58" height="12" fill="#eceadf" stroke="#8a8272"/>
+<rect x="584" y="176" width="30" height="14" fill="#e0d6c4" stroke="#9a927c"/>
+<text x="599" y="186" font-size="6" fill="#6b6459" text-anchor="middle">closet</text>
+<circle cx="545" cy="245" r="22" fill="none" stroke="#4c9a5a" stroke-width="1.2" stroke-dasharray="3 3"/>
+<text x="545" y="248" font-size="6.2" fill="#4c9a5a" text-anchor="middle">1.5m</text>
+<text x="565" y="215" font-size="8.4" fill="#3a352a" text-anchor="middle" font-weight="bold">GUEST ~12</text>
+<rect x="512" y="274" width="44" height="44" rx="2" fill="#dfeaf0" stroke="#5c6f79"/>
+<line x1="512" y1="274" x2="556" y2="318" stroke="#a9c4d4" stroke-width="1"/>
+<text x="534" y="299" font-size="6" fill="#4a6572" text-anchor="middle">roll-in</text>
+<rect x="568" y="276" width="18" height="15" fill="none" stroke="#5c6f79"/>
+<rect x="596" y="276" width="20" height="12" fill="#dfeaf0" stroke="#5c6f79"/>
+<text x="565" y="315" font-size="7.8" fill="#3a352a" text-anchor="middle" font-weight="bold">BATH ~6 roll-in</text>
+<rect x="514" y="322" width="66" height="11" fill="#e0d6c4" stroke="#9a927c"/>
+<text x="547" y="331" font-size="6" fill="#6b6459" text-anchor="middle">lockers</text>
+<rect x="596" y="326" width="24" height="16" rx="2" fill="#d9d2c2" stroke="#9a927c"/>
+<text x="565" y="382" font-size="8.2" fill="#3a352a" text-anchor="middle" font-weight="bold">MUDROOM ~8</text>
+<rect x="514" y="435" width="20" height="20" fill="#dfe4dc" stroke="#7f8c7a"/>
+<rect x="538" y="435" width="20" height="20" fill="#dfe4dc" stroke="#7f8c7a"/>
+<circle cx="586" cy="443" r="9" fill="none" stroke="#7f8c7a"/>
+<text x="565" y="415" font-size="8.2" fill="#3a352a" text-anchor="middle" font-weight="bold">MECH ~8</text>
+<line x1="662" y1="361" x2="625" y2="361" stroke="#7a5b1e" stroke-width="2.4"/>
+<polygon points="625,355 625,367 615,361" fill="#7a5b1e"/>
+<text x="666" y="364" font-size="9" fill="#7a5b1e">enter</text>
+<g>
+<line x1="840" y1="150" x2="840" y2="104" stroke="#1c1a17" stroke-width="2.4"/>
+<polygon points="834,116 846,116 840,98" fill="#1c1a17"/>
+<circle cx="840" cy="166" r="11" fill="none" stroke="#1c1a17" stroke-width="1.4"/>
+<text x="840" y="170" font-size="12" fill="#1c1a17" text-anchor="middle" font-weight="bold">N</text>
+</g>
+<g>
+<line x1="64" y1="590" x2="214" y2="590" stroke="#1c1a17" stroke-width="2"/>
+<line x1="64" y1="585" x2="64" y2="595" stroke="#1c1a17" stroke-width="2"/>
+<line x1="139" y1="586" x2="139" y2="594" stroke="#1c1a17" stroke-width="1.4"/>
+<line x1="214" y1="585" x2="214" y2="595" stroke="#1c1a17" stroke-width="2"/>
+<text x="64" y="608" font-size="8.4" fill="#3a352a">0</text><text x="136" y="608" font-size="8.4" fill="#3a352a">2.5</text><text x="212" y="608" font-size="8.4" fill="#3a352a">5 m</text>
+</g>
+<text x="470" y="480" font-size="8.4" fill="#a06a2a" text-anchor="middle">↓ S — high winter-noon sun · neighbour · garden</text>
+<text x="250" y="600" font-size="8" fill="#4c9a5a">roster moves: office→grade (no stair) · master→SW w/ private plunge door · link widened+inhabited · island faces pool · clerestory committed</text>
+</svg>

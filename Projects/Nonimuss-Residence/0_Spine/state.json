@@ -1,0 +1,15 @@
+{
+  "project": "Nonimuss-Residence",
+  "clientFork": "household",
+  "driversLocked": true,
+  "driversLockedDate": "2026-07-11",
+  "currentPhase": "space-planning",
+  "phases": {
+    "client-discovery": { "status": "complete",    "updated": "2026-07-05" },
+    "site":             { "status": "complete",    "updated": "2026-07-11" },
+    "precedents":       { "status": "complete",    "updated": "2026-07-25" },
+    "massing":          { "status": "complete",    "updated": "2026-07-25" },
+    "space-planning":   { "status": "in-progress", "updated": "2026-07-26" },
+    "materiality":      { "status": "complete", "updated": "2026-08-28" }
+  }
+}

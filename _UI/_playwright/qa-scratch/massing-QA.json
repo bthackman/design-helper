@@ -1,0 +1,140 @@
+{
+  "schema": "massing-interchange/v1",
+  "project": "Nonimuss-Residence",
+  "scheme": "B",
+  "schemeName": "B — The Breezeway (2-storey)",
+  "generated": "2026-09-09T16:32:18.522Z",
+  "units": "m",
+  "axes": {
+    "x": "East",
+    "z": "South",
+    "y": "Up",
+    "note": "North is -z. Boxes are axis-aligned; w = E–W extent, d = N–S extent (any rotation is baked into w/d). x,z = SW corner of the box in plan."
+  },
+  "site": {
+    "origin": [
+      0,
+      0
+    ],
+    "northDeg": 0,
+    "latLong": [
+      50.99256,
+      -114.13498
+    ],
+    "lotPolygon": [
+      [
+        0,
+        0
+      ],
+      [
+        45.83,
+        0
+      ],
+      [
+        45.83,
+        19.83
+      ],
+      [
+        0,
+        32.83
+      ]
+    ],
+    "setbackPolygon": [
+      [
+        7.5,
+        1.2
+      ],
+      [
+        42.83,
+        1.2
+      ],
+      [
+        42.83,
+        17
+      ],
+      [
+        7.5,
+        27.5
+      ]
+    ],
+    "lotArea": 1206.7,
+    "storeys": [
+      {
+        "name": "L1",
+        "elev": 0
+      },
+      {
+        "name": "L2",
+        "elev": 4.5
+      }
+    ]
+  },
+  "program": {
+    "dwellingCap": 120,
+    "coverageMaxPct": 45
+  },
+  "metrics": {
+    "dwelling": 107.9,
+    "pool": 84,
+    "coveragePct": 17.2,
+    "storeys": 1,
+    "volumeCount": 4
+  },
+  "volumes": [
+    {
+      "id": "Pool",
+      "type": "pool",
+      "x": 8,
+      "z": 6,
+      "w": 6,
+      "d": 14,
+      "h": 4.5,
+      "base": 0,
+      "glaz": 50
+    },
+    {
+      "id": "House",
+      "type": "house",
+      "x": 18,
+      "z": 5,
+      "w": 11.6,
+      "d": 9.3,
+      "h": 4,
+      "base": 0,
+      "glaz": 30
+    },
+    {
+      "id": "Link",
+      "type": "link",
+      "x": 14,
+      "z": 9,
+      "w": 4,
+      "d": 4,
+      "h": 7.5,
+      "base": 0,
+      "glaz": 50
+    },
+    {
+      "id": "Gym",
+      "type": "gym",
+      "x": 8,
+      "z": 22,
+      "w": 5,
+      "d": 5,
+      "h": 3,
+      "base": 4.5,
+      "glaz": 10
+    },
+    {
+      "id": "Terrace",
+      "type": "terr",
+      "x": 8,
+      "z": 20,
+      "w": 14,
+      "d": 6,
+      "h": 0.12,
+      "base": 0,
+      "glaz": 0
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+<svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" role="img" font-family="Segoe UI, Arial, sans-serif">
+<title>Nonimuss east street elevation</title>
+<desc>East street elevation: a calm single-storey house face with entry, guest window and clerestory, and the taller pool pavilion and office box rising behind it. South left, north right.</desc>
+<rect x="0" y="0" width="620" height="360" fill="#f4f6f8"/>
+<rect x="0" y="300" width="620" height="60" fill="#efe9dc"/>
+<text x="24" y="26" font-size="14.5" fill="#1c1a17" font-weight="bold">EAST (STREET) ELEVATION (1 m = 22 px)</text>
+<text x="40" y="46" font-size="10.5" fill="#7a5b1e" font-weight="bold">◄ S  (neighbour)</text>
+<text x="580" y="46" font-size="10.5" fill="#5f7a3f" font-weight="bold" text-anchor="end">N ►</text>
+<g fill="#c3d3bb" stroke="none" opacity="0.8">
+<ellipse cx="120" cy="120" rx="46" ry="30"/><ellipse cx="200" cy="110" rx="50" ry="34"/>
+<ellipse cx="300" cy="118" rx="48" ry="30"/><ellipse cx="390" cy="112" rx="44" ry="30"/>
+</g>
+<text x="470" y="110" font-size="8.4" fill="#7f9576">Weaselhead forest beyond (W)</text>
+<rect x="150" y="135" width="160" height="165" fill="#dfe4ea" stroke="#9aa6b0" stroke-width="1.3"/>
+<rect x="176" y="135" width="66" height="66" fill="#eef0ee" stroke="#8a8168" stroke-width="1.5"/>
+<text x="209" y="126" font-size="8" fill="#6b6459" text-anchor="middle">office box (7.5 m)</text>
+<text x="285" y="180" font-size="8" fill="#6f7c86">pool pavilion behind</text>
+<rect x="120" y="212" width="210" height="88" fill="#d8cdb8" stroke="#3a352a" stroke-width="2"/>
+<rect x="205" y="198" width="60" height="14" fill="#eaf2f6" stroke="#7d95a1" stroke-width="1.2"/>
+<text x="235" y="194" font-size="7" fill="#5c6f79" text-anchor="middle">clerestory</text>
+<g stroke="#c3b48f" stroke-width="1" opacity="0.7">
+<line x1="130" y1="220" x2="130" y2="300"/><line x1="140" y1="220" x2="140" y2="300"/>
+<line x1="150" y1="220" x2="150" y2="300"/><line x1="300" y1="220" x2="300" y2="300"/>
+<line x1="310" y1="220" x2="310" y2="300"/><line x1="320" y1="220" x2="320" y2="300"/>
+</g>
+<rect x="206" y="250" width="30" height="50" fill="#6b5a3e" stroke="#3a352a" stroke-width="1.4"/>
+<rect x="198" y="244" width="46" height="7" fill="#8a7452"/>
+<text x="221" y="318" font-size="8" fill="#6b6459" text-anchor="middle">entry</text>
+<rect x="284" y="234" width="34" height="40" fill="#cfe0ea" stroke="#5c6f79" stroke-width="1.3"/>
+<text x="301" y="286" font-size="7.4" fill="#6b6459" text-anchor="middle">guest</text>
+<g stroke="#8a8272" stroke-width="1.4">
+<line x1="140" y1="258" x2="164" y2="258"/><line x1="140" y1="264" x2="164" y2="264"/>
+<line x1="140" y1="270" x2="164" y2="270"/></g>
+<text x="152" y="286" font-size="7.2" fill="#8a8272" text-anchor="middle">mech</text>
+<line x1="24" y1="300" x2="596" y2="300" stroke="#8a8064" stroke-width="2"/>
+<line x1="345" y1="212" x2="345" y2="300" stroke="#8a8272" stroke-width="1"/>
+<text x="349" y="260" font-size="7.6" fill="#6b6459">4.0 m</text>
+<line x1="108" y1="135" x2="108" y2="300" stroke="#8a8272" stroke-width="1"/>
+<text x="82" y="220" font-size="7.6" fill="#6b6459">7.5 m</text>
+<text x="300" y="343" font-size="8.6" fill="#6b6459" text-anchor="middle">Calm, private street face (entry · guest · service) — the house opens up on the forest/pool side (W). Local-trades wood cladding.</text>
+</svg>

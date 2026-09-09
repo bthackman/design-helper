@@ -1,0 +1,132 @@
+{
+  "massing_before": {
+    "state": [
+      {
+        "id": "Pool",
+        "type": "pool",
+        "x": 8,
+        "z": 6,
+        "w": 6,
+        "d": 14,
+        "h": 4.5
+      },
+      {
+        "id": "House",
+        "type": "house",
+        "x": 18,
+        "z": 5,
+        "w": 11.6,
+        "d": 9.3,
+        "h": 4
+      },
+      {
+        "id": "Office",
+        "type": "office",
+        "x": 8,
+        "z": 10,
+        "w": 3.7,
+        "d": 3,
+        "h": 3,
+        "base": 4.5
+      },
+      {
+        "id": "Link",
+        "type": "link",
+        "x": 14,
+        "z": 9,
+        "w": 4,
+        "d": 4,
+        "h": 7.5
+      },
+      {
+        "id": "Gym",
+        "type": "gym",
+        "x": 8,
+        "z": 22,
+        "w": 5,
+        "d": 5,
+        "h": 3
+      },
+      {
+        "id": "Terrace",
+        "type": "terr",
+        "x": 8,
+        "z": 20,
+        "w": 14,
+        "d": 6,
+        "h": 0.12
+      }
+    ],
+    "dwell": "119 / 120 m\u00b2"
+  },
+  "massing_after_sync": {
+    "state": [
+      {
+        "id": "Pool",
+        "type": "pool",
+        "x": 8,
+        "z": 6,
+        "w": 6,
+        "d": 14,
+        "h": 4.5
+      },
+      {
+        "id": "House",
+        "type": "house",
+        "x": 18,
+        "z": 5,
+        "w": 11.6,
+        "d": 9.3,
+        "h": 4
+      },
+      {
+        "id": "Office",
+        "type": "office",
+        "x": 8,
+        "z": 10,
+        "w": 3.7,
+        "d": 3,
+        "h": 3,
+        "base": 4.5
+      },
+      {
+        "id": "Link",
+        "type": "link",
+        "x": 14,
+        "z": 9,
+        "w": 4,
+        "d": 4,
+        "h": 7.5
+      },
+      {
+        "id": "Gym",
+        "type": "gym",
+        "x": 8,
+        "z": 22,
+        "w": 5,
+        "d": 5,
+        "h": 3
+      },
+      {
+        "id": "Terrace",
+        "type": "terr",
+        "x": 8,
+        "z": 20,
+        "w": 14,
+        "d": 6,
+        "h": 0.12
+      }
+    ],
+    "dwell": "119 / 120 m\u00b2",
+    "tfSyncStatus": "synced 10:38:06 AM (testfit-QA.json)",
+    "tfSyncNoteHTML": "Test-Fit sync (10:38:06 AM):\nHouse (Ground): Test-Fit rooms need ~107.9 m\u00b2 (13\u00d78.3 bbox, 84.2 m\u00b2 net program) vs House box 107.9 m\u00b2 \u2014 match\nOffice (Upper): Test-Fit rooms need ~107.4 m\u00b2 (14\u00d77.67 bbox, 23 m\u00b2 net program) vs Office box 11.1 m\u00b2 \u2014 +96.3 m\u00b2 short \u2014 box may need to grow\nadvisory only \u2014 box dims are not auto-resized; axis correspondence between the two tools' coordinate systems is assumed, not verified",
+    "tfSyncNoteVisible": "block"
+  },
+  "massing_console": [
+    "[warning] [.WebGL-0x396c001b9600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x396c001b9600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x396c001b9600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[warning] [.WebGL-0x396c001b9600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "massing_errors": []
+}
