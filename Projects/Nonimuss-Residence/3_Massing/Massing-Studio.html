@@ -58,7 +58,7 @@
   </div>
   <div class="grp"><button onclick="resetScheme()">↺ Reset scheme</button>
     <button onclick="exportState()" title="Copy your edits to share with Claude">⧉ Export / share edits</button>
-    <button onclick="exportJSON()" title="Download massing.json for the Rhino / Revit receivers (current scheme)">⤓ Export JSON (Rhino/Revit)</button>
+    <button onclick="exportMassingJSON()" title="Download massing.json for the Rhino / Revit receivers (current scheme)">⤓ Export JSON (Rhino/Revit)</button>
     <button onclick="saveForSync()" title="Save massing-interchange.json to a real file — Test-Fit Studio reads this to sync its cap numbers">💾 Save for Test-Fit sync</button>
     <span class="lab" id="syncStatus" style="margin-left:2px">not yet saved</span></div>
   <div class="grp"><button onclick="syncFromTestFit()" title="Read testfit-interchange.json (saved from Test-Fit Studio) and compare its placed-room footprint against this scheme's House/Office boxes">↻ Sync from Test-Fit</button>
@@ -82,8 +82,10 @@
   <h2 id="schemeName">B — The Breezeway</h2>
   <h3>Steer a volume</h3>
   <select id="volPick" onchange="pickVol()"></select>
+  <div id="volBadge" class="cap-note"></div>
   <div id="sliders"></div>
   <div class="grp" style="margin-top:4px"><button onclick="rot90()">⟳ Rotate 90°</button></div>
+  <div id="promoPreview" class="cap-note" style="display:none"></div>
 
   <h3>Cap &amp; metrics</h3>
   <div class="metric"><span>Dwelling floor</span><b id="mDwell">–</b></div>
@@ -117,6 +119,9 @@
   <h3 style="margin-top:12px">Trade-space</h3>
   <div id="tradeWrap"><canvas id="tradeCanvas"></canvas></div>
   <div class="foot">Cap-safety (x) × wellness continuity D2 (y); bubble = winter thermal D3. ★ = your live edit.</div>
+  <div class="foot" id="tradeReadout"></div>
+  <div class="foot">The ★ only MOVES when an edit changes cap-safety or D2 specifically (e.g. pulling the house away from the pool/link) — those two are step-like, not smooth, so most edits (glazing, height, a small nudge) move the numbers above instead and leave the ★ sitting still or barely growing/shrinking. That's still a live update — read the numbers on this line, not just the dot.</div>
+  <div class="foot">A/B/C reference bubbles are always Stage 1 / LOD 100-grade — they never recompute against a promotion. Only the ★ (your live edit) can turn schematic (greyed), and only once a COND volume (house/office/pool/link) is promoted.</div>
 </div>
 
 <div id="hint">drag to orbit · scroll to zoom · steer volumes on the left</div>
@@ -225,8 +230,39 @@ function drivers(){
   return {D1,D2,D3,D4,D5,CAP6};
 }
 
+// ===== metricsDisplay() — Stage 2/3 (2026-09-09, Two-Stage-Integration-2026-09-09.md §2/§7) =====
+// metrics()/drivers() above are UNTOUCHED — byte-identical to before this pass, per this
+// project's "pure functions lifted, not rewritten" rule. This is new, additive judgment sitting
+// BESIDE them: given metrics()'s own raw output and the live `state`, decide which fields are
+// still trustworthy to show as a plain number and which have gone stale because a COND-type
+// volume (house/office/pool/link) carries a promotion (state[i].promoted, set by promoteVolume()
+// below). Reuses this tool's existing [bracketed] Judgment-flag convention (GLOSSARY.md) rather
+// than inventing new visual language for "a number that looks as certain as its neighbours but
+// isn't." Never called from metrics()/drivers() themselves — only from refresh()/updateTrade().
+const STALE_ON_PROMOTE = ['facade','effLoss','glazedPct','D3']; // §2's list, verbatim
+const SCHEMATIC_TAG = '[schematic-only — see Stage 2]';
+function metricsDisplay(m, st){
+  const promotedIds = st.filter(b => b.promoted && COND.includes(b.type)).map(b => b.id);
+  const tainted = promotedIds.length > 0;
+  const who = promotedIds.join('/');
+  return {
+    tainted, promotedVolumes: promotedIds, staleFields: tainted ? STALE_ON_PROMOTE.slice() : [],
+    coverage: { text: m.coverage.toFixed(1)+'% (max 45)',
+      title: tainted ? 'Box coverage — conservative, includes non-program notch area now that '+who+' is a promoted (Stage 2 / LOD 200) box.' : '' },
+    nVol: { text: m.nVol+' vol',
+      title: tainted ? 'Counts boxes, not rooms — see Test-Fit plan for real room articulation inside '+who+'.' : '' },
+    facade: tainted
+      ? { text: SCHEMATIC_TAG, raw: m.facade, title: 'Façade reads directly off '+who+"'s promoted box, which can understate real wall length once a room layout is articulated (Two-Stage-Integration-2026-09-09.md §2)." }
+      : { text: m.facade.toFixed(0)+' m²', raw: m.facade, title: '' },
+    effLoss: tainted ? { text: SCHEMATIC_TAG, raw: m.effLoss } : { text: m.effLoss.toFixed(0), raw: m.effLoss },
+    glazedPct: tainted
+      ? { text: SCHEMATIC_TAG, raw: m.glazedPct, title: 'Computed from the same promoted façade — see façade above.' }
+      : { text: m.glazedPct.toFixed(0)+'% glazed', raw: m.glazedPct, title: '' }
+  };
+}
+
 // ===== THREE scene =====
-const view=document.getElementById('view');
+const viewEl=document.getElementById('view');
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0xeae6da);
 scene.fog=new THREE.Fog(0xeae6da,95,190);
 const camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.5,600);
@@ -234,7 +270,7 @@ const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-view.appendChild(renderer.domElement);
+viewEl.appendChild(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xffffff,0x9a936f,0.75));
 const sun=new THREE.DirectionalLight(0xfff2d8,0.85);
 sun.position.set(CX-6,26,CZ+34); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
@@ -296,22 +332,37 @@ let target=new THREE.Vector3(0,2,0), sph={r:64,theta:0.42,phi:0.95};
 function applyCam(){const{r,theta,phi}=sph;camera.position.set(target.x+r*Math.sin(phi)*Math.sin(theta),target.y+r*Math.cos(phi),target.z+r*Math.sin(phi)*Math.cos(theta));camera.lookAt(target);}
 const VIEWS={plan:{r:74,theta:0,phi:0.06},iso:{r:64,theta:0.72,phi:0.92},persp:{r:50,theta:0.4,phi:1.28}};
 function setView(v){sph={...VIEWS[v]};applyCam();}
-let drag=false,px=0,py=0;
-renderer.domElement.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;py=e.clientY;});
-addEventListener('pointerup',()=>drag=false);
-addEventListener('pointermove',e=>{if(!drag)return;sph.theta-=(e.clientX-px)*.008;sph.phi=clamp(sph.phi-(e.clientY-py)*.008,0.05,1.52);px=e.clientX;py=e.clientY;applyCam();});
+let orbitDrag=false,px=0,py=0;
+renderer.domElement.addEventListener('pointerdown',e=>{orbitDrag=true;px=e.clientX;py=e.clientY;});
+addEventListener('pointerup',()=>orbitDrag=false);
+addEventListener('pointermove',e=>{if(!orbitDrag)return;sph.theta-=(e.clientX-px)*.008;sph.phi=clamp(sph.phi-(e.clientY-py)*.008,0.05,1.52);px=e.clientX;py=e.clientY;applyCam();});
 renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();sph.r=clamp(sph.r*(1+Math.sign(e.deltaY)*.08),20,150);applyCam();},{passive:false});
 
 // ===== steer UI =====
 function fillVolPicker(){
   const sel=document.getElementById('volPick'); sel.innerHTML='';
-  state.forEach((b,i)=>{const o=document.createElement('option');o.value=i;o.textContent=b.id+' ('+b.type+')';sel.appendChild(o);});
+  // Stage 4 (2026-09-09) — the badge, not a tab: a per-volume provenance label, right in the
+  // dropdown, so every volume's stage is scannable at once without picking each one in turn.
+  // See buildSliders() below for the fuller badge on whichever volume is currently selected.
+  state.forEach((b,i)=>{const o=document.createElement('option');o.value=i;o.textContent=b.id+' ('+b.type+')'+(b.promoted?' — LOD 200':'');sel.appendChild(o);});
   sel.value=selIdx;
 }
 function pickVol(){selIdx=+document.getElementById('volPick').value;buildSliders();rebuild();}
 const SLIDE=[["x","East–West",0,44,0.5],["z","North–South",0,32,0.5],["w","Width (E-W)",2,25,0.5],["d","Depth (N-S)",2,20,0.5],["h","Height",0.1,8,0.1],["base","Base / level (stack)",0,6,0.5],["glaz","Glazing %",0,100,25]];
 function buildSliders(){
   const b=state[selIdx],box=document.getElementById('sliders');box.innerHTML='';
+  // Stage 4 badge — no new page-level mode control (Two-Stage-Integration-2026-09-09.md §3):
+  // this is a fact about ONE volume, read straight off state[i].promoted, next to its own
+  // sliders. "Reshape to fit" (Stage 3, promoteVolume() below) is what sets it; nothing else does.
+  const badgeEl=document.getElementById('volBadge');
+  if(badgeEl){
+    if(b.promoted){
+      const bef=b.promoted.before;
+      badgeEl.innerHTML='<b style="color:#8a6d3b">Stage 2 — LOD 200 (articulated)</b> · promoted '+b.promoted.date+' from Test-Fit · was '+bef.w.toFixed(1)+'×'+bef.d.toFixed(1)+'m';
+    } else {
+      badgeEl.innerHTML='Stage 1 — LOD 100 (siting)';
+    }
+  }
   SLIDE.forEach(([k,lab,mn,mx,st])=>{
     const wrap=document.createElement('div');wrap.className='slider';
     const cur=(k==='glaz')?glazOf(b):((+b[k])||0), dp=(k==='glaz')?0:1;
@@ -332,6 +383,7 @@ function setScheme(k){curKey=k;state=WORK[k];selIdx=Math.min(selIdx,state.length
 function barColor(v){return v>=70?'var(--good)':v>=45?'var(--warn)':'var(--bad)';}
 function refresh(){
   const m=metrics(),d=drivers();
+  const disp=metricsDisplay(m,state); // Stage 2/3 — gates facade/effLoss/glazedPct/D3, captions coverage/nVol. metrics()/drivers() above stay untouched.
   document.getElementById('mDwell').textContent=m.dwell.toFixed(0)+' / '+CAP+' m²';
   const pct=clamp(m.dwell/CAP*100,0,140);
   const cb=document.getElementById('capBar'); cb.style.width=Math.min(pct,100)+'%';
@@ -339,15 +391,28 @@ function refresh(){
   document.getElementById('capNote').textContent=m.dwell<=CAP?('✓ '+(CAP-m.dwell).toFixed(0)+' m² under cap'):('✗ '+(m.dwell-CAP).toFixed(0)+' m² OVER — trim the dwelling');
   document.getElementById('capNote').style.color=m.dwell<=CAP?'#4c9a5a':'#c8503c';
   document.getElementById('mPool').textContent=m.pool.toFixed(0)+' m²';
-  document.getElementById('mCov').textContent=m.coverage.toFixed(1)+'% (max 45)';
+  const mCovEl=document.getElementById('mCov'); mCovEl.textContent=disp.coverage.text; mCovEl.title=disp.coverage.title;
   document.getElementById('mVol').textContent=m.volume.toFixed(0)+' m³';
-  document.getElementById('mFac').textContent=m.facade.toFixed(0)+' m²';
-  document.getElementById('mGlaz').textContent=m.glazedPct.toFixed(0)+'% glazed';
-  document.getElementById('mSimp').textContent=m.nVol+' vol · '+m.storeys+'-storey '+(m.nVol<=2?'· simple':m.nVol<=4?'· moderate':'· complex');
-  const D=[["D1 forest",d.D1],["D2 wellness",d.D2],["D3 winter",d.D3],["D4 sun",d.D4],["D5 step-free",d.D5],["OQ-6 cap-safe",d.CAP6]];
-  document.getElementById('drivers').innerHTML=D.map(([n,v])=>
-    `<div class="drv"><div class="row"><span>${n}</span><b>${v.toFixed(0)}</b></div><div class="bar"><i style="width:${v}%;background:${barColor(v)}"></i></div></div>`).join('');
-  drawSection(); updateTrade(); saveWork(); renderTestFitSync();
+  const mFacEl=document.getElementById('mFac'); mFacEl.textContent=disp.facade.text; mFacEl.title=disp.facade.title; mFacEl.style.color=disp.tainted?'#8a6d3b':'';
+  const mGlazEl=document.getElementById('mGlaz'); mGlazEl.textContent=disp.glazedPct.text; mGlazEl.title=disp.glazedPct.title; mGlazEl.style.color=disp.tainted?'#8a6d3b':'';
+  const mSimpEl=document.getElementById('mSimp'); mSimpEl.textContent=disp.nVol.text+' · '+m.storeys+'-storey '+(m.nVol<=2?'· simple':m.nVol<=4?'· moderate':'· complex'); mSimpEl.title=disp.nVol.title;
+  const D=[["D1 forest",d.D1,false],["D2 wellness",d.D2,false],["D3 winter",d.D3,disp.tainted],["D4 sun",d.D4,false],["D5 step-free",d.D5,false],["OQ-6 cap-safe",d.CAP6,false]];
+  document.getElementById('drivers').innerHTML=D.map(([n,v,flagged])=>
+    flagged
+      ? `<div class="drv"><div class="row"><span>${n}</span><b style="color:#8a6d3b">${v.toFixed(0)} ${SCHEMATIC_TAG}</b></div><div class="bar"><i style="width:${v}%;background:#c9bfa0;opacity:.6"></i></div></div>`
+      : `<div class="drv"><div class="row"><span>${n}</span><b>${v.toFixed(0)}</b></div><div class="bar"><i style="width:${v}%;background:${barColor(v)}"></i></div></div>`
+  ).join('');
+  drawSection(); updateTrade(); saveWork(); renderTestFitSync(); refreshPromotionPreview();
+  // Step 5 (2026-09-09): re-render Test-Fit's plan so its live massing cut
+  // (liveMassingCut()/drawPlanCut() in Test-Fit-Studio.html) reflects this edit in the same
+  // instant — the bar Fork-Decision-2026-09-09.md §4 sets: "drag a volume in the 3D pane, and
+  // the dashed footprint under the rooms moves in the same instant. Not on save. Not on sync."
+  // Guarded, not assumed: `render` only exists as a top-level function once Test-Fit Studio's
+  // own script has also run in this document (true only inside the generated
+  // Design-Studio.html) — a standalone Massing Studio never defines it, so `typeof render`
+  // is safely 'undefined' there and this is a no-op, same as renderTestFitSync() above already
+  // is when nothing has synced. Never lets a Test-Fit-side failure break Massing's own refresh.
+  if (typeof render === 'function') { try{ render(); }catch(e){} }
 }
 
 // ===== SECTION renderer =====
@@ -416,6 +481,34 @@ function drawSection(){
 }
 function setSection(a){sectionAxis=a;document.getElementById('secNS').classList.toggle('on',a==='NS');document.getElementById('secEW').classList.toggle('on',a==='EW');drawSection();}
 
+// ===== PLAN CUT (Step 5, 2026-09-09) — a horizontal sibling of drawSection() above: same
+// idea (a function that reads `state` and produces a 2D slice) but a plan cut instead of a
+// section — and it returns geometry rather than drawing to a canvas, since the consumer is
+// Test-Fit Studio's SVG plan (only reachable when both Studios share one runtime, i.e. inside
+// the generated Design-Studio.html), not a canvas element in this file. Read-only: never
+// writes into `state`. Massing models solid boxes with base/h, not floor slabs, so a box is
+// "present" at a given elevation exactly when base <= elevation < base+h — the same test
+// Fork-Decision-2026-09-09.md §4 specifies, and the reason a cut at the Upper elevation finds
+// Office over House but nothing over Pool (Pool's box top is exactly that elevation, so it's
+// excluded by the "< base+h", not "<=").
+function drawPlanCut(elevation){
+  return state
+    .filter(b => elevation >= (b.base||0) && elevation < (b.base||0)+b.h)
+    .map(b => ({id:b.id, type:b.type, x:b.x, z:b.z, w:b.w, d:b.d}));
+}
+// Which elevation counts as "Ground" and which as "Upper" — derived from `state` itself, never
+// hardcoded to e.g. 4.5. Reuses the exact convention already established elsewhere in this
+// codebase (Test-Fit's own syncFromMassing(): base<0.1 = Ground, base>=0.1 = Upper, keyed off
+// the two DWELL types). Ground's cut elevation is the house box's own base (0 in every scheme
+// that exists today); Upper's is the office box's own base (4.5 in scheme B). A scheme with no
+// office volume (A, C) has no real "Upper" — Upper collapses to Ground's elevation, which is
+// the honest answer for a single-storey scheme, not a special case needing a guard.
+function levelElevations(){
+  const house=findBox('house'), office=findBox('office');
+  const ground = house ? (house.base||0) : 0;
+  return {Ground: ground, Upper: office ? (office.base||0) : ground};
+}
+
 // ===== TRADE-SPACE (Chart.js) =====
 let chart;
 function schemePoint(key,boxes){const d=schemeDrivers(boxes);return {x:d.CAP6,y:d.D2,r:6+d.D3/10,key};}
@@ -426,15 +519,38 @@ function updateTrade(){
     {...schemePoint('C',DEFAULTS.C.boxes),c:'#7fb0d0'},
   ];
   const live=schemeDrivers(state);const livePt={x:live.CAP6,y:live.D2,r:8+live.D3/10};
+  // Stage 3 (2026-09-09) — the bubble radius reads D3, and D3 reads facade/effLoss, so the
+  // star's own color/greyed treatment must track the same `tainted` flag metricsDisplay()
+  // computes for the panel above. Position (x=CAP6, y=D2) stays honest and live either way
+  // (Two-Stage-Integration-2026-09-09.md §2) — only the radius/color is in question here.
+  const disp=metricsDisplay(metrics(),state);
+  const starColor=disp.tainted?'#9a948a':'#d98a2b', starBorder=disp.tainted?'#6b6459':'#8a5410';
+  // Live dataset listed FIRST, not second (2026-09-09 — Ben's "doesn't appear to update"
+  // report). Confirmed live, pixel-by-pixel, that this Chart.js build paints datasets[0] on
+  // TOP of datasets[1] wherever they overlap — the opposite of the naive "later = on top"
+  // assumption the code read like before. Whenever the live edit hasn't moved yet (e.g. right
+  // after loading scheme B, before touching anything), the ★ sits at the EXACT same x/y as
+  // scheme B's own static bubble — that's correct, not a bug, since nothing has diverged from
+  // B yet — but with the old order the plain grey circle painted over the star completely,
+  // leaving no visible star at all, only a couple of its points peeking past the circle's edge.
+  // Read the four bubble/star element colors directly off the canvas (getImageData, not a
+  // screenshot guess) before deciding this was the actual mechanism, not merely a theory.
   const data={datasets:[
+    {label:'★ live'+(disp.tainted?' (schematic)':''),data:[livePt],backgroundColor:starColor,borderColor:starBorder,borderWidth:2,pointStyle:'star'},
     {label:'A / B / C',data:pts.map(p=>({x:p.x,y:p.y,r:p.r,key:p.key})),backgroundColor:pts.map(p=>p.c),borderColor:'#333',borderWidth:1},
-    {label:'★ live',data:[livePt],backgroundColor:'#d98a2b',borderColor:'#8a5410',borderWidth:2,pointStyle:'star'},
   ]};
   const opts={responsive:true,maintainAspectRatio:false,animation:false,
     scales:{x:{title:{display:true,text:'cap-safety (OQ-6) →'},min:0,max:100},y:{title:{display:true,text:'wellness continuity D2 →'},min:0,max:100}},
     plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const k=c.raw.key||'live';return k+'  cap '+c.raw.x.toFixed(0)+' / D2 '+c.raw.y.toFixed(0);}}}}};
   if(!chart){chart=new Chart(document.getElementById('tradeCanvas'),{type:'bubble',data,options:opts});}
   else{chart.data=data;chart.update();}
+  // Numeric readout, always current (2026-09-09) — the chart recomputes on every single edit
+  // (called from the end of refresh(), which every slider's oninput already triggers), but the
+  // ★ itself frequently doesn't move a visible pixel because CAP6/D2 are threshold-based, not
+  // continuous (see the comment on drivers() for the actual formulas). This line is the proof
+  // the update happened even when the dot looks frozen — read it, don't just watch the dot.
+  const ro=document.getElementById('tradeReadout');
+  if(ro) ro.textContent='live now: cap-safety '+live.CAP6.toFixed(0)+' · D2 '+live.D2.toFixed(0)+' · D3 (bubble size) '+live.D3.toFixed(0)+(disp.tainted?'  '+SCHEMATIC_TAG:'');
 }
 
 // ===== export current state (so it can be shared back to Claude) =====
@@ -493,7 +609,7 @@ function buildInterchange(){
     volumes:vols
   };
 }
-function exportJSON(){
+function exportMassingJSON(){
   const txt=JSON.stringify(buildInterchange(),null,2);
   const blob=new Blob([txt],{type:"application/json"});
   const url=URL.createObjectURL(blob);
@@ -531,7 +647,7 @@ async function saveForSync(){
   try{
     if(!window.showSaveFilePicker){
       statusEl.textContent='needs Chrome/Edge — falling back to download';
-      exportJSON();
+      exportMassingJSON();
       return;
     }
     if(!syncFileHandle){
@@ -641,6 +757,116 @@ function rebuildGhosts(){
     lbl.position.set(wx,(box.base||0)+1.1,wz); lbl.scale.set(7,1.75,1);
     ghostGroup.add(lbl);
   });
+}
+
+// ===== PROMOTION PREVIEW + COMMIT (Stage 2/3, 2026-09-09, Two-Stage-Integration-2026-09-09.md
+// §7) — the live, per-volume version of the ghost-then-commit idea Stage 0's rebuildGhosts()
+// above already proved, generalized from "House/Office via a saved sync file" to "any COND-type
+// volume, read live off Test-Fit's own `rooms`, the instant both Studios share a runtime."
+//
+// testFitBBoxFor() is the mirror image of liveMassingCut()/liveCutForLevel() in
+// Test-Fit-Studio.html: THAT function feature-detects Massing's globals from the Test-Fit side;
+// this one feature-detects Test-Fit's globals (`rooms`, `ROOM_VOLUME_TYPE`) from the Massing
+// side — the first time this codebase reads INTO Test-Fit's object graph rather than out of it.
+// Only real inside the generated Design-Studio.html; a standalone open of this file has no
+// `rooms` at all, so every function below is a safe, silent no-op there — same contract every
+// other cross-Studio read in this codebase already uses.
+//
+// Read-only through Stage 2 (preview): nothing here writes into `state` until promoteVolume()
+// is actually clicked (Stage 3). "Reshape to fit" is box-grow only — it writes a NEW w/d/x/z
+// onto the SAME volume object, never creates a volume per room (Two-Stage-Integration-2026-09-09
+// .md §2's load-bearing constraint: the moment a room becomes its own volume, nVol/D3/D5 break
+// for real — this never does that).
+function testFitBBoxFor(type){
+  if (typeof rooms === 'undefined' || typeof ROOM_VOLUME_TYPE === 'undefined') return null;
+  let minX=Infinity,minZ=Infinity,maxX=-Infinity,maxZ=-Infinity,any=false;
+  try{
+    Object.entries(rooms).forEach(([id,r])=>{
+      if (r.illustrative) return;
+      if (ROOM_VOLUME_TYPE[id] !== type) return;
+      any = true;
+      minX=Math.min(minX,r.x); maxX=Math.max(maxX,r.x+r.w);
+      minZ=Math.min(minZ,r.y); maxZ=Math.max(maxZ,r.y+r.h);
+    });
+  }catch(e){ return null; } // a live-link failure must never break Massing's own refresh
+  if(!any) return null;
+  return {x:+minX.toFixed(2), z:+minZ.toFixed(2), w:+(maxX-minX).toFixed(2), d:+(maxZ-minZ).toFixed(2)};
+}
+// One entry per volume in the CURRENT scheme that has real Test-Fit rooms mapped to it — the
+// box delta ("what Reshape to fit would do right now") plus, for COND-type volumes, which
+// metrics will go stale the moment it's committed (§2's own list, named in the preview text
+// itself, not just in this document — the exact requirement Stage 2's checkpoint tests for).
+function promotionPreview(){
+  return state.map((b,i)=>{
+    const bb = testFitBBoxFor(b.type);
+    if(!bb) return null;
+    const delta = {w:+(bb.w-b.w).toFixed(2), d:+(bb.d-b.d).toFixed(2), x:+(bb.x-b.x).toFixed(2), z:+(bb.z-b.z).toFixed(2)};
+    const changed = Math.abs(delta.w)>0.01 || Math.abs(delta.d)>0.01 || Math.abs(delta.x)>0.01 || Math.abs(delta.z)>0.01;
+    return { idx:i, id:b.id, type:b.type, changed, from:{w:b.w,d:b.d,x:b.x,z:b.z}, to:bb, delta,
+             staleMetrics: COND.includes(b.type) ? STALE_ON_PROMOTE.slice() : [] };
+  }).filter(Boolean);
+}
+function refreshPromotionPreview(){
+  rebuildPromoGhosts();
+  const el = document.getElementById('promoPreview');
+  if(!el) return;
+  const items = promotionPreview().filter(p=>p.changed);
+  if(!items.length){ el.style.display='none'; return; }
+  el.style.display='block'; el.style.color='#8a6d3b';
+  el.innerHTML = '<b>Promotion preview (live from Test-Fit — no write yet):</b><br>' + items.map(p=>{
+    const moveTxt = (Math.abs(p.delta.x)>0.01||Math.abs(p.delta.z)>0.01)
+      ? ', moves '+(p.delta.x>=0?'+':'')+p.delta.x.toFixed(1)+'m E, '+(p.delta.z>=0?'+':'')+p.delta.z.toFixed(1)+'m S' : '';
+    const dims = p.id+': '+p.from.w.toFixed(1)+'×'+p.from.d.toFixed(1)+' → '+p.to.w.toFixed(1)+'×'+p.to.d.toFixed(1)+' m'+moveTxt;
+    const stale = p.staleMetrics.length
+      ? '<br><span style="font-size:9.5px">Committing goes stale: '+p.staleMetrics.join(', ')+' and the trade-space bubble/D3 bar (Stage 2 / LOD 200 — '+SCHEMATIC_TAG+').</span>' : '';
+    const btn = ' <button style="margin-left:4px;font-size:10.5px;padding:2px 7px" onclick="promoteVolume('+p.idx+')" title="Writes '+p.id+'\'s w/d/x/z to the rooms\' bounding box, sets its provenance flag, then reruns rebuild()/refresh() exactly like any slider edit.">Reshape to fit</button>';
+    return '<div style="margin:4px 0 6px">'+dims+stale+btn+'</div>';
+  }).join('');
+}
+// A distinct visual group from Stage 0's tan/brown file-sync ghost (rebuildGhosts()/ghostGroup
+// above) — this one is amber/warn-colored, live (no file save needed), and covers every
+// COND-type volume with a real delta, not just House/Office.
+let promoGhostGroup=new THREE.Group(); scene.add(promoGhostGroup);
+function rebuildPromoGhosts(){
+  disposeGroup(promoGhostGroup);
+  promotionPreview().filter(p=>p.changed).forEach(p=>{
+    const b=state[p.idx];
+    const[wx,wz]=toWorld(p.to.x+p.to.w/2, p.to.z+p.to.d/2);
+    const geo=new THREE.BoxGeometry(p.to.w, 0.08, p.to.d);
+    const edges=new THREE.EdgesGeometry(geo);
+    const line=new THREE.LineSegments(edges,new THREE.LineDashedMaterial({color:0xd98a2b,dashSize:0.5,gapSize:0.3}));
+    line.computeLineDistances();
+    line.position.set(wx,(b.base||0)+0.06,wz);
+    promoGhostGroup.add(line);
+    const lbl=makeLabel(p.id+' → '+p.to.w.toFixed(1)+'×'+p.to.d.toFixed(1)+'m (preview)','#d98a2b');
+    lbl.position.set(wx,(b.base||0)+1.3,wz); lbl.scale.set(7,1.75,1);
+    promoGhostGroup.add(lbl);
+  });
+}
+// ===== Stage 3 — the commit ("Reshape to fit") =====
+// Writes new w/d/x/z AND the provenance flag as ONE atomic assignment (never two edits an
+// observer could catch half-applied), then runs the exact rebuild()/refresh() pair any ordinary
+// slider oninput already runs — no special-case render path for a promoted box. Box-grow only:
+// this resizes/repositions the existing volume, never creates a new one.
+function promoteVolume(i){
+  const b = state[i];
+  const bb = testFitBBoxFor(b.type);
+  if(!bb) return; // preview vanished between paint and click (e.g. rooms dragged back) — no-op
+  const before = {w:b.w, d:b.d, x:b.x, z:b.z};
+  b.w=bb.w; b.d=bb.d; b.x=bb.x; b.z=bb.z;
+  b.promoted = {from:'test-fit', date:new Date().toISOString().slice(0,10), before};
+  rebuild(); refresh();
+  // Unlike an ordinary slider's oninput (which patches only its own <span> directly), this
+  // button changes w/d/x/z all at once from OUTSIDE the currently-open slider set, on
+  // whichever volume the preview panel named — not necessarily the one selIdx currently
+  // points at. So the picker dropdown (its "— LOD 200" option text) and, if the promoted
+  // volume IS the one currently selected, its own slider values + badge both need an
+  // explicit repaint. Caught live via a real button click, not a direct function call:
+  // without this, "Reshape to fit" wrote state and regrew the 3D box correctly but left the
+  // sliders/badge/dropdown showing stale pre-promotion numbers until the volume was
+  // re-picked by hand.
+  fillVolPicker();
+  if (selIdx === i) buildSliders();
 }
 
 // ===== responsive panel offset =====

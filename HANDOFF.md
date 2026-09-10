@@ -57,10 +57,18 @@ Chromium or explicitly flagged as unverified. **Nothing in this session was comm
 — **contains a real error, see below**), `Review-Steps-1-4-2026-09-09.md` (third-party review),
 `Step-5-Report-2026-09-09.md`, `Containment-And-TradeSpace-2026-09-09.md`,
 `Two-Stage-Massing-2026-09-09.md`, `Two-Stage-Integration-2026-09-09.md`, and
-**`Two-Stage-Build-2026-09-09.md`** — the last of these was still being written by a Fable agent when this
-entry was authored, covering the build of Integration §7's Stages 2–5 (promotion preview, the "Reshape to
-fit" commit, the per-volume badge, and method propagation into the skill). **If that file is absent or
-truncated, Stages 2–5 may be half-built — check `git status` and the source Studios before trusting them.**
+**`Two-Stage-Build-2026-09-09.md`** — Integration §7's Stages 2–5, now **built, independently verified, and
+committed**: the live promotion preview, the "Reshape to fit" commit with its `.promoted` provenance flag,
+`metricsDisplay()` (with `metrics()`/`drivers()` confirmed byte-identical to session start), the per-volume
+badge, and method propagation into `phase-3-massing.md`, `phase-4-space-planning.md`, `SKILL.md` and
+`GLOSSARY.md`, with `design-process.skill` repackaged (verified: 10 entries, forward-slash separators, all
+8 documents byte-matching their sources).
+
+**The loop demonstrably closes.** Verified independently through the real button in the merged page: House
+promoted from 11.6 × 9.3 m to **13.0 × 12.3 m**, `promoted` flag set, and `containmentResults()` breaches
+went **4 → 0**. Rooms breach → promote → the box grows to fit → the breach is gone. Zero console/page
+errors across all four pages (both standalone Studios, Nyando, and `Design-Studio.html`), and
+`buildInterchange()`/`buildExportData()` identical standalone vs. merged both before and after promotion.
 
 ### What got built and verified
 
@@ -170,7 +178,17 @@ rooms' bounding box via an explicit, previewable, undoable action. Anchored to *
    `*.pre-step3-backup`, `*.pre-stage0-backup`). A `git add -A` would publish them — gitignore or delete.
 9. **Ben's in-person confirmation of Step 5 is still outstanding** — the live plan cut has only been
    verified headlessly.
-10. **`_UI/_playwright/` still has no install notes** despite now having a working interpreter.
+10. ~~`_UI/_playwright/` has no install notes~~ — **done**, `_UI/_playwright/README.md` now carries the
+    install steps, the "check which interpreter you actually got" trap, the `file://` cross-frame limit,
+    and the verification conventions. Written because a new machine would otherwise repeat today's hour.
+11. **"Stage 1 / Stage 2" collides with existing vocabulary** — `phase-2-site.md` already uses "Stage 1 —
+    zone scorecard" / "Stage 2 — parcel scorecard" for the *site search*, an unrelated meaning.
+    `Two-Stage-Integration-2026-09-09.md` claimed no collision existed; it was wrong. The build
+    disambiguated with parentheticals rather than renaming either pair, because which one should change is
+    Ben's call, not a build decision. Worth settling before the terms spread further.
+12. **The Stage 4 badge is fully reversible from `Massing-Studio.html:342-365` alone** — Integration §7
+    wanted Ben to see real badges before they were written into the method docs; he chose to build through
+    that pause, so this is the localised undo point if the badges read wrong in use.
 
 ### The verification bar that actually caught things
 
