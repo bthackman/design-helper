@@ -43,7 +43,12 @@
 #ms-pane button{font:inherit;font-size:12px;padding:5px 10px;border:1px solid #b9b19c;background:#fff;border-radius:7px;cursor:pointer;color:#2b2b2b}
 #ms-pane button:hover{background:#f3efe4}
 #ms-pane button.on{background:#5b6b7a;color:#fff;border-color:#46545f}
-#ms-pane #ms-left{top:64px;left:12px;width:270px;max-height:calc(100% - 80px);overflow:auto;padding:12px 14px;font-size:12px}
+#ms-pane button.iconbtn{padding:2px 7px;font-size:12px;border-radius:6px;line-height:1.4}
+#ms-pane #ms-left.collapsed, #ms-pane #ms-right.collapsed{width:auto}
+#ms-pane .panelHead{display:flex;justify-content:space-between;align-items:center;padding:9px 12px 0}
+#ms-pane .panelBody{padding:6px 14px 12px;overflow:auto;max-height:calc(100% - 130px);font-size:12px}
+#ms-pane .collapsed .panelBody{display:none}
+#ms-pane #ms-left{top:64px;left:12px;width:270px;max-height:calc(100% - 80px);transition:width .15s}
 #ms-pane #ms-left h2{font-size:13px;margin:0 0 6px}
 #ms-pane #ms-left h3{font-size:11px;margin:12px 0 5px;color:#6b6459;text-transform:uppercase;letter-spacing:.04em}
 #ms-pane select, #ms-pane input[type=range]{width:100%}
@@ -56,12 +61,13 @@
 #ms-pane .drv{margin:5px 0}
 #ms-pane .drv .row{display:flex;justify-content:space-between;font-size:11px}
 #ms-pane .cap-note{font-size:10.5px;color:#6b6459;margin-top:-3px}
-#ms-pane #ms-right{top:64px;right:12px;width:330px;max-height:calc(100% - 80px);overflow:auto;padding:10px 12px}
+#ms-pane #ms-right{top:64px;right:12px;width:330px;max-height:calc(100% - 80px);transition:width .15s}
 #ms-pane #ms-right h3{font-size:11px;margin:4px 0 5px;color:#6b6459;text-transform:uppercase;letter-spacing:.04em}
 #ms-pane #sectionCanvas{width:100%;height:170px;background:#f4f1ea;border:1px solid var(--line);border-radius:7px}
 #ms-pane #tradeWrap{height:210px;position:relative}
 #ms-pane .foot{font-size:10px;color:#8a8375;margin-top:6px;line-height:1.4}
 #ms-pane #ms-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:#7a7365;background:rgba(255,255,255,.72);padding:4px 10px;border-radius:6px}
+#ms-pane #ms-exportModal{position:absolute;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center}
 </style>
 <style>/* ---- Test-Fit Studio, scoped ---- */
 #tf-pane{--ink:#1c1c1c;--panel:rgba(255,255,255,.94);--line:#c9c2b0;--good:#4c9a5a;--warn:#d98a2b;--bad:#c8503c;}
@@ -101,6 +107,7 @@
 #tf-pane .viol{background:#fbe4e0;border:1px solid #e0a394;border-radius:7px;padding:6px 8px;font-size:10.6px;margin:4px 0}
 #tf-pane .softnote{background:#fdf3d9;border:1px solid #e5c876;border-radius:7px;padding:6px 8px;font-size:10.6px;margin:4px 0}
 #tf-pane #hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:#7a7365;background:rgba(255,255,255,.72);padding:4px 10px;border-radius:6px;z-index:4}
+#tf-pane #exportModal{position:absolute;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -140,7 +147,7 @@
     <span class="lab" id="tfSyncStatus" style="margin-left:2px">not yet synced</span></div>
 </div>
 
-<div id="ms-exportModal" style="display:none;position:fixed;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center">
+<div id="ms-exportModal" style="display:none">
   <div class="panel" style="position:relative;width:min(560px,92vw);padding:16px 18px">
     <h2 style="margin:0 0 4px;font-size:15px">Your massing state</h2>
     <div id="exportMsg" style="font-size:11.5px;color:#4c9a5a;margin-bottom:8px">Copy this and paste it into the chat so Claude can see your edits.</div>
@@ -154,7 +161,8 @@
 
 <!-- LEFT: steer + live metrics -->
 <div class="panel" id="ms-left">
-  <h2 id="schemeName">B — The Breezeway</h2>
+  <div class="panelHead"><h2 id="schemeName">B — The Breezeway</h2><button class="iconbtn" onclick="toggleMsLeft()" id="ms-leftToggle">−</button></div>
+  <div class="panelBody">
   <h3>Steer a volume</h3>
   <select id="volPick" onchange="pickVol()"></select>
   <div id="volBadge" class="cap-note"></div>
@@ -177,11 +185,13 @@
   <h3>Driver proxies (concept-grade)</h3>
   <div id="drivers"></div>
   <div class="foot">Scores are geometric heuristics that move as you steer — a live gut-check, not real analysis.</div>
+  </div>
 </div>
 
 <!-- RIGHT: section + trade-space -->
 <div class="panel" id="ms-right">
-  <h3>Section <span style="text-transform:none;color:#8a8375">— sun-tested</span></h3>
+  <div class="panelHead"><h3 style="margin:0">Section <span style="text-transform:none;color:#8a8375">— sun-tested</span></h3><button class="iconbtn" onclick="toggleMsRight()" id="ms-rightToggle">−</button></div>
+  <div class="panelBody">
   <div class="grp" style="margin-bottom:5px">
     <button id="secNS" class="on" onclick="setSection('NS')">N–S (sun)</button>
     <button id="secEW" onclick="setSection('EW')">E–W (forest)</button>
@@ -197,6 +207,7 @@
   <div class="foot" id="tradeReadout"></div>
   <div class="foot">The ★ only MOVES when an edit changes cap-safety or D2 specifically (e.g. pulling the house away from the pool/link) — those two are step-like, not smooth, so most edits (glazing, height, a small nudge) move the numbers above instead and leave the ★ sitting still or barely growing/shrinking. That's still a live update — read the numbers on this line, not just the dot.</div>
   <div class="foot">A/B/C reference bubbles are always Stage 1 / LOD 100-grade — they never recompute against a promotion. Only the ★ (your live edit) can turn schematic (greyed), and only once a COND volume (house/office/pool/link) is promoted.</div>
+  </div>
 </div>
 
 <div id="ms-hint">drag to orbit · scroll to zoom · steer volumes on the left</div>
@@ -223,7 +234,7 @@
     <span class="lab" id="massingSyncStatus">not yet synced</span></div>
 </div>
 
-<div id="exportModal" style="display:none;position:fixed;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center">
+<div id="exportModal" style="display:none">
   <div class="panel" style="position:relative;width:min(560px,92vw);padding:16px 18px">
     <h2 style="margin:0 0 4px;font-size:15px">test-fit-interchange/v1</h2>
     <div style="font-size:11.5px;color:#4c9a5a;margin-bottom:8px">Copy this and paste it into the chat.</div>
@@ -563,6 +574,12 @@ function buildSliders(){
 }
 function rot90(){const b=state[selIdx];const w=b.w;b.w=b.d;b.d=w;buildSliders();rebuild();refresh();}
 function resetScheme(){WORK[curKey]=clone(DEFAULTS[curKey].boxes);state=WORK[curKey];selIdx=Math.min(selIdx,state.length-1);fillVolPicker();buildSliders();rebuild();refresh();}
+/* Named distinctly from Test-Fit's own togglePanel(which) — both scripts share one global
+ * scope once merged into Design-Studio.html, and 'left'/'right' get id-prefixed to
+ * 'ms-left'/'ms-right' there but only via literal getElementById('ms-left') calls, not through
+ * an indirected `which` parameter. Two explicit functions keep every call literal. */
+function toggleMsLeft(){const p=document.getElementById('ms-left');const c=p.classList.toggle('collapsed');document.getElementById('ms-leftToggle').textContent=c?'+':'−';}
+function toggleMsRight(){const p=document.getElementById('ms-right');const c=p.classList.toggle('collapsed');document.getElementById('ms-rightToggle').textContent=c?'+':'−';}
 function setScheme(k){curKey=k;state=WORK[k];selIdx=Math.min(selIdx,state.length-1);   // keep this scheme's edits
   ['A','B','C'].forEach(id=>document.getElementById('b'+id).classList.toggle('on',id===k));
   document.getElementById('schemeName').textContent=DEFAULTS[k].name;

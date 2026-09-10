@@ -14,9 +14,23 @@ relationship — cited in §4, since it became load-bearing for the decision, mo
 
 ## 1. Verdict on the four hand-analysis findings
 
+**CORRECTION (2026-09-10, from `HANDOFF.md`'s "Four claims this repo had been repeating that are now
+corrected," item 1) — Finding 1 below is wrong. Left in place, uncut, as the historical record of the
+error; do not rely on it.** Both tools have always used the same frame — `x=East(+)`, `z=South(+)`
+(`Massing-Studio.html:132`, `axes` metadata at `:597`) and Test-Fit's own axis note says the same
+(`Test-Fit-Studio.html:159`: rooms "were drawn 90 degrees out from the locked Option B massing"). The real
+mechanism is a **per-room 90° rotation** of the off-cap rooms, not a transposed coordinate system. The test
+below — comparing swapped room *extents* against a volume's `w`/`d` — cannot actually distinguish "different
+axis convention" from "same convention, room rotated 90°": both produce extents that read as swapped. The
+Step 1 re-anchor (`HANDOFF.md`, "2026-09-09, later session") worked from this corrected understanding —
+translation plus, where needed, a 90° rotation per room, one coordinate system throughout — not from a
+transposition fix. The lesson, stated so it doesn't recur: read the documented convention before inferring
+a coordinate frame from dimensions alone.
+
 All four **confirmed**, one with an added precision, one with more evidence than originally claimed.
 
-**Finding 1 (axis transposition) — confirmed.** Re-derived independently from the two files' actual
+**Finding 1 (axis transposition) — confirmed [SEE CORRECTION ABOVE — this finding does not hold].**
+Re-derived independently from the two files' actual
 `DEFAULTS.B.boxes` (`Massing-Studio.html:143-149`) and `ROOMS` (`Test-Fit-Studio.html:137-149`):
 
 - Test-Fit `PL` is `w:14.0, h:6.0` (x-extent 14, y-extent 6). Massing `Pool` is `w:6, d:14` (x/E-W-extent

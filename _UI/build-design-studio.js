@@ -11,8 +11,12 @@
  * two Studios have to share one document, which means resolving their DOM/CSS collisions.
  *
  * What it resolves (measured, not guessed):
- *   - 9 shared DOM ids (capBar capNote exportModal exportText hint left right topbar view).
- *     Massing's are prefixed ms-; Test-Fit's are left alone.
+ *   - 11 shared DOM ids (capBar capNote exportModal exportText hint left right topbar view
+ *     leftToggle rightToggle). Massing's are prefixed ms-; Test-Fit's are left alone.
+ *     leftToggle/rightToggle added 2026-09-10 for Massing's new panel-collapse toggle
+ *     (HANDOFF "Panel crowding"); Massing's own toggle functions are named distinctly
+ *     (toggleMsLeft/toggleMsRight, not Test-Fit's togglePanel) since a `which`-parameterised
+ *     getElementById call can't be seen by this script's literal-string id-prefixing.
  *   - 21 shared CSS selectors. Each Studio's rules are scoped under its own pane, and the
  *     viewport-relative bits (:root, html/body, position:fixed, 100vh) are rewritten to be
  *     pane-relative so two full-screen layouts can coexist.
@@ -31,7 +35,7 @@ const SRC = {
 };
 const OUT = path.join(ROOT, 'Projects/Nonimuss-Residence/Design-Studio.html');
 
-const SHARED_IDS = ['capBar','capNote','exportModal','exportText','hint','left','right','topbar','view'];
+const SHARED_IDS = ['capBar','capNote','exportModal','exportText','hint','left','right','topbar','view','leftToggle','rightToggle'];
 
 function extract(file) {
   const src = fs.readFileSync(file, 'utf8');

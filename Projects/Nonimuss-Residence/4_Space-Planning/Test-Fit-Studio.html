@@ -42,6 +42,11 @@
   .viol{background:#fbe4e0;border:1px solid #e0a394;border-radius:7px;padding:6px 8px;font-size:10.6px;margin:4px 0}
   .softnote{background:#fdf3d9;border:1px solid #e5c876;border-radius:7px;padding:6px 8px;font-size:10.6px;margin:4px 0}
   #hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:#7a7365;background:rgba(255,255,255,.72);padding:4px 10px;border-radius:6px;z-index:4}
+  /* Was an inline style="" attribute — build-design-studio.js's scopeCss() only rewrites
+     <style> blocks, so position:fixed here leaked past this Studio's pane in the merged
+     Design-Studio.html and covered the whole window. Moved into CSS so the same
+     fixed->absolute, pane-scoping rewrite that #view already gets also applies here. */
+  #exportModal{position:fixed;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -66,7 +71,7 @@
     <span class="lab" id="massingSyncStatus">not yet synced</span></div>
 </div>
 
-<div id="exportModal" style="display:none;position:fixed;inset:0;background:rgba(30,28,22,.45);z-index:50;align-items:center;justify-content:center">
+<div id="exportModal" style="display:none">
   <div class="panel" style="position:relative;width:min(560px,92vw);padding:16px 18px">
     <h2 style="margin:0 0 4px;font-size:15px">test-fit-interchange/v1</h2>
     <div style="font-size:11.5px;color:#4c9a5a;margin-bottom:8px">Copy this and paste it into the chat.</div>
