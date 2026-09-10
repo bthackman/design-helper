@@ -43,6 +43,145 @@ memory-biased toward international canon rather than actually searched).
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
 
+## Session handoff — 2026-09-09, later session (Steps 1–5 of the merge built; the two-stage massing model established and being integrated; four repeated claims in this repo corrected)
+
+The longest single session this tool has had. It picked up from the Stage 0 entry below, discovered that
+the **8-stage plan agreed in that session was never written to a file**, rebuilt it, then largely replaced
+it as Ben's own thinking moved past it. Everything below is either verified through a real headless
+Chromium or explicitly flagged as unverified. **Nothing in this session was committed except this entry.**
+
+### Documents produced (read these before re-deriving anything)
+
+`Merge-Stages-2026-09-09.md` (the reconstructed 8-stage plan — explicitly a reconstruction, not a record),
+`Modality-Dream-2026-09-09.md`, `Fork-Decision-2026-09-09.md` (the architecture decision the build followed
+— **contains a real error, see below**), `Review-Steps-1-4-2026-09-09.md` (third-party review),
+`Step-5-Report-2026-09-09.md`, `Containment-And-TradeSpace-2026-09-09.md`,
+`Two-Stage-Massing-2026-09-09.md`, `Two-Stage-Integration-2026-09-09.md`, and
+**`Two-Stage-Build-2026-09-09.md`** — the last of these was still being written by a Fable agent when this
+entry was authored, covering the build of Integration §7's Stages 2–5 (promotion preview, the "Reshape to
+fit" commit, the per-volume badge, and method propagation into the skill). **If that file is absent or
+truncated, Stages 2–5 may be half-built — check `git status` and the source Studios before trusting them.**
+
+### What got built and verified
+
+**Steps 1–5 of the merge** (numbering per `Merge-Stages`/`Fork-Decision` §6, as re-explained to Ben in
+plain language):
+
+1. **Test-Fit's rooms re-anchored into the Massing site frame.** House cluster translated +18 East, +5
+   South (puts the room block's north face flush with House's, and lands GR's west wall on the Link box's
+   z9–13 span); off-cap rooms (PL/LK/OF/VOID) rotated 90° and set to their Massing box footprints. All 12
+   door/window/furniture `center` values recalculated. One coordinate system now exists, not two.
+2. **`levelVolume()`** — the envelope a level's rooms sit in: a real synced Massing volume at its true site
+   position, or an implicit box from the rooms themselves when no massing exists. `onCapBBox()` extended to
+   full extents; the Stage 0 "position not mapped" hedge retired.
+3. **De-collision.** 3 JS collisions out of 157 top-level names renamed (`view`→`viewEl`,
+   `drag`→`orbitDrag`, `exportJSON`→`export{Massing,TestFit}JSON`). The real collision surface turned out
+   to be **CSS**: 21 shared selectors, 9 shared DOM ids.
+4. **The merge.** `_UI/build-design-studio.js` generates `Projects/Nonimuss-Residence/Design-Studio.html`
+   — **generated, never hand-edit it**; edit a source Studio and re-run `node _UI/build-design-studio.js`.
+   It prefixes Massing's 9 shared ids with `ms-`, scopes each Studio's CSS under its pane, rewrites
+   `position:fixed`→`absolute`, `100vh`→`100%`, `:root`/`html`/`body`→ the pane selector, and repoints
+   Massing's renderer from `innerWidth/innerHeight` to its pane box.
+5. **The live one-way link.** `drawPlanCut(elevation)`/`levelElevations()` in Massing (pure, modelled on
+   `drawSection()`), `liveMassingCut()` in Test-Fit, plus one guarded call to Test-Fit's `render()` at the
+   end of Massing's `refresh()`. Drag a mass, the plan's cut outline moves in the same instant. Verified:
+   slider 18→26, cut rect 18→26 read from the DOM, rooms unmoved, run twice.
+
+**Then the model changed.** Ben proposed, and a Fable pass confirmed, a **two-stage massing model**:
+*Stage 1 (siting)* is a coarse box per functional volume — `Massing-Studio.html` exactly as it is;
+*Stage 2 (articulation)* lets rooms placed in Test-Fit **promote** a volume, reshaping its box to the
+rooms' bounding box via an explicit, previewable, undoable action. Anchored to **BIMForum LOD 100 / LOD
+200** (not 300 — that needs a real polygon hull, still rejected). Consequently:
+
+- **Stage 0 of that work — the containment clamp was built and then reversed the same day.** A drag clamp
+  was added on the reading that the mass should lead room sizes; Ben revised that ("their relative
+  locations could also help inform the mass"). `containmentResults()`/`roomContainer()`/`isRoomCompliant()`
+  are **kept and live** — a room breaching its volume is now the *promotion signal*, not an error to
+  prevent. Verified: a compliant room dragged 15 m past its container stays put and is flagged.
+- **Stage 1 — the room-creation tool** Ben named as a hard requirement: an "Add room" palette (name,
+  cluster, counts-to-cap) creating `R<n>` rooms, `×` delete on palette-added rooms only, cleaning up their
+  openings and furniture. `R<n>` ids are deliberately distinct from the hand-seeded two-letter ids so a
+  promotion pass can tell field-added rooms from seeded ones.
+- **Two real bugs fixed** in `Containment-And-TradeSpace-2026-09-09.md`: the trade-space ★ was painted
+  *underneath* the static "B" bubble (this Chart.js build paints the **first** dataset on top, the
+  opposite of the natural assumption) so a fresh open showed no star at all; and a live numeric readout was
+  added because the driver formulas are **thresholds, not curves** — a 0.5 m nudge moves the star zero
+  pixels while a 2 m nudge jumps it 68 points, which reads as "frozen" but isn't.
+
+### Four claims this repo had been repeating that are now corrected
+
+1. **The Massing↔Test-Fit axes were never transposed.** Both tools always used `x=East`, `y`/`z`=`South`
+   (`Massing-Studio.html:127`). The real mechanism was **per-room 90° rotation** of the off-cap rooms.
+   `Fork-Decision-2026-09-09.md` §1 "confirmed" a transposition by comparing swapped room *extents* — but
+   swapped extents are exactly what a room drawn sideways in the *same* frame looks like, so that test
+   cannot distinguish the two. **`Fork-Decision` §1 still contains this error and should be corrected.**
+   The lesson generalises: read the documented convention; don't infer a coordinate frame from dimensions.
+2. **Massing Studio is not offline-first.** It loads Three.js and Chart.js from `cdnjs.cloudflare.com`
+   (`:124-125`) and needs network to open. "No CDN, `file://`-openable" covers **Test-Fit and the Project
+   Window only**. Several documents in this repo assert it of both.
+3. **`Projects/Nonimuss-Residence/` is not gitignored.** `.gitignore` carries a dated exception
+   (`!Projects/Nonimuss-Residence/**`); 47 files are tracked and public. The general "Projects/ never
+   ships" rule does not apply to it.
+4. **The Playwright harness had no working environment.** Despite this file recording harness runs earlier
+   the same day, Playwright was installed on neither Python. Now installed at
+   **`C:\Users\bthac\AppData\Local\Programs\Python\Python310\python.exe`** (Playwright 1.62.0 + bundled
+   Chromium). The `python`/`py` on PATH is 3.14 and **lacks it**. `_UI/_playwright/harness.py` still ships
+   no install notes.
+
+### Decisions made (so they aren't re-litigated)
+
+- **Massing is authoritative for the Step 1 re-anchor** (Ben's call — Option B is locked and
+  `Program-Test-Fit.md:3` says geometry was pulled from the Massing Studio).
+- **One merged document, not iframes.** Verified: Chrome blocks cross-frame scripting between `file://`
+  documents (`SecurityError`, origin "null"); it works only behind `--allow-file-access-from-files`, which
+  breaks double-click-to-open.
+- **Rooms inform the mass; the mass does not constrain rooms.** Report breaches, never prevent them.
+- **Promotion is box-grow only — never one-box-per-room.** Load-bearing, not stylistic: the moment a room
+  becomes its own volume, `nVol`, `D3` and `D5` break for real.
+- **Stage-scoped metrics.** Gate `facade`/`effLoss`/`glazedPct`/`D3` at Stage 2; caption (don't gate)
+  `coverage` and `nVol`; `D5` and the cap meter are genuinely safe. Gating lives in a new
+  `metricsDisplay()` wrapper — **`metrics()`/`drivers()` stay byte-identical**.
+- **Stage is a per-volume property, not a page mode.** A badge per volume, not tabs — because House can be
+  Stage 2 while Pool stays Stage 1, and that's the common case, not an edge case.
+- **It's a loop between phases 3 and 4**, and the **drivers-lock gate does not reopen** — a promotion
+  sharpens a box's precision, it doesn't re-argue drivers. Promotions log to `02_Decision-Log.md` with
+  Phase written as `"Space planning → Massing"`.
+
+### Open items for next session
+
+1. **Correct `Fork-Decision-2026-09-09.md` §1's transposition error** — it's the document the build follows.
+2. **Export-modal bug, unfixed:** both Studios' `#exportModal` carries an inline `style="position:fixed"`
+   that `build-design-studio.js`'s CSS scoping never rewrites (it only rewrites `<style>` blocks), so in
+   the merged page a modal covers the whole window and blocks the other pane until closed.
+3. **Panel crowding:** at 1440×900 side-by-side, the plan pane has **~41px** of clear drawing width and
+   Massing's ~168px. Test-Fit's panels collapse; **Massing's cannot**. Use "Plan only"/"Massing only", or
+   give Massing a collapse toggle.
+4. **`OF`↔`LKU` (2.3 m across the void) is a genuine unresolved design conflict** — the one Step 1 finding
+   the two-stage reframe does *not* explain away. Widen Link, move Office, or accept the gap.
+5. **`MB`↔`LK` door:** a rectangular bbox-grow may satisfy the area numbers while leaving this door
+   unresolved, because a rectangle doesn't know a door needs a wall in a particular place.
+6. **`state.json` hygiene, two gaps:** `SKILL.md` defines a per-phase `looping-back` status that nothing
+   populates — Nonimuss's decision log records a real 2026-07-25→07-26 loop while its `state.json` still
+   says `massing: complete`. And Nyando's `state.json` is a self-invented shape whose own note claims no
+   template exists; that note is stale.
+7. **Interchange schema question, deliberately not decided:** should a promoted volume be distinguishable
+   to a downstream Rhino/Revit consumer? The pipeline was left untouched rather than changed unilaterally.
+8. **Backup files sit untracked inside the public Nonimuss folder** (`*.pre-step1-backup`,
+   `*.pre-step3-backup`, `*.pre-stage0-backup`). A `git add -A` would publish them — gitignore or delete.
+9. **Ben's in-person confirmation of Step 5 is still outstanding** — the live plan cut has only been
+   verified headlessly.
+10. **`_UI/_playwright/` still has no install notes** despite now having a working interpreter.
+
+### The verification bar that actually caught things
+
+Two real bugs this session were found by *driving the browser*, not by reading code: `layoutPanels()` looks
+its panels up from an **array of string literals** (`['left','right']`) that the id-prefixing could not
+see, so Massing was silently repositioning Test-Fit's panel; and Test-Fit carried the same hardcoded
+`top:64px` bug Massing had fixed hours earlier, invisible until its pane got narrow (now fixed at source
+via `layoutPanelsTF()`). The trade-space star bug needed a **pixel-level `getImageData` check** — a
+screenshot glance would have missed it. Keep this bar: byte-identical `buildInterchange()`/
+`buildExportData()` before and after any refactor, a real click-through, and re-run once for stability.
+
 ## Session handoff — 2026-09-09, continued (Stage 0 built and verified — the existing sync is now visible, not just numeric)
 
 Same day, immediately after the architecture-dream pass below. Ben agreed to a staged build-out of that pass's recommendation, broken into 8 checkpointed stages after a token/session-budget discussion; this is **Stage 0** — the cheap, independent fallback the dream pass recommended building regardless of whether the bigger merge (Stages 1–6b) ever happens: upgrade the *existing* file-based sync from a text-only advisory to something actually visible, without touching the underlying two-document architecture at all.
