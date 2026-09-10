@@ -23,3 +23,8 @@ __pycache__/
 # OS cruft
 .DS_Store
 Thumbs.db
+
+# Ad-hoc safety backups taken before a risky edit (*.pre-step1-backup etc.). Useful locally,
+# never worth publishing — and Nonimuss-Residence is un-ignored above, so without this rule a
+# `git add -A` would push them.
+*.pre-*-backup
