@@ -120,7 +120,7 @@ const html = `<!doctype html>
 <style>
   html,body{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;background:#dcd7c8;overflow:hidden}
   #shell{display:flex;flex-direction:column;height:100%}
-  #shellbar{flex:0 0 auto;display:flex;gap:10px;align-items:center;padding:6px 12px;
+  #shellbar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 12px;
     background:#2f2b24;color:#f0ece1;font-size:12.5px}
   #shellbar b{font-size:13px}
   #shellbar .sp{flex:1}
@@ -151,7 +151,7 @@ ${scopeCss(T.style, '#tf-pane')}
 <div id="shell">
   <div id="shellbar">
     <b>Nonimuss — Design Studio</b>
-    <span>Massing + Test-Fit, one runtime</span>
+    <span title="Stage 1 = a coarse siting box, steered here in Massing (left). Stage 2 = a box reshaped to fit real rooms -- arrange rooms in Test-Fit (right); when one outgrows its box, a badge and a &quot;Reshape to fit&quot; button appear on the left. Stage is per-volume, not a project-wide mode -- House can be Stage 2 while Pool stays Stage 1, and that's the normal case.">ⓘ Stage 1 (siting, left) vs Stage 2 (shaped by rooms, right → left)</span>
     <span class="sp"></span>
     <span>Layout</span>
     <button onclick="setPanes('')">Side by side</button>
@@ -175,6 +175,15 @@ function setPanes(mode){
   document.getElementById('panes').className = mode;
   dispatchEvent(new Event('resize'));   // both Studios already re-layout on resize
 }
+// Lets an embedding page (Project-Window.html's phase-rail iframe) pick a default pane
+// via ?pane=only-ms|only-tf|stack -- e.g. the Massing phase tab opens straight into the
+// Massing-only view of this SAME merged file, not a separate standalone Studio, so
+// promotion (which only exists here, in the shared runtime) is reachable from the normal
+// phase-rail flow. Falls back to side-by-side (mode:'') if the param is absent/unknown.
+(function(){
+  const p = new URLSearchParams(location.search).get('pane');
+  if (p) setPanes(p);
+})();
 </script>
 <script>/* ===== Massing Studio ===== */
 ${M.inline}

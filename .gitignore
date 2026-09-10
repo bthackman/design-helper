@@ -28,3 +28,13 @@ Thumbs.db
 # never worth publishing — and Nonimuss-Residence is un-ignored above, so without this rule a
 # `git add -A` would push them.
 *.pre-*-backup
+
+# Revit scratch, 2026-09-10 (first real Revit verification): a real .rvt test project and
+# Revit's own auto-numbered family backups (MassBox.0001.rfa etc.) are personal/local scratch,
+# not tool source — MassBox.rfa itself (the actual family, built once from the recipe) stays
+# tracked. Exported massing-interchange JSON test fixtures dropped in this folder for a Dynamo
+# test run are the same kind of ad-hoc, regenerate-on-demand artifact the Studio's own Export
+# button already produces elsewhere in this repo — never checked in.
+_Export-Receivers/Revit/*.rvt
+_Export-Receivers/Revit/*.[0-9][0-9][0-9][0-9].rfa
+_Export-Receivers/Revit/*.json

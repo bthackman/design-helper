@@ -9,7 +9,7 @@
 <style>
   html,body{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;background:#dcd7c8;overflow:hidden}
   #shell{display:flex;flex-direction:column;height:100%}
-  #shellbar{flex:0 0 auto;display:flex;gap:10px;align-items:center;padding:6px 12px;
+  #shellbar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 12px;
     background:#2f2b24;color:#f0ece1;font-size:12.5px}
   #shellbar b{font-size:13px}
   #shellbar .sp{flex:1}
@@ -75,6 +75,8 @@
 #tf-pane, #tf-pane{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);background:#eae6da;overflow:hidden}
 #tf-pane #view{position:absolute;inset:0}
 #tf-pane svg{display:block;width:100%;height:100%}
+#tf-pane #roomMassView{position:absolute;inset:0}
+#tf-pane #roomMassView canvas{display:block}
 #tf-pane .panel{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.10);backdrop-filter:blur(4px)}
 #tf-pane #topbar{top:12px;left:12px;right:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:9px 12px;z-index:5}
 #tf-pane #topbar h1{font-size:14px;margin:0 10px 0 0;font-weight:700}
@@ -114,7 +116,7 @@
 <div id="shell">
   <div id="shellbar">
     <b>Nonimuss — Design Studio</b>
-    <span>Massing + Test-Fit, one runtime</span>
+    <span title="Stage 1 = a coarse siting box, steered here in Massing (left). Stage 2 = a box reshaped to fit real rooms -- arrange rooms in Test-Fit (right); when one outgrows its box, a badge and a &quot;Reshape to fit&quot; button appear on the left. Stage is per-volume, not a project-wide mode -- House can be Stage 2 while Pool stays Stage 1, and that's the normal case.">ⓘ Stage 1 (siting, left) vs Stage 2 (shaped by rooms, right → left)</span>
     <span class="sp"></span>
     <span>Layout</span>
     <button onclick="setPanes('')">Side by side</button>
@@ -137,6 +139,15 @@
     <button onclick="setView('plan')">Plan</button>
     <button onclick="setView('iso')">Iso</button>
     <button onclick="setView('persp')">Persp</button>
+  </div>
+  <!-- Room massing (live) — 2026-09-10, Ben's own ask after seeing the first attempt (a
+       separate 3D tab inside Test-Fit Studio): "I wanted it to go back into the massing
+       studio where sections and sun study etc is visible with the new massing." A SECOND
+       mode of THIS Studio, not a separate viewer — see roomBoxes()/setMassMode() below for
+       exactly what is and isn't shown, and why. -->
+  <div class="grp"><span class="lab">Mode</span>
+    <button id="bModeSchem" class="on" onclick="setMassMode('schematic')" title="The original hand-authored volumes (House/Office/Pool/Link/...) — full metrics, driver proxies and trade-space plot.">Schematic (Stage 1)</button>
+    <button id="bModeRooms" onclick="setMassMode('rooms')" title="One live 3D box per Test-Fit room (not grouped by type) — same section cut, sun-study and cap meter as Stage 1. Needs Test-Fit's rooms in this same runtime (Design-Studio.html); a standalone open of this file has none to show. Updates automatically as rooms are added/dragged/resized — no click, no promote step.">Room massing (live)</button>
   </div>
   <div class="grp"><button onclick="resetScheme()">↺ Reset scheme</button>
     <button onclick="exportState()" title="Copy your edits to share with Claude">⧉ Export / share edits</button>
@@ -163,14 +174,20 @@
 <div class="panel" id="ms-left">
   <div class="panelHead"><h2 id="schemeName">B — The Breezeway</h2><button class="iconbtn" onclick="toggleMsLeft()" id="ms-leftToggle">−</button></div>
   <div class="panelBody">
+  <!-- Stage-1-only controls: steering a single hand-authored box has no meaning once you're
+       looking at one-box-per-room, so this whole block hides in Room massing mode rather than
+       operating on the wrong data (setMassMode() below toggles it). -->
+  <div id="stage1Steer">
   <h3>Steer a volume</h3>
   <select id="volPick" onchange="pickVol()"></select>
   <div id="volBadge" class="cap-note"></div>
   <div id="sliders"></div>
   <div class="grp" style="margin-top:4px"><button onclick="rot90()">⟳ Rotate 90°</button></div>
   <div id="promoPreview" class="cap-note" style="display:none"></div>
+  </div>
 
   <h3>Cap &amp; metrics</h3>
+  <div id="roomModeNote" class="cap-note" style="display:none;color:#8a6d3b"></div>
   <div class="metric"><span>Dwelling floor</span><b id="mDwell">–</b></div>
   <div class="bar"><i id="ms-capBar"></i></div>
   <div class="cap-note" id="ms-capNote"></div>
@@ -178,13 +195,24 @@
   <div class="metric"><span>Pool (off-cap)</span><b id="mPool">–</b></div>
   <div class="metric"><span>Lot coverage</span><b id="mCov">–</b></div>
   <div class="metric"><span>Enclosed volume</span><b id="mVol">–</b></div>
-  <div class="metric"><span>Façade (envelope)</span><b id="mFac">–</b></div>
-  <div class="metric"><span>Glazed façade</span><b id="mGlaz">–</b></div>
-  <div class="metric"><span>Build simplicity</span><b id="mSimp">–</b></div>
+  <!-- facade/glazedPct/build-simplicity all read Stage 1's `metrics()` correctly at ANY
+       grain (the function itself never changes, per this file's "lifted, not rewritten"
+       rule) — but Two-Stage-Massing-2026-09-09.md §8 Q2 already found facade/effLoss
+       DOUBLE-COUNT every shared interior wall once a volume is really many small adjacent
+       boxes, and build-simplicity's own nVol threshold reads "articulated" as "complex"
+       regardless of design quality. Rather than show a number computed correctly by a
+       formula that was never calibrated for this grain, these three rows are hidden (not
+       tagged/greyed like Stage 2's metricsDisplay() — there is no single promoted volume
+       here to caption, the whole grain changed) whenever Room massing mode is active. -->
+  <div class="metric" id="rowFac"><span>Façade (envelope)</span><b id="mFac">–</b></div>
+  <div class="metric" id="rowGlaz"><span>Glazed façade</span><b id="mGlaz">–</b></div>
+  <div class="metric" id="rowSimp"><span>Build simplicity</span><b id="mSimp">–</b></div>
 
+  <div id="stage1Drivers">
   <h3>Driver proxies (concept-grade)</h3>
   <div id="drivers"></div>
   <div class="foot">Scores are geometric heuristics that move as you steer — a live gut-check, not real analysis.</div>
+  </div>
   </div>
 </div>
 
@@ -197,10 +225,16 @@
     <button id="secEW" onclick="setSection('EW')">E–W (forest)</button>
     <span class="lab" style="margin-left:6px">cut</span>
   </div>
-  <input type="range" id="cutSlider" min="0" max="100" value="45" oninput="drawSection()"/>
+  <input type="range" id="cutSlider" min="0" max="100" value="45" oninput="redrawSection()"/>
   <canvas id="sectionCanvas" width="600" height="340"></canvas>
   <div class="foot" id="secNote"></div>
 
+  <!-- Trade-space + driver-proxy bubble both read drivers(), which leans on findBox('house'/
+       'pool'/'link') — a SINGLE box per type. At room grain there are many house-type rooms;
+       findBox() would silently grab whichever one Object.find() hits first, a wrong number
+       that would look exactly as authoritative as a real one. Hidden, not faked, in Room
+       massing mode — see roomModeTradeNote below. -->
+  <div id="stage1Trade">
   <h3 style="margin-top:12px">Trade-space</h3>
   <div id="tradeWrap"><canvas id="tradeCanvas"></canvas></div>
   <div class="foot">Cap-safety (x) × wellness continuity D2 (y); bubble = winter thermal D3. ★ = your live edit.</div>
@@ -208,15 +242,23 @@
   <div class="foot">The ★ only MOVES when an edit changes cap-safety or D2 specifically (e.g. pulling the house away from the pool/link) — those two are step-like, not smooth, so most edits (glazing, height, a small nudge) move the numbers above instead and leave the ★ sitting still or barely growing/shrinking. That's still a live update — read the numbers on this line, not just the dot.</div>
   <div class="foot">A/B/C reference bubbles are always Stage 1 / LOD 100-grade — they never recompute against a promotion. Only the ★ (your live edit) can turn schematic (greyed), and only once a COND volume (house/office/pool/link) is promoted.</div>
   </div>
+  <div class="foot" id="roomModeTradeNote" style="display:none">Trade-space and the driver-proxy scores (D1–D5, OQ-6) are calibrated to Stage 1's few large, deliberately-shaped volumes — <code>findBox('house')</code> etc. assume exactly one box per type, which one-box-per-room isn't. Not computed here. See <b>Schematic (Stage 1)</b> for those numbers.</div>
+  </div>
 </div>
 
-<div id="ms-hint">drag to orbit · scroll to zoom · steer volumes on the left</div>
+<div id="ms-hint">drag to orbit · shift-drag or right-drag to pan · scroll to zoom · Plan/Iso/Persp resets both · steer volumes on the left</div>
     </div>
     <div class="pane" id="tf-pane">
 <div id="view"><svg id="svg" viewBox="-18 -1 33 15.5"></svg></div>
+<div id="roomMassView" style="display:none"></div>
 
 <div class="panel" id="topbar">
   <h1>Nonimuss — Test-Fit Studio</h1>
+  <div class="grp"><span class="lab">View</span>
+    <button id="bPlan2D" class="on" onclick="setMainView('plan')" title="The 2D SVG plan (doors, windows, casework, adjacency checks)">Plan</button>
+    <button id="bRoomMass" onclick="setMainView('mass')" title="A live 3D box per room, one-to-one -- not the schematic Massing Studio's few large hand-authored volumes. Updates instantly as you add/move/resize rooms here, no click needed. Needs network (loads Three.js). Standalone-only view (no section cut, no sun-study, no cap meter) -- for those, use Massing Studio's own 'Room massing (live)' mode instead, reachable from this same runtime once merged.">3D room massing (standalone)</button>
+    <button onclick="rmFit()" title="Reset the 3D view's pan/zoom to frame all rooms">⤢ Fit</button>
+  </div>
   <div class="grp"><span class="lab">Level</span>
     <button id="bGround" class="on" onclick="setLevel('Ground')">Ground</button>
     <button id="bUpper" onclick="setLevel('Upper')">Upper</button>
@@ -292,6 +334,11 @@
     <h3>Violations &amp; notes</h3>
     <div id="violList"></div>
 
+    <div id="massingFitWrap" style="display:none">
+      <h3>Massing fit</h3>
+      <div id="massingFit"></div>
+    </div>
+
     <div class="foot">Schematic block diagram — proportions approximate the program table, not a scaled architectural plan. Rooms drag freely; doors/windows/casework slide along the wall they're already assigned to (like a door), but don't re-snap to a different wall if dragged off it. Each door/window has a round slide handle, two square stretch handles, and a red × to delete. The upper link's stair hatching is a location marker only — not a calculated stair (no rise/run/going check).</div>
   </div>
 </div>
@@ -311,6 +358,14 @@
 </div>
 
 <div id="hint">scroll to zoom · drag empty canvas to pan · round handle slides a door/window, square handles stretch it, red × deletes it</div>
+
+<!-- Added 2026-09-10 for "3D room massing" (Ben's ask: a live one-box-per-room 3D view,
+     separate from the schematic Massing Studio's few hand-authored volumes). Same CDN URL
+     Massing-Studio.html already loads, so build-design-studio.js's cdn de-dupe means the
+     merged Design-Studio.html still only loads it once. This is a real, honest change to
+     this file's dependency profile: Test-Fit Studio was offline-first before this (no
+     network needed to open it); it now needs network for the 3D tab specifically. The
+     Plan (2D/SVG) view is untouched and still works with no network at all. -->
     </div>
   </div>
 </div>
@@ -326,6 +381,15 @@ function setPanes(mode){
   document.getElementById('panes').className = mode;
   dispatchEvent(new Event('resize'));   // both Studios already re-layout on resize
 }
+// Lets an embedding page (Project-Window.html's phase-rail iframe) pick a default pane
+// via ?pane=only-ms|only-tf|stack -- e.g. the Massing phase tab opens straight into the
+// Massing-only view of this SAME merged file, not a separate standalone Studio, so
+// promotion (which only exists here, in the shared runtime) is reachable from the normal
+// phase-rail flow. Falls back to side-by-side (mode:'') if the param is absent/unknown.
+(function(){
+  const p = new URLSearchParams(location.search).get('pane');
+  if (p) setPanes(p);
+})();
 </script>
 <script>/* ===== Massing Studio ===== */
 
@@ -511,6 +575,10 @@ placeLabel('N ↑',22.9,-4,3,'#333'); placeLabel('S neighbour',22.9,36,2.5,'#8a5
 let bgroup=new THREE.Group(); scene.add(bgroup);
 // Test-Fit ghost group — Stage 0 (2026-09-09), see renderTestFitSync()/rebuildGhosts() below.
 let ghostGroup=new THREE.Group(); scene.add(ghostGroup);
+// Room massing (live) — 2026-09-10, see roomBoxes()/rebuildRoomBoxes()/setMassMode() further
+// down. A separate group so Stage 1's own bgroup is untouched; visibility toggles with mode.
+let roomBoxGroup=new THREE.Group(); roomBoxGroup.visible=false; scene.add(roomBoxGroup);
+let massMode='schematic'; // 'schematic' | 'rooms' — see setMassMode() below
 function disposeGroup(g){g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose&&o.material.dispose();});g.clear();}
 function rebuild(){
   disposeGroup(bgroup);
@@ -531,11 +599,30 @@ function rebuild(){
 let target=new THREE.Vector3(0,2,0), sph={r:64,theta:0.42,phi:0.95};
 function applyCam(){const{r,theta,phi}=sph;camera.position.set(target.x+r*Math.sin(phi)*Math.sin(theta),target.y+r*Math.cos(phi),target.z+r*Math.sin(phi)*Math.cos(theta));camera.lookAt(target);}
 const VIEWS={plan:{r:74,theta:0,phi:0.06},iso:{r:64,theta:0.72,phi:0.92},persp:{r:50,theta:0.4,phi:1.28}};
-function setView(v){sph={...VIEWS[v]};applyCam();}
-let orbitDrag=false,px=0,py=0;
-renderer.domElement.addEventListener('pointerdown',e=>{orbitDrag=true;px=e.clientX;py=e.clientY;});
-addEventListener('pointerup',()=>orbitDrag=false);
-addEventListener('pointermove',e=>{if(!orbitDrag)return;sph.theta-=(e.clientX-px)*.008;sph.phi=clamp(sph.phi-(e.clientY-py)*.008,0.05,1.52);px=e.clientX;py=e.clientY;applyCam();});
+function setView(v){sph={...VIEWS[v]};target.set(0,2,0);applyCam();}
+let orbitDrag=false,panDrag=false,px=0,py=0;
+// Pan (2026-09-10, Ben's ask): right-click-drag or shift+left-drag shifts `target` sideways
+// in the camera's own right/up plane, scaled by the current zoom radius so it feels the same
+// speed at any zoom level; plain left-drag still orbits, wheel still zooms, unchanged.
+renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
+renderer.domElement.addEventListener('pointerdown',e=>{
+  if(e.button===2||e.shiftKey){panDrag=true;}else{orbitDrag=true;}
+  px=e.clientX;py=e.clientY;
+});
+addEventListener('pointerup',()=>{orbitDrag=false;panDrag=false;});
+addEventListener('pointermove',e=>{
+  if(panDrag){
+    const dx=e.clientX-px,dy=e.clientY-py;
+    const rt=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
+    const up=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,1);
+    const s=sph.r*0.0016;
+    target.addScaledVector(rt,-dx*s); target.addScaledVector(up,dy*s);
+    px=e.clientX;py=e.clientY; applyCam();
+    return;
+  }
+  if(!orbitDrag)return;
+  sph.theta-=(e.clientX-px)*.008;sph.phi=clamp(sph.phi-(e.clientY-py)*.008,0.05,1.52);px=e.clientX;py=e.clientY;applyCam();
+});
 renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();sph.r=clamp(sph.r*(1+Math.sign(e.deltaY)*.08),20,150);applyCam();},{passive:false});
 
 // ===== steer UI =====
@@ -588,6 +675,16 @@ function setScheme(k){curKey=k;state=WORK[k];selIdx=Math.min(selIdx,state.length
 // ===== live metric + driver display =====
 function barColor(v){return v>=70?'var(--good)':v>=45?'var(--warn)':'var(--bad)';}
 function refresh(){
+  // Room massing mode reads a completely different, finer-grained input and skips
+  // drivers()/updateTrade() entirely (see the "ROOM MASSING (LIVE)" block below for why) —
+  // refreshRoomMode() is the whole of this branch. Still ends the same way every branch of
+  // this function always has: a guarded cross-call into Test-Fit's own render(), so the
+  // promotion-preview panel there (Stage-1-only, unaffected by this mode) stays current.
+  if (massMode === 'rooms') {
+    refreshRoomMode();
+    if (typeof render === 'function') { try{ render(); }catch(e){} }
+    return;
+  }
   const m=metrics(),d=drivers();
   const disp=metricsDisplay(m,state); // Stage 2/3 — gates facade/effLoss/glazedPct/D3, captions coverage/nVol. metrics()/drivers() above stay untouched.
   document.getElementById('mDwell').textContent=m.dwell.toFixed(0)+' / '+CAP+' m²';
@@ -685,7 +782,7 @@ function drawSection(){
     ? "Winter noon sun rakes in at only <b>15.6°</b> from the south — anything the neighbour or a deep plan blocks stays in winter shade. Push glazing high-south / clerestory to catch it (L1, L5)."
     : "The forest wall (W) blocks low western sun: the rear face gets <b>no direct winter sun</b>. Daylight the plan from the roof and the east, not the forest (L5).";
 }
-function setSection(a){sectionAxis=a;document.getElementById('secNS').classList.toggle('on',a==='NS');document.getElementById('secEW').classList.toggle('on',a==='EW');drawSection();}
+function setSection(a){sectionAxis=a;document.getElementById('secNS').classList.toggle('on',a==='NS');document.getElementById('secEW').classList.toggle('on',a==='EW');redrawSection();}
 
 // ===== PLAN CUT (Step 5, 2026-09-09) — a horizontal sibling of drawSection() above: same
 // idea (a function that reads `state` and produces a 2D slice) but a plan cut instead of a
@@ -972,7 +1069,7 @@ function rebuildGhosts(){
 //
 // testFitBBoxFor() is the mirror image of liveMassingCut()/liveCutForLevel() in
 // Test-Fit-Studio.html: THAT function feature-detects Massing's globals from the Test-Fit side;
-// this one feature-detects Test-Fit's globals (`rooms`, `ROOM_VOLUME_TYPE`) from the Massing
+// this one feature-detects Test-Fit's globals (`rooms`, `roomVolumeType()`) from the Massing
 // side — the first time this codebase reads INTO Test-Fit's object graph rather than out of it.
 // Only real inside the generated Design-Studio.html; a standalone open of this file has no
 // `rooms` at all, so every function below is a safe, silent no-op there — same contract every
@@ -984,12 +1081,12 @@ function rebuildGhosts(){
 // .md §2's load-bearing constraint: the moment a room becomes its own volume, nVol/D3/D5 break
 // for real — this never does that).
 function testFitBBoxFor(type){
-  if (typeof rooms === 'undefined' || typeof ROOM_VOLUME_TYPE === 'undefined') return null;
+  if (typeof rooms === 'undefined' || typeof roomVolumeType === 'undefined') return null;
   let minX=Infinity,minZ=Infinity,maxX=-Infinity,maxZ=-Infinity,any=false;
   try{
     Object.entries(rooms).forEach(([id,r])=>{
       if (r.illustrative) return;
-      if (ROOM_VOLUME_TYPE[id] !== type) return;
+      if (roomVolumeType(id) !== type) return;
       any = true;
       minX=Math.min(minX,r.x); maxX=Math.max(maxX,r.x+r.w);
       minZ=Math.min(minZ,r.y); maxZ=Math.max(maxZ,r.y+r.h);
@@ -1075,6 +1172,157 @@ function promoteVolume(i){
   if (selIdx === i) buildSliders();
 }
 
+// ===== ROOM MASSING (LIVE) — 2026-09-10 =====
+// Ben, in his own words, after seeing the first attempt (a second, disconnected 3D viewer
+// added inside Test-Fit Studio): "Still not quite what i meant - because i wanted it to go
+// back into the massing studio where sections and sun study etc is visible with the new
+// massing." Confirmed separately: one box per ROOM (not per type/cluster), reachable as a
+// clearly distinct second view (not a buried toggle), live/automatic (no click, no
+// "reshape"/"promote" step for THIS view specifically).
+//
+// This is a NEW, second view of the SAME instruments Stage 1 already has — drawSection()
+// (section + sun-study) and the cap meter — fed a DIFFERENT, finer-grained input. It is not
+// a replacement for Stage 1 and it does not touch `state`, `metrics()`, `drivers()`, DEFAULTS
+// or WORK. Two-Stage-Massing-2026-09-09.md §8 Q2 and Two-Stage-Integration-2026-09-09.md §2
+// already worked out, in writing, exactly what breaks if a Massing volume becomes one box per
+// room: nVol explodes (and D3/D5's nVol terms with it), facade/effLoss double-count every
+// shared interior wall between adjacent rooms, and build-simplicity's own threshold reads
+// every articulated house as "complex" regardless of design quality. On top of that (found
+// while building this view, not in the prior passes): drivers() itself calls findBox('house'
+// /'pool'/'link') — a single-box lookup — for D2/D4/OQ-6 and the link-aspect term of D5; with
+// several house-type rooms, that call would silently return whichever one Array.find() hits
+// first, a wrong number indistinguishable at a glance from a right one. None of that is
+// hypothetical risk to manage later — it is exactly what those two documents already found,
+// now confirmed against a second, sharper failure mode (findBox's single-box assumption).
+//
+// The resolution: reuse drawSection()/metrics() completely UNCHANGED (same rule as
+// metricsDisplay() above — wrap, don't rewrite) via the SAME swap-and-restore trick
+// schemeDrivers() already uses for drivers() one screen up, generalized into withBoxes()
+// below. Never call drivers()/updateTrade() against room boxes at all — the driver-proxy
+// panel and trade-space plot are hidden in this mode (not tagged/greyed like a Stage-2
+// promotion, since there is no single volume to caption here — the whole grain changed),
+// replaced by a plain note pointing back to Schematic (Stage 1). What IS shown, safely:
+// the cap meter (areaOfTypes() sums w*d filtered by type — arithmetically identical for 1 box
+// or 12, the one metric both prior passes already found clean at every grain), lot coverage
+// (captioned — a literal room-grain sum, not Stage 1's single-box figure), enclosed volume
+// (no perimeter/double-count problem — floor area × height doesn't care about interior
+// walls), and the section cut + sun-study (drawSection() is a pure per-box slice; the sun
+// rays are fixed angles that never read nVol at all).
+function withBoxes(boxes, fn){ const old=state; state=boxes; try{ return fn(); } finally { state=old; } }
+
+// Mirrors testFitBBoxFor() above (which aggregates Test-Fit's rooms into ONE bbox per type,
+// for promotion) but returns ONE box per ROOM, never aggregated — box-per-room is exactly
+// what promoteVolume() above is deliberately forbidden from doing to `state`; this function
+// never writes into `state` at all, so building it doesn't reopen that rule. Same
+// feature-detection contract as every other cross-Studio read in this codebase: `rooms`/
+// `roomVolumeType` only exist once Test-Fit Studio's own script has also run in this document
+// (true only inside the generated Design-Studio.html) — a standalone open of this file
+// returns an empty array, and the mode button's own tooltip already says why.
+function roomBoxesAvailable(){ return typeof rooms !== 'undefined' && typeof roomVolumeType === 'function'; }
+function roomBoxes(){
+  if (!roomBoxesAvailable()) return [];
+  const out = [];
+  try{
+    Object.entries(rooms).forEach(([id,r])=>{
+      if (r.illustrative) return;
+      const type = roomVolumeType(id) || 'room'; // unmapped clusters (e.g. a new Wellness
+        // room — Test-Fit-Studio.html's own CLUSTER_VOLUME_TYPE comment already names this
+        // gap: Wellness covers both Pool and Link, left unmapped rather than guessed) fall
+        // back to a plain 'room' type: it still gets a box and still counts toward nothing
+        // type-filtered (DWELL/COND/FOOT all name real types), same honest gap as upstream.
+      // Reuse whichever Stage-1 box of this type already exists for height/base/glazing, so
+      // the two views agree where they can; else a generic per-level default (matches
+      // Test-Fit's own now-superseded rmHeightBase(), same reasoning, ported here).
+      const ref = state.find(b=>b.type===type);
+      const boxH = ref ? ref.h : (r.level==='Upper' ? 3 : 4);
+      const boxBase = ref ? (ref.base||0) : (r.level==='Upper' ? 4.5 : 0);
+      const boxGlaz = ref ? glazOf(ref) : (GLAZ0[type]||20);
+      out.push({id, type, x:+r.x, z:+r.y, w:+r.w, d:+r.h, h:boxH, base:boxBase, glaz:boxGlaz});
+    });
+  }catch(e){ return []; } // a live-link failure must never break Massing's own refresh
+  return out;
+}
+function rebuildRoomBoxes(){
+  disposeGroup(roomBoxGroup);
+  if (massMode !== 'rooms') return;
+  roomBoxes().forEach(b=>{
+    const[wx,wz]=toWorld(b.x+b.w/2,b.z+b.d/2);
+    const geo=new THREE.BoxGeometry(b.w,b.h,b.d);
+    const gz=glazOf(b)/100;
+    const baseCol=new THREE.Color(COLOR[b.type]||0xb9b19c).lerp(new THREE.Color(0xbfd8e8),gz*0.4);
+    const mat=new THREE.MeshLambertMaterial({color:baseCol,transparent:gz>0,opacity:1-gz*0.5});
+    const m=new THREE.Mesh(geo,mat); m.position.set(wx,b.base+b.h/2,wz); m.castShadow=true; m.receiveShadow=true; roomBoxGroup.add(m);
+    const eg=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x2b2b2b,transparent:true,opacity:0.55}));
+    eg.position.copy(m.position); roomBoxGroup.add(eg);
+    const lbl=makeLabel(b.id,'#2b2b2b'); lbl.position.set(wx,b.base+b.h+0.5,wz); lbl.scale.set(4,1,1); roomBoxGroup.add(lbl);
+  });
+}
+// Dispatcher for the two existing section-redraw call sites (the cut slider's oninput and
+// setSection()'s own tail call) — drawSection() ITSELF is never edited, only which array it
+// reads is swapped first, via withBoxes(). Matches this file's "lifted, not rewritten" rule
+// the same way metricsDisplay()/schemeDrivers() already do for metrics()/drivers().
+function redrawSection(){
+  if (massMode==='rooms') withBoxes(roomBoxes(), drawSection);
+  else drawSection();
+}
+// The room-mode half of refresh() (called below) — panel text + cap meter + section, using
+// ONLY the metrics fields already established as safe/captioned above. Never calls
+// drivers()/updateTrade(). Never calls Test-Fit's render() itself (that would create a
+// direct mutual-recursion loop with refreshMassingRoomMode() below, which Test-Fit's own
+// render() calls back into) — the OUTER refresh() dispatcher below is the one place that
+// cross-call happens, exactly as it already did before this feature existed.
+function refreshRoomMode(){
+  const boxes = roomBoxes();
+  const noteEl = document.getElementById('roomModeNote');
+  if (!roomBoxesAvailable()){
+    noteEl.style.display='block';
+    noteEl.innerHTML = 'No room data in this runtime — open this from the Project Window\'s Massing phase ("Room massing (live)"), or from <code>Design-Studio.html</code> directly. A standalone <code>Massing-Studio.html</code> has no Test-Fit rooms to build boxes from.';
+    ['mDwell','mPool','mCov','mVol'].forEach(id=>document.getElementById(id).textContent='–');
+    document.getElementById('ms-capBar').style.width='0%';
+    document.getElementById('ms-capNote').textContent='';
+    redrawSection();
+    return;
+  }
+  noteEl.style.display='block';
+  noteEl.innerHTML = boxes.length+' room'+(boxes.length===1?'':'s')+', one box each — live from Test-Fit, no click needed. Façade, glazing, build-simplicity and the driver-proxy scores aren\'t shown here — see <b>Schematic (Stage 1)</b> for those.';
+  const m = withBoxes(boxes, metrics);
+  document.getElementById('mDwell').textContent=m.dwell.toFixed(0)+' / '+CAP+' m²';
+  const pct=clamp(m.dwell/CAP*100,0,140);
+  const cb=document.getElementById('ms-capBar'); cb.style.width=Math.min(pct,100)+'%';
+  cb.style.background=m.dwell<=CAP?'var(--good)':'var(--bad)';
+  document.getElementById('ms-capNote').textContent=m.dwell<=CAP?('✓ '+(CAP-m.dwell).toFixed(0)+' m² under cap'):('✗ '+(m.dwell-CAP).toFixed(0)+' m² OVER — trim the dwelling');
+  document.getElementById('ms-capNote').style.color=m.dwell<=CAP?'#4c9a5a':'#c8503c';
+  document.getElementById('mPool').textContent=m.pool.toFixed(0)+' m²';
+  const mCovEl=document.getElementById('mCov');
+  mCovEl.textContent=m.coverage.toFixed(1)+'% (rooms)';
+  mCovEl.title='Sum of individual room footprints ÷ lot area — a literal room-grain figure, not Stage 1\'s single-box coverage.';
+  document.getElementById('mVol').textContent=m.volume.toFixed(0)+' m³';
+  redrawSection();
+  rebuildRoomBoxes();
+}
+// The REVERSE-direction half — called from Test-Fit's own render() (see the guarded call
+// added there), the same asymmetric pattern refreshPromotionPreview() above already
+// established: narrow, no cross-call back into Test-Fit's render(), so dragging a room
+// there updates this view in the same instant without either side calling the other forever.
+function refreshMassingRoomMode(){ if (massMode==='rooms') refreshRoomMode(); }
+// The mode switch itself: toggles which DOM sections are Stage-1-only vs shown at every
+// grain, flips bgroup/roomBoxGroup visibility, then runs a normal refresh so every number
+// and the 3D scene repaint together, not in two visible steps.
+function setMassMode(mode){
+  massMode=mode;
+  document.getElementById('bModeSchem').classList.toggle('on', mode==='schematic');
+  document.getElementById('bModeRooms').classList.toggle('on', mode==='rooms');
+  document.getElementById('stage1Steer').style.display = mode==='schematic' ? '' : 'none';
+  document.getElementById('stage1Drivers').style.display = mode==='schematic' ? '' : 'none';
+  document.getElementById('stage1Trade').style.display = mode==='schematic' ? '' : 'none';
+  document.getElementById('roomModeTradeNote').style.display = mode==='rooms' ? '' : 'none';
+  document.getElementById('roomModeNote').style.display = mode==='rooms' ? '' : 'none';
+  ['rowFac','rowGlaz','rowSimp'].forEach(id=>{ document.getElementById(id).style.display = mode==='schematic' ? '' : 'none'; });
+  bgroup.visible = (mode==='schematic');
+  roomBoxGroup.visible = (mode==='rooms');
+  rebuild(); rebuildRoomBoxes(); refresh();
+}
+
 // ===== responsive panel offset =====
 // #ms-topbar wraps to a second row below ~1560px (a common laptop width is 1440px) since its
 // button groups don't fit on one line at #ms-topbar's own font size. #ms-left/#ms-right used a
@@ -1098,6 +1346,13 @@ setView('iso'); fillVolPicker(); buildSliders(); rebuild(); refresh(); applyCam(
 layoutPanels();
 (function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
 addEventListener('resize',()=>{camera.aspect=paneW()/paneH();camera.updateProjectionMatrix();renderer.setSize(paneW(),paneH());layoutPanels();});
+// Lets an embedding page (Project-Window.html's Massing phase sub-toggle) open straight into
+// Room massing (live) via ?mode=rooms, mirroring Test-Fit's own ?view=mass and
+// Design-Studio.html's own ?pane= params.
+(function(){
+  const v = new URLSearchParams(location.search).get('mode');
+  if (v === 'rooms') setMassMode('rooms');
+})();
 
 </script>
 <script>/* ===== Test-Fit Studio ===== */
@@ -1393,6 +1648,24 @@ const ROOM_VOLUME_TYPE = {
   GR:'house', MB:'house', GU:'house', GB:'house', MU:'house', ML:'house',
   PL:'pool', LK:'link', LKU:'link', OF:'office'
 };
+// BUG FIX (2026-09-10): the map above only ever covered the ten hand-seeded ids. A
+// palette-added room (addRoom(), R<n> id) has no entry, so ROOM_VOLUME_TYPE[id] read
+// `undefined` for every new room -- roomContainer() below returned null for it (never
+// checked for a breach) and Massing's testFitBBoxFor() silently skipped it too (never
+// counted toward "Reshape to fit"'s bounding box). Net effect: addRoom()'s own promised
+// behaviour ("a room reaching past its volume is the signal... which is what a later
+// 'reshape to fit' step reads") was false for every room actually added through the
+// palette -- confirmed by Ben adding rooms and finding nothing pushed back to Massing.
+// Fix: derive a type from the room's own `cluster` (set at creation) when the static map
+// doesn't have the id. Three of the five clusters map to exactly one volume type; Wellness
+// covers both Pool and Link, so a new Wellness room still can't be placed unambiguously —
+// left unmapped rather than guessed, same as before this fix (a real, narrower, honest gap).
+const CLUSTER_VOLUME_TYPE = { Hub:'house', Private:'house', Service:'house', Work:'office' };
+function roomVolumeType(id){
+  if (ROOM_VOLUME_TYPE[id]) return ROOM_VOLUME_TYPE[id];
+  const r = rooms[id];
+  return (r && CLUSTER_VOLUME_TYPE[r.cluster]) || undefined;
+}
 // The volume rect a room should be judged against, in this file's own x/y frame, or null if
 // there's genuinely nothing to check it against yet. Prefers the live per-volume cut (Step 5 —
 // real geometry, right elevation, right box, only true inside Design-Studio.html); falls back
@@ -1405,7 +1678,7 @@ const ROOM_VOLUME_TYPE = {
 function roomContainer(id){
   const r = rooms[id];
   if(!r || r.illustrative) return null;
-  const type = ROOM_VOLUME_TYPE[id];
+  const type = roomVolumeType(id);
   if(!type) return null;
   const cut = liveCutForLevel(r.level);
   if(cut && cut.footprints.length){
@@ -1529,6 +1802,171 @@ function rotateStair(roomId){
   newY = Math.max(r.y, Math.min(r.y+r.h-newH, newY));
   box.x=newX; box.y=newY; box.w=newW; box.h=newH;
   render();
+}
+
+// ===== 3D ROOM MASSING (2026-09-10) — Ben's ask, verbatim: "in the massing phase 2 side
+// ... build a new rectangle for the new room." One live 3D box PER ROOM, not the schematic
+// Massing Studio's few hand-authored volumes (House/Office/Pool/Link/...) and not the
+// promote-one-shared-box mechanism above (which stays as-is for anyone who still wants it).
+//
+// SUPERSEDED AS "THE" ANSWER, KEPT AS A STANDALONE FALLBACK (2026-09-10, same day). Ben saw
+// this tab and said, verbatim: "Still not quite what i meant - because i wanted it to go back
+// into the massing studio where sections and sun study etc is visible with the new massing."
+// This view has no section cut, no sun-study, and no cap meter — it's a bare 3D box viewer,
+// disconnected from every instrument Stage 1 already has. The real answer is Massing
+// Studio's own new "Room massing (live)" mode (see roomBoxes()/setMassMode() in
+// Massing-Studio.html) — same section/sun-study/cap meter Stage 1 uses, fed room-derived
+// boxes instead. Project-Window.html's Massing sub-toggle now opens THAT, not this tab, in
+// any project with a merged Design-Studio.html.
+//
+// Kept, not deleted, because it is still the ONLY room-massing view for a project with no
+// Massing Studio at all (Nyando-style — no Massing Studio, no Design-Studio.html merge, so
+// Massing's mode doesn't exist to reach). Its box-per-room geometry construction and the
+// live-rebuild-on-render pattern were the direct model for Massing-Studio.html's own
+// roomBoxes()/rebuildRoomBoxes() — lifted and re-shaped into Massing's own box format
+// ({id,type,x,z,w,d,h,base,glaz}), not shared by reference (same per-file-copy convention
+// every other cross-Studio read in this codebase already uses, e.g. drawPlanCut()).
+//
+// Deliberately built INSIDE this file rather than as a genuinely separate document: it needs
+// zero cross-document data (every room already lives in `rooms`, right here), so it works
+// completely standalone (Nyando too — no Massing Studio required at all) and can update
+// live, with NO save/click/promote step, which a real separate file could not do without
+// hitting the exact file:// cross-frame wall that made the Massing<->Test-Fit merge
+// necessary in the first place (Fork-Decision-2026-09-09.md §2). Reached from Project
+// Window's Massing phase tab as a clearly separate view — see openPhase() in
+// _UI/Project-Window.html — so it doesn't read as a hidden extra tool inside Test-Fit.
+//
+// Every global below is rm-prefixed so it can never collide with Massing-Studio.html's own
+// scene/camera/renderer/sph/target/orbitDrag/etc. once both scripts share one runtime in
+// the generated Design-Studio.html (same discipline as the Step 3 de-collision rename).
+let rmInited = false;
+const rmScene = new THREE.Scene(); rmScene.background = new THREE.Color(0xeae6da);
+let rmCamera, rmRenderer;
+let rmTarget = new THREE.Vector3(22, 2, 16), rmSph = {r:36, theta:0.5, phi:1.0};
+let rmGroup = new THREE.Group(); rmScene.add(rmGroup);
+function rmApplyCam(){
+  const {r,theta,phi} = rmSph;
+  rmCamera.position.set(rmTarget.x+r*Math.sin(phi)*Math.sin(theta), rmTarget.y+r*Math.cos(phi), rmTarget.z+r*Math.sin(phi)*Math.cos(theta));
+  rmCamera.lookAt(rmTarget);
+}
+function rmInit(){
+  if (rmInited) return;
+  rmInited = true;
+  const el = document.getElementById('roomMassView');
+  rmCamera = new THREE.PerspectiveCamera(45, Math.max(1,el.clientWidth)/Math.max(1,el.clientHeight), 0.5, 400);
+  rmRenderer = new THREE.WebGLRenderer({antialias:true});
+  rmRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  el.appendChild(rmRenderer.domElement);
+  rmScene.add(new THREE.HemisphereLight(0xffffff,0x9a936f,0.9));
+  const sun = new THREE.DirectionalLight(0xfff2d8,0.7); sun.position.set(10,26,14); rmScene.add(sun);
+  rmScene.add(new THREE.GridHelper(70,35,0xb9b19c,0xd8d2c2));
+  let drag=false, rmPanDrag=false, px=0, py=0;
+  // Pan (2026-09-10, Ben's ask): right-click-drag or shift+left-drag shifts rmTarget in the
+  // camera's own right/up plane, scaled by the current zoom radius; plain drag still orbits,
+  // wheel still zooms, unchanged. Mirrors Massing-Studio.html's own pan, rm-prefixed globals
+  // only (no shared identifiers here to collide with once merged).
+  rmRenderer.domElement.addEventListener('contextmenu', e=>e.preventDefault());
+  rmRenderer.domElement.addEventListener('pointerdown', e=>{
+    if(e.button===2||e.shiftKey){rmPanDrag=true;}else{drag=true;}
+    px=e.clientX;py=e.clientY;
+  });
+  addEventListener('pointerup', ()=>{drag=false;rmPanDrag=false;});
+  addEventListener('pointermove', e=>{
+    if(document.getElementById('roomMassView').style.display==='none') return;
+    if(rmPanDrag){
+      const dx=e.clientX-px,dy=e.clientY-py;
+      const rt=new THREE.Vector3().setFromMatrixColumn(rmCamera.matrixWorld,0);
+      const up=new THREE.Vector3().setFromMatrixColumn(rmCamera.matrixWorld,1);
+      const s=rmSph.r*0.0016;
+      rmTarget.addScaledVector(rt,-dx*s); rmTarget.addScaledVector(up,dy*s);
+      px=e.clientX; py=e.clientY; rmApplyCam(); rmRenderer.render(rmScene,rmCamera);
+      return;
+    }
+    if(!drag) return;
+    rmSph.theta -= (e.clientX-px)*.008; rmSph.phi = Math.max(0.05,Math.min(1.52,rmSph.phi-(e.clientY-py)*.008));
+    px=e.clientX; py=e.clientY; rmApplyCam(); rmRenderer.render(rmScene,rmCamera);
+  });
+  rmRenderer.domElement.addEventListener('wheel', e=>{
+    e.preventDefault(); rmSph.r=Math.max(6,Math.min(120,rmSph.r*(1+Math.sign(e.deltaY)*.08))); rmApplyCam(); rmRenderer.render(rmScene,rmCamera);
+  }, {passive:false});
+  rebuildRoomMass();
+  rmFit();
+}
+// Frame the actual rooms, not a guessed default -- cheap since rebuildRoomMass() already has
+// to walk every room to build boxes. Also the pan escape hatch (2026-09-10, Ben's ask): once
+// a pan drifts rmTarget away, this is the way back, same role Massing Studio's Plan/Iso/Persp
+// buttons play there. Extracted out of rmInit() so the "⤢ Fit" button can call it any time,
+// not just on first load.
+function rmFit(){
+  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity,any=false;
+  for(const [id,r] of Object.entries(rooms)){
+    if(r.illustrative) continue;
+    any=true; minX=Math.min(minX,r.x); maxX=Math.max(maxX,r.x+r.w); minZ=Math.min(minZ,r.y); maxZ=Math.max(maxZ,r.y+r.h);
+  }
+  if(any){
+    rmTarget.set((minX+maxX)/2, 2, (minZ+maxZ)/2);
+    rmSph.r = Math.max(14, Math.max(maxX-minX,maxZ-minZ)*1.4);
+  }
+  if(rmInited){ rmApplyCam(); rmResize(); }
+}
+function rmResize(){
+  if(!rmInited) return;
+  const el = document.getElementById('roomMassView');
+  const w = Math.max(1,el.clientWidth), h = Math.max(1,el.clientHeight);
+  rmCamera.aspect = w/h; rmCamera.updateProjectionMatrix();
+  rmRenderer.setSize(w,h);
+  rmRenderer.render(rmScene,rmCamera);
+}
+addEventListener('resize', rmResize);
+// Height/base per room: prefer the real Stage-1 box for whichever volume type the room maps
+// to (only real inside the merged Design-Studio.html, where Massing's own `state` exists as
+// a global) so the two views agree in height where they can; otherwise a generic per-level
+// default (Ground ~4m, matching House's own default height; Upper ~3m, matching Office's)
+// so this still works completely standalone, with no Massing Studio at all (Nyando).
+function rmHeightBase(id){
+  const r = rooms[id];
+  const type = roomVolumeType(id);
+  if (typeof state !== 'undefined' && type) {
+    const b = state.find(x=>x.type===type);
+    if (b) return {h:b.h, base:b.base||0};
+  }
+  return r.level==='Upper' ? {h:3, base:4.5} : {h:4, base:0};
+}
+function rmDispose(g){ g.traverse(o=>{ if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose && o.material.dispose(); }); g.clear(); }
+function rmMakeLabel(t){
+  const cv=document.createElement('canvas'); cv.width=256; cv.height=64; const g=cv.getContext('2d');
+  g.font='bold 30px Segoe UI, Arial'; g.textAlign='center'; g.textBaseline='middle';
+  g.lineWidth=6; g.strokeStyle='rgba(255,255,255,.9)'; g.strokeText(t,128,32);
+  g.fillStyle='#2b2b2b'; g.fillText(t,128,32);
+  const tx=new THREE.CanvasTexture(cv); const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true}));
+  s.scale.set(3.4,0.85,1); return s;
+}
+// Live, automatic, no click: called from render()'s own end, same as every other panel in
+// this file, so a new/dragged/resized room's box appears the instant the edit happens --
+// per Ben's explicit ask, no "reshape to fit" / promote step for this view.
+function rebuildRoomMass(){
+  if (typeof THREE === 'undefined') return; // CDN blocked/offline -- the 2D Plan view still works with no network
+  rmDispose(rmGroup);
+  for(const [id,r] of Object.entries(rooms)){
+    if(r.illustrative) continue;
+    const {h,base} = rmHeightBase(id);
+    const wx = r.x + r.w/2, wz = r.y + r.h/2;
+    const geo = new THREE.BoxGeometry(r.w, h, r.h);
+    const mat = new THREE.MeshLambertMaterial({color: new THREE.Color(CLUSTER_COLOR[r.cluster]||'#ccc')});
+    const m = new THREE.Mesh(geo, mat); m.position.set(wx, base+h/2, wz); rmGroup.add(m);
+    const eg = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({color:0x2b2b2b, transparent:true, opacity:0.5}));
+    eg.position.copy(m.position); rmGroup.add(eg);
+    const lbl = rmMakeLabel(id); lbl.position.set(wx, base+h+0.6, wz); rmGroup.add(lbl);
+  }
+  if(rmInited) rmRenderer.render(rmScene, rmCamera);
+}
+function setMainView(mode){
+  const isMass = mode==='mass';
+  document.getElementById('view').style.display = isMass?'none':'block';
+  document.getElementById('roomMassView').style.display = isMass?'block':'none';
+  document.getElementById('bPlan2D').classList.toggle('on', !isMass);
+  document.getElementById('bRoomMass').classList.toggle('on', isMass);
+  if(isMass){ rmInit(); rebuildRoomMass(); rmResize(); }
 }
 
 function render(){
@@ -1722,6 +2160,16 @@ function render(){
   // standalone open of this file never defines it, so this is a no-op there, same contract
   // every other cross-Studio call in this codebase already uses.
   if (typeof refreshPromotionPreview === 'function') { try{ refreshPromotionPreview(); }catch(e){} }
+  // Massing Studio's own "Room massing (live)" mode (2026-09-10) — the integrated answer to
+  // Ben's ask for one-box-per-room INSIDE Massing Studio's real section/sun-study/cap-meter,
+  // not a second disconnected viewer. Same guarded, narrow, one-direction-only cross-call
+  // shape as refreshPromotionPreview() just above (never calls back into this file's own
+  // render(), so a room drag here can't create a mutual-recursion loop with Massing's own
+  // refresh()) — a no-op whenever Massing Studio's own mode isn't 'rooms', and undefined
+  // entirely in a standalone open of this file, same contract as every other cross-Studio
+  // read in this codebase.
+  if (typeof refreshMassingRoomMode === 'function') { try{ refreshMassingRoomMode(); }catch(e){} }
+  rebuildRoomMass();
 }
 
 /* ---------- panels ---------- */
@@ -1784,6 +2232,29 @@ function renderPanels(caseworkViol, caseworkSoft, containBreach){
   }
   if(!html) html = '<div class="foot">None on this level — current layout is clean.</div>';
   violEl.innerHTML = html;
+
+  // Mirror of Massing's own "Promotion preview" panel, rendered here too (2026-09-10) —
+  // that panel lives entirely inside Massing's pane, so it stayed invisible to anyone
+  // working the Test-Fit side in a single-pane layout (only-tf, or "Plan only"), which is
+  // exactly where a room actually gets added/dragged past its box. promoteVolume() is the
+  // SAME global function Massing's own button calls (one shared runtime once merged) —
+  // calling it from here does everything the Massing button does, including re-rendering
+  // this pane, since Massing's refresh() already calls this file's render() at its own end.
+  // Feature-detected exactly like every other cross-Studio read in this codebase: undefined
+  // in a standalone open of this file, so this whole block is then a safe no-op.
+  const mfWrap = document.getElementById('massingFitWrap');
+  const mfEl = document.getElementById('massingFit');
+  const promo = (typeof promotionPreview === 'function') ? promotionPreview().filter(p=>p.changed) : [];
+  if(promo.length){
+    mfWrap.style.display = 'block';
+    mfEl.innerHTML = promo.map(p=>{
+      const dims = '<b>'+p.id+'</b>: box is '+p.from.w.toFixed(1)+'×'+p.from.d.toFixed(1)+' m — your rooms need '+p.to.w.toFixed(1)+'×'+p.to.d.toFixed(1)+' m';
+      const btn = ' <button style="margin-left:4px;font-size:10.5px;padding:2px 7px" onclick="promoteVolume('+p.idx+')" title="Writes '+p.id+'\'s new size into Massing — same action as Massing pane\'s own Reshape to fit button.">Reshape to fit</button>';
+      return '<div class="softnote">'+dims+btn+'</div>';
+    }).join('');
+  } else {
+    mfWrap.style.display = 'none';
+  }
 
   document.getElementById('discrepancyBanner').innerHTML =
     `<b>Source discrepancy, flagged not resolved:</b> the adjacency matrix marks MB✗LK (keep apart), but the same document's 2026-07-26 roster-review section adds a private master→link door, incorporated into the current design. This Studio models the private door (current design) and shows the matrix row as a live conflict below — reconcile <code>Program-Test-Fit.md</code>'s matrix next time this phase reopens.`;
@@ -2200,6 +2671,12 @@ populateRoomDropdown();
 fitView();
 layoutPanelsTF();
 render();
+// Lets an embedding page (Project-Window.html's Massing phase tab) open straight into the
+// 3D room-massing view via ?view=mass, mirroring Design-Studio.html's own ?pane= param.
+(function(){
+  const v = new URLSearchParams(location.search).get('view');
+  if (v === 'mass') setMainView('mass');
+})();
 
 </script>
 </body>

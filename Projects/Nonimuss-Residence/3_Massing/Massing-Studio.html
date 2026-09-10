@@ -69,6 +69,15 @@
     <button onclick="setView('iso')">Iso</button>
     <button onclick="setView('persp')">Persp</button>
   </div>
+  <!-- Room massing (live) — 2026-09-10, Ben's own ask after seeing the first attempt (a
+       separate 3D tab inside Test-Fit Studio): "I wanted it to go back into the massing
+       studio where sections and sun study etc is visible with the new massing." A SECOND
+       mode of THIS Studio, not a separate viewer — see roomBoxes()/setMassMode() below for
+       exactly what is and isn't shown, and why. -->
+  <div class="grp"><span class="lab">Mode</span>
+    <button id="bModeSchem" class="on" onclick="setMassMode('schematic')" title="The original hand-authored volumes (House/Office/Pool/Link/...) — full metrics, driver proxies and trade-space plot.">Schematic (Stage 1)</button>
+    <button id="bModeRooms" onclick="setMassMode('rooms')" title="One live 3D box per Test-Fit room (not grouped by type) — same section cut, sun-study and cap meter as Stage 1. Needs Test-Fit's rooms in this same runtime (Design-Studio.html); a standalone open of this file has none to show. Updates automatically as rooms are added/dragged/resized — no click, no promote step.">Room massing (live)</button>
+  </div>
   <div class="grp"><button onclick="resetScheme()">↺ Reset scheme</button>
     <button onclick="exportState()" title="Copy your edits to share with Claude">⧉ Export / share edits</button>
     <button onclick="exportMassingJSON()" title="Download massing.json for the Rhino / Revit receivers (current scheme)">⤓ Export JSON (Rhino/Revit)</button>
@@ -94,14 +103,20 @@
 <div class="panel" id="left">
   <div class="panelHead"><h2 id="schemeName">B — The Breezeway</h2><button class="iconbtn" onclick="toggleMsLeft()" id="leftToggle">−</button></div>
   <div class="panelBody">
+  <!-- Stage-1-only controls: steering a single hand-authored box has no meaning once you're
+       looking at one-box-per-room, so this whole block hides in Room massing mode rather than
+       operating on the wrong data (setMassMode() below toggles it). -->
+  <div id="stage1Steer">
   <h3>Steer a volume</h3>
   <select id="volPick" onchange="pickVol()"></select>
   <div id="volBadge" class="cap-note"></div>
   <div id="sliders"></div>
   <div class="grp" style="margin-top:4px"><button onclick="rot90()">⟳ Rotate 90°</button></div>
   <div id="promoPreview" class="cap-note" style="display:none"></div>
+  </div>
 
   <h3>Cap &amp; metrics</h3>
+  <div id="roomModeNote" class="cap-note" style="display:none;color:#8a6d3b"></div>
   <div class="metric"><span>Dwelling floor</span><b id="mDwell">–</b></div>
   <div class="bar"><i id="capBar"></i></div>
   <div class="cap-note" id="capNote"></div>
@@ -109,13 +124,24 @@
   <div class="metric"><span>Pool (off-cap)</span><b id="mPool">–</b></div>
   <div class="metric"><span>Lot coverage</span><b id="mCov">–</b></div>
   <div class="metric"><span>Enclosed volume</span><b id="mVol">–</b></div>
-  <div class="metric"><span>Façade (envelope)</span><b id="mFac">–</b></div>
-  <div class="metric"><span>Glazed façade</span><b id="mGlaz">–</b></div>
-  <div class="metric"><span>Build simplicity</span><b id="mSimp">–</b></div>
+  <!-- facade/glazedPct/build-simplicity all read Stage 1's `metrics()` correctly at ANY
+       grain (the function itself never changes, per this file's "lifted, not rewritten"
+       rule) — but Two-Stage-Massing-2026-09-09.md §8 Q2 already found facade/effLoss
+       DOUBLE-COUNT every shared interior wall once a volume is really many small adjacent
+       boxes, and build-simplicity's own nVol threshold reads "articulated" as "complex"
+       regardless of design quality. Rather than show a number computed correctly by a
+       formula that was never calibrated for this grain, these three rows are hidden (not
+       tagged/greyed like Stage 2's metricsDisplay() — there is no single promoted volume
+       here to caption, the whole grain changed) whenever Room massing mode is active. -->
+  <div class="metric" id="rowFac"><span>Façade (envelope)</span><b id="mFac">–</b></div>
+  <div class="metric" id="rowGlaz"><span>Glazed façade</span><b id="mGlaz">–</b></div>
+  <div class="metric" id="rowSimp"><span>Build simplicity</span><b id="mSimp">–</b></div>
 
+  <div id="stage1Drivers">
   <h3>Driver proxies (concept-grade)</h3>
   <div id="drivers"></div>
   <div class="foot">Scores are geometric heuristics that move as you steer — a live gut-check, not real analysis.</div>
+  </div>
   </div>
 </div>
 
@@ -128,10 +154,16 @@
     <button id="secEW" onclick="setSection('EW')">E–W (forest)</button>
     <span class="lab" style="margin-left:6px">cut</span>
   </div>
-  <input type="range" id="cutSlider" min="0" max="100" value="45" oninput="drawSection()"/>
+  <input type="range" id="cutSlider" min="0" max="100" value="45" oninput="redrawSection()"/>
   <canvas id="sectionCanvas" width="600" height="340"></canvas>
   <div class="foot" id="secNote"></div>
 
+  <!-- Trade-space + driver-proxy bubble both read drivers(), which leans on findBox('house'/
+       'pool'/'link') — a SINGLE box per type. At room grain there are many house-type rooms;
+       findBox() would silently grab whichever one Object.find() hits first, a wrong number
+       that would look exactly as authoritative as a real one. Hidden, not faked, in Room
+       massing mode — see roomModeTradeNote below. -->
+  <div id="stage1Trade">
   <h3 style="margin-top:12px">Trade-space</h3>
   <div id="tradeWrap"><canvas id="tradeCanvas"></canvas></div>
   <div class="foot">Cap-safety (x) × wellness continuity D2 (y); bubble = winter thermal D3. ★ = your live edit.</div>
@@ -139,9 +171,11 @@
   <div class="foot">The ★ only MOVES when an edit changes cap-safety or D2 specifically (e.g. pulling the house away from the pool/link) — those two are step-like, not smooth, so most edits (glazing, height, a small nudge) move the numbers above instead and leave the ★ sitting still or barely growing/shrinking. That's still a live update — read the numbers on this line, not just the dot.</div>
   <div class="foot">A/B/C reference bubbles are always Stage 1 / LOD 100-grade — they never recompute against a promotion. Only the ★ (your live edit) can turn schematic (greyed), and only once a COND volume (house/office/pool/link) is promoted.</div>
   </div>
+  <div class="foot" id="roomModeTradeNote" style="display:none">Trade-space and the driver-proxy scores (D1–D5, OQ-6) are calibrated to Stage 1's few large, deliberately-shaped volumes — <code>findBox('house')</code> etc. assume exactly one box per type, which one-box-per-room isn't. Not computed here. See <b>Schematic (Stage 1)</b> for those numbers.</div>
+  </div>
 </div>
 
-<div id="hint">drag to orbit · scroll to zoom · steer volumes on the left</div>
+<div id="hint">drag to orbit · shift-drag or right-drag to pan · scroll to zoom · Plan/Iso/Persp resets both · steer volumes on the left</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -328,6 +362,10 @@ placeLabel('N ↑',22.9,-4,3,'#333'); placeLabel('S neighbour',22.9,36,2.5,'#8a5
 let bgroup=new THREE.Group(); scene.add(bgroup);
 // Test-Fit ghost group — Stage 0 (2026-09-09), see renderTestFitSync()/rebuildGhosts() below.
 let ghostGroup=new THREE.Group(); scene.add(ghostGroup);
+// Room massing (live) — 2026-09-10, see roomBoxes()/rebuildRoomBoxes()/setMassMode() further
+// down. A separate group so Stage 1's own bgroup is untouched; visibility toggles with mode.
+let roomBoxGroup=new THREE.Group(); roomBoxGroup.visible=false; scene.add(roomBoxGroup);
+let massMode='schematic'; // 'schematic' | 'rooms' — see setMassMode() below
 function disposeGroup(g){g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose&&o.material.dispose();});g.clear();}
 function rebuild(){
   disposeGroup(bgroup);
@@ -348,11 +386,30 @@ function rebuild(){
 let target=new THREE.Vector3(0,2,0), sph={r:64,theta:0.42,phi:0.95};
 function applyCam(){const{r,theta,phi}=sph;camera.position.set(target.x+r*Math.sin(phi)*Math.sin(theta),target.y+r*Math.cos(phi),target.z+r*Math.sin(phi)*Math.cos(theta));camera.lookAt(target);}
 const VIEWS={plan:{r:74,theta:0,phi:0.06},iso:{r:64,theta:0.72,phi:0.92},persp:{r:50,theta:0.4,phi:1.28}};
-function setView(v){sph={...VIEWS[v]};applyCam();}
-let orbitDrag=false,px=0,py=0;
-renderer.domElement.addEventListener('pointerdown',e=>{orbitDrag=true;px=e.clientX;py=e.clientY;});
-addEventListener('pointerup',()=>orbitDrag=false);
-addEventListener('pointermove',e=>{if(!orbitDrag)return;sph.theta-=(e.clientX-px)*.008;sph.phi=clamp(sph.phi-(e.clientY-py)*.008,0.05,1.52);px=e.clientX;py=e.clientY;applyCam();});
+function setView(v){sph={...VIEWS[v]};target.set(0,2,0);applyCam();}
+let orbitDrag=false,panDrag=false,px=0,py=0;
+// Pan (2026-09-10, Ben's ask): right-click-drag or shift+left-drag shifts `target` sideways
+// in the camera's own right/up plane, scaled by the current zoom radius so it feels the same
+// speed at any zoom level; plain left-drag still orbits, wheel still zooms, unchanged.
+renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
+renderer.domElement.addEventListener('pointerdown',e=>{
+  if(e.button===2||e.shiftKey){panDrag=true;}else{orbitDrag=true;}
+  px=e.clientX;py=e.clientY;
+});
+addEventListener('pointerup',()=>{orbitDrag=false;panDrag=false;});
+addEventListener('pointermove',e=>{
+  if(panDrag){
+    const dx=e.clientX-px,dy=e.clientY-py;
+    const rt=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
+    const up=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,1);
+    const s=sph.r*0.0016;
+    target.addScaledVector(rt,-dx*s); target.addScaledVector(up,dy*s);
+    px=e.clientX;py=e.clientY; applyCam();
+    return;
+  }
+  if(!orbitDrag)return;
+  sph.theta-=(e.clientX-px)*.008;sph.phi=clamp(sph.phi-(e.clientY-py)*.008,0.05,1.52);px=e.clientX;py=e.clientY;applyCam();
+});
 renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();sph.r=clamp(sph.r*(1+Math.sign(e.deltaY)*.08),20,150);applyCam();},{passive:false});
 
 // ===== steer UI =====
@@ -405,6 +462,16 @@ function setScheme(k){curKey=k;state=WORK[k];selIdx=Math.min(selIdx,state.length
 // ===== live metric + driver display =====
 function barColor(v){return v>=70?'var(--good)':v>=45?'var(--warn)':'var(--bad)';}
 function refresh(){
+  // Room massing mode reads a completely different, finer-grained input and skips
+  // drivers()/updateTrade() entirely (see the "ROOM MASSING (LIVE)" block below for why) —
+  // refreshRoomMode() is the whole of this branch. Still ends the same way every branch of
+  // this function always has: a guarded cross-call into Test-Fit's own render(), so the
+  // promotion-preview panel there (Stage-1-only, unaffected by this mode) stays current.
+  if (massMode === 'rooms') {
+    refreshRoomMode();
+    if (typeof render === 'function') { try{ render(); }catch(e){} }
+    return;
+  }
   const m=metrics(),d=drivers();
   const disp=metricsDisplay(m,state); // Stage 2/3 — gates facade/effLoss/glazedPct/D3, captions coverage/nVol. metrics()/drivers() above stay untouched.
   document.getElementById('mDwell').textContent=m.dwell.toFixed(0)+' / '+CAP+' m²';
@@ -502,7 +569,7 @@ function drawSection(){
     ? "Winter noon sun rakes in at only <b>15.6°</b> from the south — anything the neighbour or a deep plan blocks stays in winter shade. Push glazing high-south / clerestory to catch it (L1, L5)."
     : "The forest wall (W) blocks low western sun: the rear face gets <b>no direct winter sun</b>. Daylight the plan from the roof and the east, not the forest (L5).";
 }
-function setSection(a){sectionAxis=a;document.getElementById('secNS').classList.toggle('on',a==='NS');document.getElementById('secEW').classList.toggle('on',a==='EW');drawSection();}
+function setSection(a){sectionAxis=a;document.getElementById('secNS').classList.toggle('on',a==='NS');document.getElementById('secEW').classList.toggle('on',a==='EW');redrawSection();}
 
 // ===== PLAN CUT (Step 5, 2026-09-09) — a horizontal sibling of drawSection() above: same
 // idea (a function that reads `state` and produces a 2D slice) but a plan cut instead of a
@@ -789,7 +856,7 @@ function rebuildGhosts(){
 //
 // testFitBBoxFor() is the mirror image of liveMassingCut()/liveCutForLevel() in
 // Test-Fit-Studio.html: THAT function feature-detects Massing's globals from the Test-Fit side;
-// this one feature-detects Test-Fit's globals (`rooms`, `ROOM_VOLUME_TYPE`) from the Massing
+// this one feature-detects Test-Fit's globals (`rooms`, `roomVolumeType()`) from the Massing
 // side — the first time this codebase reads INTO Test-Fit's object graph rather than out of it.
 // Only real inside the generated Design-Studio.html; a standalone open of this file has no
 // `rooms` at all, so every function below is a safe, silent no-op there — same contract every
@@ -801,12 +868,12 @@ function rebuildGhosts(){
 // .md §2's load-bearing constraint: the moment a room becomes its own volume, nVol/D3/D5 break
 // for real — this never does that).
 function testFitBBoxFor(type){
-  if (typeof rooms === 'undefined' || typeof ROOM_VOLUME_TYPE === 'undefined') return null;
+  if (typeof rooms === 'undefined' || typeof roomVolumeType === 'undefined') return null;
   let minX=Infinity,minZ=Infinity,maxX=-Infinity,maxZ=-Infinity,any=false;
   try{
     Object.entries(rooms).forEach(([id,r])=>{
       if (r.illustrative) return;
-      if (ROOM_VOLUME_TYPE[id] !== type) return;
+      if (roomVolumeType(id) !== type) return;
       any = true;
       minX=Math.min(minX,r.x); maxX=Math.max(maxX,r.x+r.w);
       minZ=Math.min(minZ,r.y); maxZ=Math.max(maxZ,r.y+r.h);
@@ -892,6 +959,157 @@ function promoteVolume(i){
   if (selIdx === i) buildSliders();
 }
 
+// ===== ROOM MASSING (LIVE) — 2026-09-10 =====
+// Ben, in his own words, after seeing the first attempt (a second, disconnected 3D viewer
+// added inside Test-Fit Studio): "Still not quite what i meant - because i wanted it to go
+// back into the massing studio where sections and sun study etc is visible with the new
+// massing." Confirmed separately: one box per ROOM (not per type/cluster), reachable as a
+// clearly distinct second view (not a buried toggle), live/automatic (no click, no
+// "reshape"/"promote" step for THIS view specifically).
+//
+// This is a NEW, second view of the SAME instruments Stage 1 already has — drawSection()
+// (section + sun-study) and the cap meter — fed a DIFFERENT, finer-grained input. It is not
+// a replacement for Stage 1 and it does not touch `state`, `metrics()`, `drivers()`, DEFAULTS
+// or WORK. Two-Stage-Massing-2026-09-09.md §8 Q2 and Two-Stage-Integration-2026-09-09.md §2
+// already worked out, in writing, exactly what breaks if a Massing volume becomes one box per
+// room: nVol explodes (and D3/D5's nVol terms with it), facade/effLoss double-count every
+// shared interior wall between adjacent rooms, and build-simplicity's own threshold reads
+// every articulated house as "complex" regardless of design quality. On top of that (found
+// while building this view, not in the prior passes): drivers() itself calls findBox('house'
+// /'pool'/'link') — a single-box lookup — for D2/D4/OQ-6 and the link-aspect term of D5; with
+// several house-type rooms, that call would silently return whichever one Array.find() hits
+// first, a wrong number indistinguishable at a glance from a right one. None of that is
+// hypothetical risk to manage later — it is exactly what those two documents already found,
+// now confirmed against a second, sharper failure mode (findBox's single-box assumption).
+//
+// The resolution: reuse drawSection()/metrics() completely UNCHANGED (same rule as
+// metricsDisplay() above — wrap, don't rewrite) via the SAME swap-and-restore trick
+// schemeDrivers() already uses for drivers() one screen up, generalized into withBoxes()
+// below. Never call drivers()/updateTrade() against room boxes at all — the driver-proxy
+// panel and trade-space plot are hidden in this mode (not tagged/greyed like a Stage-2
+// promotion, since there is no single volume to caption here — the whole grain changed),
+// replaced by a plain note pointing back to Schematic (Stage 1). What IS shown, safely:
+// the cap meter (areaOfTypes() sums w*d filtered by type — arithmetically identical for 1 box
+// or 12, the one metric both prior passes already found clean at every grain), lot coverage
+// (captioned — a literal room-grain sum, not Stage 1's single-box figure), enclosed volume
+// (no perimeter/double-count problem — floor area × height doesn't care about interior
+// walls), and the section cut + sun-study (drawSection() is a pure per-box slice; the sun
+// rays are fixed angles that never read nVol at all).
+function withBoxes(boxes, fn){ const old=state; state=boxes; try{ return fn(); } finally { state=old; } }
+
+// Mirrors testFitBBoxFor() above (which aggregates Test-Fit's rooms into ONE bbox per type,
+// for promotion) but returns ONE box per ROOM, never aggregated — box-per-room is exactly
+// what promoteVolume() above is deliberately forbidden from doing to `state`; this function
+// never writes into `state` at all, so building it doesn't reopen that rule. Same
+// feature-detection contract as every other cross-Studio read in this codebase: `rooms`/
+// `roomVolumeType` only exist once Test-Fit Studio's own script has also run in this document
+// (true only inside the generated Design-Studio.html) — a standalone open of this file
+// returns an empty array, and the mode button's own tooltip already says why.
+function roomBoxesAvailable(){ return typeof rooms !== 'undefined' && typeof roomVolumeType === 'function'; }
+function roomBoxes(){
+  if (!roomBoxesAvailable()) return [];
+  const out = [];
+  try{
+    Object.entries(rooms).forEach(([id,r])=>{
+      if (r.illustrative) return;
+      const type = roomVolumeType(id) || 'room'; // unmapped clusters (e.g. a new Wellness
+        // room — Test-Fit-Studio.html's own CLUSTER_VOLUME_TYPE comment already names this
+        // gap: Wellness covers both Pool and Link, left unmapped rather than guessed) fall
+        // back to a plain 'room' type: it still gets a box and still counts toward nothing
+        // type-filtered (DWELL/COND/FOOT all name real types), same honest gap as upstream.
+      // Reuse whichever Stage-1 box of this type already exists for height/base/glazing, so
+      // the two views agree where they can; else a generic per-level default (matches
+      // Test-Fit's own now-superseded rmHeightBase(), same reasoning, ported here).
+      const ref = state.find(b=>b.type===type);
+      const boxH = ref ? ref.h : (r.level==='Upper' ? 3 : 4);
+      const boxBase = ref ? (ref.base||0) : (r.level==='Upper' ? 4.5 : 0);
+      const boxGlaz = ref ? glazOf(ref) : (GLAZ0[type]||20);
+      out.push({id, type, x:+r.x, z:+r.y, w:+r.w, d:+r.h, h:boxH, base:boxBase, glaz:boxGlaz});
+    });
+  }catch(e){ return []; } // a live-link failure must never break Massing's own refresh
+  return out;
+}
+function rebuildRoomBoxes(){
+  disposeGroup(roomBoxGroup);
+  if (massMode !== 'rooms') return;
+  roomBoxes().forEach(b=>{
+    const[wx,wz]=toWorld(b.x+b.w/2,b.z+b.d/2);
+    const geo=new THREE.BoxGeometry(b.w,b.h,b.d);
+    const gz=glazOf(b)/100;
+    const baseCol=new THREE.Color(COLOR[b.type]||0xb9b19c).lerp(new THREE.Color(0xbfd8e8),gz*0.4);
+    const mat=new THREE.MeshLambertMaterial({color:baseCol,transparent:gz>0,opacity:1-gz*0.5});
+    const m=new THREE.Mesh(geo,mat); m.position.set(wx,b.base+b.h/2,wz); m.castShadow=true; m.receiveShadow=true; roomBoxGroup.add(m);
+    const eg=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x2b2b2b,transparent:true,opacity:0.55}));
+    eg.position.copy(m.position); roomBoxGroup.add(eg);
+    const lbl=makeLabel(b.id,'#2b2b2b'); lbl.position.set(wx,b.base+b.h+0.5,wz); lbl.scale.set(4,1,1); roomBoxGroup.add(lbl);
+  });
+}
+// Dispatcher for the two existing section-redraw call sites (the cut slider's oninput and
+// setSection()'s own tail call) — drawSection() ITSELF is never edited, only which array it
+// reads is swapped first, via withBoxes(). Matches this file's "lifted, not rewritten" rule
+// the same way metricsDisplay()/schemeDrivers() already do for metrics()/drivers().
+function redrawSection(){
+  if (massMode==='rooms') withBoxes(roomBoxes(), drawSection);
+  else drawSection();
+}
+// The room-mode half of refresh() (called below) — panel text + cap meter + section, using
+// ONLY the metrics fields already established as safe/captioned above. Never calls
+// drivers()/updateTrade(). Never calls Test-Fit's render() itself (that would create a
+// direct mutual-recursion loop with refreshMassingRoomMode() below, which Test-Fit's own
+// render() calls back into) — the OUTER refresh() dispatcher below is the one place that
+// cross-call happens, exactly as it already did before this feature existed.
+function refreshRoomMode(){
+  const boxes = roomBoxes();
+  const noteEl = document.getElementById('roomModeNote');
+  if (!roomBoxesAvailable()){
+    noteEl.style.display='block';
+    noteEl.innerHTML = 'No room data in this runtime — open this from the Project Window\'s Massing phase ("Room massing (live)"), or from <code>Design-Studio.html</code> directly. A standalone <code>Massing-Studio.html</code> has no Test-Fit rooms to build boxes from.';
+    ['mDwell','mPool','mCov','mVol'].forEach(id=>document.getElementById(id).textContent='–');
+    document.getElementById('capBar').style.width='0%';
+    document.getElementById('capNote').textContent='';
+    redrawSection();
+    return;
+  }
+  noteEl.style.display='block';
+  noteEl.innerHTML = boxes.length+' room'+(boxes.length===1?'':'s')+', one box each — live from Test-Fit, no click needed. Façade, glazing, build-simplicity and the driver-proxy scores aren\'t shown here — see <b>Schematic (Stage 1)</b> for those.';
+  const m = withBoxes(boxes, metrics);
+  document.getElementById('mDwell').textContent=m.dwell.toFixed(0)+' / '+CAP+' m²';
+  const pct=clamp(m.dwell/CAP*100,0,140);
+  const cb=document.getElementById('capBar'); cb.style.width=Math.min(pct,100)+'%';
+  cb.style.background=m.dwell<=CAP?'var(--good)':'var(--bad)';
+  document.getElementById('capNote').textContent=m.dwell<=CAP?('✓ '+(CAP-m.dwell).toFixed(0)+' m² under cap'):('✗ '+(m.dwell-CAP).toFixed(0)+' m² OVER — trim the dwelling');
+  document.getElementById('capNote').style.color=m.dwell<=CAP?'#4c9a5a':'#c8503c';
+  document.getElementById('mPool').textContent=m.pool.toFixed(0)+' m²';
+  const mCovEl=document.getElementById('mCov');
+  mCovEl.textContent=m.coverage.toFixed(1)+'% (rooms)';
+  mCovEl.title='Sum of individual room footprints ÷ lot area — a literal room-grain figure, not Stage 1\'s single-box coverage.';
+  document.getElementById('mVol').textContent=m.volume.toFixed(0)+' m³';
+  redrawSection();
+  rebuildRoomBoxes();
+}
+// The REVERSE-direction half — called from Test-Fit's own render() (see the guarded call
+// added there), the same asymmetric pattern refreshPromotionPreview() above already
+// established: narrow, no cross-call back into Test-Fit's render(), so dragging a room
+// there updates this view in the same instant without either side calling the other forever.
+function refreshMassingRoomMode(){ if (massMode==='rooms') refreshRoomMode(); }
+// The mode switch itself: toggles which DOM sections are Stage-1-only vs shown at every
+// grain, flips bgroup/roomBoxGroup visibility, then runs a normal refresh so every number
+// and the 3D scene repaint together, not in two visible steps.
+function setMassMode(mode){
+  massMode=mode;
+  document.getElementById('bModeSchem').classList.toggle('on', mode==='schematic');
+  document.getElementById('bModeRooms').classList.toggle('on', mode==='rooms');
+  document.getElementById('stage1Steer').style.display = mode==='schematic' ? '' : 'none';
+  document.getElementById('stage1Drivers').style.display = mode==='schematic' ? '' : 'none';
+  document.getElementById('stage1Trade').style.display = mode==='schematic' ? '' : 'none';
+  document.getElementById('roomModeTradeNote').style.display = mode==='rooms' ? '' : 'none';
+  document.getElementById('roomModeNote').style.display = mode==='rooms' ? '' : 'none';
+  ['rowFac','rowGlaz','rowSimp'].forEach(id=>{ document.getElementById(id).style.display = mode==='schematic' ? '' : 'none'; });
+  bgroup.visible = (mode==='schematic');
+  roomBoxGroup.visible = (mode==='rooms');
+  rebuild(); rebuildRoomBoxes(); refresh();
+}
+
 // ===== responsive panel offset =====
 // #topbar wraps to a second row below ~1560px (a common laptop width is 1440px) since its
 // button groups don't fit on one line at #topbar's own font size. #left/#right used a
@@ -915,6 +1133,13 @@ setView('iso'); fillVolPicker(); buildSliders(); rebuild(); refresh(); applyCam(
 layoutPanels();
 (function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);layoutPanels();});
+// Lets an embedding page (Project-Window.html's Massing phase sub-toggle) open straight into
+// Room massing (live) via ?mode=rooms, mirroring Test-Fit's own ?view=mass and
+// Design-Studio.html's own ?pane= params.
+(function(){
+  const v = new URLSearchParams(location.search).get('mode');
+  if (v === 'rooms') setMassMode('rooms');
+})();
 </script>
 </body>
 </html>

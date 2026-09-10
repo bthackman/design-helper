@@ -28,10 +28,16 @@ memory-biased toward international canon rather than actually searched).
    target — not yet built.
 3. **Exports don't exist.** Program → `.xlsx`, brief/drivers → `.docx`, boards/decision log → `.pdf` are
    all speced in `00_Tool-Concept-Spec.md`, none built.
-4. **Export receivers are uneven.** Blender (`_Export-Receivers/Blender/`) is built and tested end-to-end
-   — but only against a synthetic fixture, not yet a real project's massing. Revit is paused at a
-   Dynamo-graph MVP (Autodesk's own API is read-only for now, so there's no near-term reason to push
-   further). Rhino hasn't been started at all.
+4. **Export receivers are uneven, but Revit took a real step forward 2026-09-10.** Blender
+   (`_Export-Receivers/Blender/`) is built and tested end-to-end — but only against a synthetic fixture,
+   not yet a real project's massing. **Revit verified end-to-end for the first time** — Ben built
+   `MassBox.rfa` (the one manual, in-Revit step nothing outside Revit can do), wired the Dynamo graph's
+   inputs by hand (the shipped `.dyn` opened with its Python node's three inputs unconnected — had to be
+   walked through adding String/String/Boolean nodes from scratch), ran it against a real exported
+   `nonimuss-massing-B.json`, and got 6 real mass instances in a real Revit project. Cross-checked: the
+   Mass Floor Schedule's House+Office rows (107.88 + 11.10 = 118.98 m²) matched the Studio's own live cap
+   meter (119.0 m²) almost exactly. Genuinely a one-project, one-run verification, not a settled pipeline
+   — still worth a second real run before trusting it blind. Rhino hasn't been started at all.
 5. **Precedents check a personal Obsidian vault as their source of truth, not a folder in this repo.**
    `_skill-source/references/phase-1-precedents.md` points phase 1 at an external vault path
    (`Architecture/Architecture Design/` tree) before running a fresh web search. That integration is
@@ -42,6 +48,169 @@ memory-biased toward international canon rather than actually searched).
    authority, not a course instructor), real budget-as-a-driver workflows, multi-disciplinary
    consultant-team coordination, and confidentiality handling for real client data are all identified
    gaps — none yet exercised. See the backlog in `00_Tool-Concept-Spec.md` for the full list and reasoning.
+
+## Session handoff — 2026-09-10, continued (pan added to both 3D views; Revit export pipeline verified end-to-end for the first time — session close-out)
+
+Same day, closing out a long session. Two more things landed after the entry below, then the session
+wrapped for the evening with everything pushed.
+
+**Pan added to Massing Studio's 3D view and Test-Fit's standalone "3D room massing" tab** — both only had
+orbit (drag) + zoom (wheel) before; Ben asked directly for pan. Shift-drag or right-click-drag now shifts
+the camera's `target` sideways in its own right/up plane (scaled by current zoom radius so it feels
+consistent at any distance), reusing the exact same technique in both files under `rm`-prefixed globals
+in Test-Fit's copy so nothing collides once merged. Massing's existing Plan/Iso/Persp buttons now also
+recentre `target` (not just the orbit angle) as the escape hatch back from a bad pan; Test-Fit's 3D tab
+got a new "⤢ Fit" button doing the same (extracted the existing first-load auto-frame logic into a
+reusable `rmFit()` so the button and the initial boot call it the same way). `Design-Studio.html`
+regenerated after.
+
+**The Revit export receiver ran successfully end-to-end for the first time ever**, closing out the
+single oldest-paused item in this tool's export-receiver list (see "What's genuinely unfinished" #4,
+updated above). Ben built `MassBox.rfa` from the recipe (the one step that has to happen inside Revit —
+nothing outside Revit can generate a `.rfa`). Before handing it to him: read `massing_to_revit.py` fresh
+against the current `massing-interchange/v1` schema — confirmed no drift since it was written in July —
+and generated a real, current `nonimuss-massing-B.json` fixture matching the Studio's actual live Scheme
+B geometry (script at the session's scratchpad, not committed — it's a one-off test fixture, not source;
+same reasoning as not committing Studio-exported JSON elsewhere in this repo). **The shipped
+`Massing-Import.dyn` opened with its Python node's three inputs completely unconnected** — no
+String/Boolean nodes on the canvas at all, so "Run" silently did nothing (the script's own `if not run`
+guard read the disconnected Boolean as falsy). Walked Ben through wiring it by hand — two String nodes
+(json path, family name) and a Boolean, double-click-canvas-to-search each one, drag-to-connect, a Watch
+node on OUT to see the log. Worth recording plainly: **Ben has not used Dynamo's node-graph UI before**,
+so a future session picking this back up should expect to explain wiring/connecting nodes from scratch
+again unless he's used it again in between. Once wired: ran clean, created 6 real mass instances in a
+real Revit project (7 Mass Floor Schedule rows — Link legitimately appears twice, once per level its
+7.5m height spans). Cross-checked by hand: schedule's House + Office rows (107.88 + 11.10 = 118.98 m²)
+matched the Studio's own live cap-meter reading (119.0 m²) almost exactly. **This is a real, working,
+first-ever verification — but only one project, one run.** `01_Workflow-Quickref.md` and `MassBox.rfa`
+(both already in the working tree before this session, never committed) are committed alongside this
+entry since they're real, load-bearing parts of a now-verified pipeline, not stray files.
+
+**Honest state at session close:** everything today (the Fork-Decision correction, export-modal/panel
+fixes, Room massing, pan, and this Revit verification) is committed and pushed to `origin/main` as of
+this entry. The tool moves into real use next: Ben's next school project is expected "sometime next
+week," which will be the first time any of this — Test-Fit Studio, the two-stage massing model, Room
+massing, the Design Studio merge, Project Window's phase-rail integration — runs against a project
+neither built to validate the tool itself. Read this file's "What's genuinely unfinished" section fresh
+before that session; several items there (materiality run only once, never tested against a real client
+engagement) become directly relevant the moment a real project starts, in a way they weren't for
+Nonimuss.
+
+## Session handoff — 2026-09-10, continued (Room massing's pane bug fixed; propagated into the per-project generation method)
+
+Same day, right after the Fable-agent entry below landed. Two things, both small compared to that entry
+but both real:
+
+**Bug: Project Window's "Room massing (live)" sub-tab opened `Design-Studio.html?pane=only-ms&mode=rooms`
+— `only-ms` hides Test-Fit's entire pane.** Ben tried it and got exactly what that param does: Room
+massing mode rendering in Massing's pane, with the very rooms driving it invisible. His own words: *"I
+want to see the plan and the 3D room massing at the same time."* Fixed in `_UI/Project-Window.html`'s
+`showRooms()` — dropped the `pane=` param entirely for this route (defaults to side-by-side), keeping
+`mode=rooms`. The Schematic route still uses `pane=only-ms` on purpose (Stage 1 siting doesn't need
+rooms visible to be steered); Room massing mode is specifically *about* the rooms, so it gets the
+opposite default.
+
+**Propagated into the per-project generation method, per Ben's explicit instruction** ("It should be
+written into the per-project generation method"), so a *future* project seeded from this tool gets Room
+massing (live) automatically, not just Nonimuss:
+- `_skill-source/references/phase-3-massing.md` — new "Room massing (live)" section (full spec, a
+  comparison table against Stage 2 promotion so the two are never conflated), a new "ALWAYS build in"
+  item 6, and a new "The merged runtime (`Design-Studio.html`)" section — this one didn't exist in the
+  generation method **at all** before today; `build-design-studio.js`'s merge has been real since
+  2026-09-09 but was never written into the method docs, so a project seeded from these docs alone would
+  have had no instructions to ever generate the merged file the whole two-Studio live-link depends on.
+- `_skill-source/references/phase-4-space-planning.md` — corrected a now-stale claim in item 11 ("this is
+  deliberately not a live link... A Fable-model take... explicitly recommended against a shared geometry
+  model") that predates the 2026-09-09 merge and was never fixed when the merge landed; added item 12,
+  the standalone "3D room massing (standalone)" tab as the documented fallback for a project with no
+  Massing Studio to integrate with.
+- `_skill-source/SKILL.md` — a new bullet 5 under phase 3's folded-in method.
+- `GLOSSARY.md` — a new **Room massing (live)** term (disambiguated from Stage 2/Promotion explicitly,
+  since the two are easy to conflate), a new **Design Studio** term clarifying it's a *generated merge*
+  of the two existing Studios, not a fourth Studio (the glossary's own "no other Studios exist or are
+  planned" line stays true), and both Studio rows updated to mention their respective new modes/tabs.
+- `design-process.skill` repackaged (`python3 -m zipfile`, the established method — `Compress-Archive`
+  silently writes backslash paths). Verified: 10 entries, forward-slash separators, packaged
+  `phase-3-massing.md` byte-identical to its source (checked as raw bytes, not decoded text — a first
+  attempt compared decoded strings and false-flagged a mismatch that turned out to be Python's own
+  universal-newline translation on the text-mode read, not a real difference).
+
+**Not done, and not decided:** whether the Massing phase tab's Schematic/Room-massing sub-toggle should
+also gain a third tab for Stage 2 (promoted) volumes specifically, now that the Studio has three
+meaningfully different massing views (Schematic, promoted-badge-within-Schematic, Room massing) — left as
+today's UI, not raised to Ben, since he didn't ask for it and the badge-not-tab call for Stage 2 was
+already deliberate (`phase-3-massing.md`'s "The badge, not a tab").
+
+## Session handoff — 2026-09-10 (Room massing, resolved: one-box-per-room now lives INSIDE Massing Studio's own section/sun-study/cap-meter, as a second mode — not the disconnected 3D viewer built earlier the same day)
+
+Full account: `Room-Massing-Resolution-2026-09-10.md`. Picked up right after the entries below built a
+standalone "3D room massing" tab inside `Test-Fit-Studio.html` (its own Three.js scene, `rmScene`/
+`rmCamera`/`rebuildRoomMass()`) and Ben rejected it as not what he meant: *"Still not quite what i meant
+- because i wanted it to go back into the massing studio where sections and sun study etc is visible with
+the new massing."* Confirmed separately: one box per room (not per type/cluster), reachable as a second,
+clearly distinct view, live/automatic (no click, no promote step for this specific view).
+
+**The real tension, engaged, not papered over.** `Fork-Decision-2026-09-09.md` §5 and
+`Two-Stage-Massing-2026-09-09.md` §8 Q2 already established, in writing and with numbers, that
+one-box-per-room breaks `nVol` (and D3/D5's `nVol` terms), and double-counts shared interior walls in
+`facade`/`effLoss`. Found new while building this: `drivers()` also calls `findBox('house'/'pool'/'link')`
+— a single-box lookup — for D2/D4/OQ-6 and D5's link-aspect term; with several house-type rooms this
+would silently grab whichever one `Array.find()` hits first, a wrong number with no visible tell.
+
+**What got built, `Massing-Studio.html` only (plus one guarded cross-call in `Test-Fit-Studio.html`):** a
+second topbar mode, "Schematic (Stage 1)" / "Room massing (live)". `roomBoxes()` builds one box per Test-
+Fit room (mirrors `testFitBBoxFor()`'s feature-detection, but never aggregates — box-per-room is exactly
+what `promoteVolume()` stays forbidden from writing into `state`, and this function never writes into
+`state` at all). Fed into **the same, byte-identical `drawSection()`** via a new generic `withBoxes(boxes,
+fn)` swap-and-restore helper — the same trick `schemeDrivers()` already used for `drivers()`, one screen
+up in the same file — so section cut and sun-study work against room geometry with zero edits to
+`drawSection()` itself. Fed into **the same, byte-identical `metrics()`** the same way, but only the
+subset that's honest at this grain is shown: cap meter (arithmetically identical at any grain — the one
+metric both prior documents already found clean), lot coverage (captioned as a room-grain sum), and
+enclosed volume (no perimeter double-count problem). Façade/glazed/build-simplicity/the driver-proxy panel
+/the trade-space plot are hidden entirely in this mode (not tagged/greyed like a Stage-2 promotion — there
+is no single volume to caption; the whole grain changed), replaced by one plain note pointing back to
+Schematic (Stage 1). One live box per room renders in a new, separate `roomBoxGroup` (visibility toggled
+against Stage 1's own `bgroup`), live off Test-Fit's own `render()` via a new narrow `refreshMassingRoomMode()`
+— the same asymmetric, no-mutual-recursion shape `refreshPromotionPreview()` already established.
+
+**Test-Fit's own "3D room massing" tab is kept, not deleted** — relabeled "3D room massing (standalone)."
+Its box-per-room construction and live-rebuild-on-render pattern were the direct model for
+`roomBoxes()`/`rebuildRoomBoxes()` (lifted and reshaped into Massing's own box format, not shared by
+reference). It stays the only room-massing view for a project with no Massing Studio at all (Nyando-
+style) — Massing's new mode has nothing to attach to there. `_UI/Project-Window.html`'s Massing sub-toggle
+(previously "Schematic (Stage 1)" / "From rooms (Stage 2 — live)", pointing at Test-Fit's disconnected
+tab) now reads "Schematic (Stage 1)" / "Room massing (live)" and opens
+`Design-Studio.html?pane=only-ms&mode=rooms` wherever a merge exists, falling back to Test-Fit's own
+`?view=mass` tab only when it doesn't.
+
+**Regenerated `Design-Studio.html`** via the Python port of `_UI/build-design-studio.js` (no Node on this
+machine) — the port was verified byte-identical against the working tree's existing generated file on the
+*unmodified* sources before any edits (confirming it's a faithful, in-sync copy, not a silent fork), one
+real comment-only drift between the port and the real `.js` source was found and fixed in the port, then
+it was re-run on the edited sources. `git diff` on the regenerated file was read in full and is
+proportionate (446 insertions/12 deletions against the last commit) and every line traces to an intended
+change.
+
+**Verified:** brace/paren/bracket/`<div>` balance on both edited source files (exactly balanced) and the
+regenerated merged file; every new DOM id cross-referenced against every `getElementById` call in both
+directions; every new global name and id grepped against the *other* source file for collisions (zero,
+following this repo's own documented history of exactly this bug class) — full method and numbers in
+`Room-Massing-Resolution-2026-09-10.md` §7–8.
+
+**Not verified — no browser exists on this machine (confirmed: no `node` on PATH; no working Playwright
+either, per the brief this session was handed).** Nothing has been clicked. The mode toggle, the live
+drag-updates-the-3D-view behavior, the section/sun-study actually slicing the new boxes correctly, and
+the cap-meter numbers actually matching a hand check against real Nonimuss data are all genuinely
+unverified — the single biggest open item, named as such in the resolution doc rather than glossed over.
+
+**Known gaps, left for Ben, not guessed on:** method-doc propagation (`phase-3-massing.md`/
+`phase-4-space-planning.md` don't yet describe this new mode — arguably an always-in Studio feature, not
+a per-project generation-method decision, but that's a judgment call this session didn't make unilaterally);
+the pre-existing Stage-1/Stage-2 naming collision with `phase-2-site.md`'s unrelated zone/parcel-scorecard
+usage (already flagged 2026-09-09, still untouched); the unmapped-Wellness-cluster gap (`roomVolumeType()`'s
+own honest limitation, inherited by `roomBoxes()` unchanged, not fixed). **Nothing committed** — the
+working tree is left exactly as the harness found it plus this session's changes, for Ben to review.
 
 ## Session handoff — 2026-09-09, later session (Steps 1–5 of the merge built; the two-stage massing model established and being integrated; four repeated claims in this repo corrected)
 

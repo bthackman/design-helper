@@ -1,5 +1,5 @@
 {
-  "Uuid": "a09cbf03f7074a019a3e06d479e25039",
+  "Uuid": "a09cbf03-f707-4a01-9a3e-06d479e25039",
   "IsCustomNode": false,
   "Description": "Massing Studio -> Revit MVP receiver. Point the top String at your exported massing.json, set the Boolean to True, Run.",
   "Name": "Massing-Import",
@@ -11,9 +11,8 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# massing_to_revit.py  \u2014  Dynamo Python Script node\n# Revit MVP receiver for the Massing Studio.\n# Reads a \"massing-interchange/v1\" JSON (from the Studio's Export JSON button) and builds:\n#   1. Levels from site.storeys\n#   2. one MassBox family instance per volume (conceptual mass), on the right level\n#   3. Mass Floors at each level a mass passes through  -> native GFA schedule\n#\n# Compatible with IronPython 2.7 (Revit 2020-2022) AND CPython3 (Revit 2023+).\n#   - no f-strings (IronPython 2.7 doesn't support them) -> uses .format()\n#   - metres->feet done by hand (no version-specific UnitUtils call)\n#\n# Dynamo node ports (right-click node -> add inputs to match):\n#   IN[0]  jsonPath     : full path to the exported massing json (string)\n#   IN[1]  familyName   : mass family type name, default \"MassBox\" (string)\n#   IN[2]  run          : Boolean toggle so the graph only writes when you flip it True\n# OUT     : a text log of what was created / skipped\n\nimport clr\nimport json\nimport os\n\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import (\n    FilteredElementCollector, Level, XYZ, FamilySymbol,\n    Structure, MassInstanceUtils\n)\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# ---------- inputs ----------\njsonPath   = IN[0]\nfamilyName = IN[1] if (len(IN) > 1 and IN[1]) else \"MassBox\"\nrun        = IN[2] if (len(IN) > 2) else True\n\nFT = 0.3048                      # 1 foot = 0.3048 m\ndef m2ft(v): return float(v) / FT\n\nlog = []\ndef note(msg): log.append(msg)\n\nif not run:\n    OUT = \"run = False. Flip the Boolean to True to write to the model.\"\nelse:\n    # ---------- read interchange ----------\n    if not jsonPath or not os.path.isfile(jsonPath):\n        OUT = \"ERROR: jsonPath not found: {0}\".format(jsonPath)\n    else:\n        f = open(jsonPath, 'r')\n        data = json.load(f)\n        f.close()\n\n        volumes = data.get(\"volumes\", [])\n        storeys = data.get(\"site\", {}).get(\"storeys\", [])\n        note(\"Loaded {0} ({1}), {2} volumes.\".format(\n            data.get(\"project\", \"?\"), data.get(\"schemeName\", data.get(\"scheme\", \"?\")), len(volumes)))\n\n        # ---------- find the mass family symbol ----------\n        symbol = None\n        for fs in FilteredElementCollector(doc).OfClass(FamilySymbol):\n            try:\n                if fs.Family.Name == familyName:\n                    symbol = fs\n                    break\n            except:\n                pass\n\n        if symbol is None:\n            OUT = (\"ERROR: family '{0}' not loaded. Build/load MassBox.rfa first \"\n                   \"(see 00_MassBox-family-recipe.md), then re-run.\").format(familyName)\n        else:\n            TransactionManager.Instance.EnsureInTransaction(doc)\n\n            if not symbol.IsActive:\n                symbol.Activate()\n                doc.Regenerate()\n\n            # ---------- levels from storeys (create if missing) ----------\n            def get_or_create_level(elev_ft, name):\n                for lv in FilteredElementCollector(doc).OfClass(Level):\n                    if abs(lv.Elevation - elev_ft) < 1e-6:\n                        return lv\n                lv = Level.Create(doc, elev_ft)\n                try:\n                    lv.Name = name\n                except:\n                    pass\n                return lv\n\n            levels = []   # (elev_ft, Level)\n            if storeys:\n                for s in storeys:\n                    e_ft = m2ft(s.get(\"elev\", 0))\n                    lv = get_or_create_level(e_ft, s.get(\"name\", \"L\"))\n                    levels.append((e_ft, lv))\n            else:\n                levels.append((0.0, get_or_create_level(0.0, \"L1\")))\n            note(\"Levels ready: {0}\".format(\", \".join(\n                [\"{0}@{1:.2f}m\".format(l[1].Name, l[0]*FT) for l in levels])))\n\n            # ---------- helpers ----------\n            def set_p(inst, name, val):\n                p = inst.LookupParameter(name)\n                if p is not None and not p.IsReadOnly:\n                    try:\n                        p.Set(val)\n                        return True\n                    except:\n                        return False\n                return False\n\n            made = 0\n            for v in volumes:\n                w  = float(v[\"w\"]); d = float(v[\"d\"]); h = float(v[\"h\"])\n                x  = float(v[\"x\"]); z = float(v[\"z\"]); base = float(v.get(\"base\", 0))\n                # axis map: interchange x=East -> Revit +X ; z=South -> Revit -Y ; y=up -> +Z\n                px = m2ft(x + w / 2.0)\n                py = m2ft(-(z + d / 2.0))\n                pz = m2ft(base)\n                pt = XYZ(px, py, pz)\n\n                inst = doc.Create.NewFamilyInstance(pt, symbol, Structure.StructuralType.NonStructural)\n\n                # dimensions (family params drive extents; see recipe for names)\n                set_p(inst, \"Length\", m2ft(w))     # X / East extent\n                set_p(inst, \"Width\",  m2ft(d))     # Y / North extent\n                set_p(inst, \"Height\", m2ft(h))     # Z / up\n                # metadata\n                set_p(inst, \"Glazing_%\", float(v.get(\"glaz\", 0)))\n                mk = inst.LookupParameter(\"Mark\")\n                if mk is not None and not mk.IsReadOnly:\n                    try: mk.Set(str(v.get(\"id\", \"\")))\n                    except: pass\n                cm = inst.LookupParameter(\"Comments\")\n                if cm is not None and not cm.IsReadOnly:\n                    try: cm.Set(\"{0} | glaz {1}%\".format(v.get(\"type\", \"\"), v.get(\"glaz\", 0)))\n                    except: pass\n\n                # ---------- mass floors at every level the mass spans ----------\n                top = base + h\n                for (e_ft, lv) in levels:\n                    e_m = e_ft * FT\n                    if (e_m >= base - 1e-4) and (e_m < top - 1e-4):\n                        try:\n                            MassInstanceUtils.AddMassLevelDataToMassInstance(doc, inst.Id, lv.Id)\n                        except Exception as ex:\n                            note(\"  mass-floor skip on {0}@{1}: {2}\".format(v.get(\"id\"), lv.Name, ex))\n                made += 1\n\n            TransactionManager.Instance.ForceCloseTransaction()\n            note(\"Created {0} mass instances of '{1}'.\".format(made, familyName))\n            note(\"Add a 'Mass Floors (Gross Area)' schedule to read GFA natively; \"\n                 \"cross-check against interchange metrics.dwelling = {0} m2.\".format(\n                     data.get(\"metrics\", {}).get(\"dwelling\", \"?\")))\n            OUT = \"\\n\".join(log)\n",
+      "Code": "# massing_to_revit.py  —  Dynamo Python Script node\n# Revit MVP receiver for the Massing Studio.\n# Reads a \"massing-interchange/v1\" JSON (from the Studio's Export JSON button) and builds:\n#   1. Levels from site.storeys\n#   2. one MassBox family instance per volume (conceptual mass), on the right level\n#   3. Mass Floors at each level a mass passes through  -> native GFA schedule\n#\n# Compatible with IronPython 2.7 (Revit 2020-2022) AND CPython3 (Revit 2023+).\n#   - no f-strings (IronPython 2.7 doesn't support them) -> uses .format()\n#   - metres->feet done by hand (no version-specific UnitUtils call)\n#\n# Dynamo node ports (right-click node -> add inputs to match):\n#   IN[0]  jsonPath     : full path to the exported massing json (string)\n#   IN[1]  familyName   : mass family type name, default \"MassBox\" (string)\n#   IN[2]  run          : Boolean toggle so the graph only writes when you flip it True\n# OUT     : a text log of what was created / skipped\n\nimport clr\nimport json\nimport os\n\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import (\n    FilteredElementCollector, Level, XYZ, FamilySymbol,\n    Structure, MassInstanceUtils\n)\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# ---------- inputs ----------\njsonPath   = IN[0]\nfamilyName = IN[1] if (len(IN) > 1 and IN[1]) else \"MassBox\"\nrun        = IN[2] if (len(IN) > 2) else True\n\nFT = 0.3048                      # 1 foot = 0.3048 m\ndef m2ft(v): return float(v) / FT\n\nlog = []\ndef note(msg): log.append(msg)\n\nif not run:\n    OUT = \"run = False. Flip the Boolean to True to write to the model.\"\nelse:\n    # ---------- read interchange ----------\n    if not jsonPath or not os.path.isfile(jsonPath):\n        OUT = \"ERROR: jsonPath not found: {0}\".format(jsonPath)\n    else:\n        f = open(jsonPath, 'r')\n        data = json.load(f)\n        f.close()\n\n        volumes = data.get(\"volumes\", [])\n        storeys = data.get(\"site\", {}).get(\"storeys\", [])\n        note(\"Loaded {0} ({1}), {2} volumes.\".format(\n            data.get(\"project\", \"?\"), data.get(\"schemeName\", data.get(\"scheme\", \"?\")), len(volumes)))\n\n        # ---------- find the mass family symbol ----------\n        symbol = None\n        for fs in FilteredElementCollector(doc).OfClass(FamilySymbol):\n            try:\n                if fs.Family.Name == familyName:\n                    symbol = fs\n                    break\n            except:\n                pass\n\n        if symbol is None:\n            OUT = (\"ERROR: family '{0}' not loaded. Build/load MassBox.rfa first \"\n                   \"(see 00_MassBox-family-recipe.md), then re-run.\").format(familyName)\n        else:\n            TransactionManager.Instance.EnsureInTransaction(doc)\n\n            if not symbol.IsActive:\n                symbol.Activate()\n                doc.Regenerate()\n\n            # ---------- levels from storeys (create if missing) ----------\n            def get_or_create_level(elev_ft, name):\n                for lv in FilteredElementCollector(doc).OfClass(Level):\n                    if abs(lv.Elevation - elev_ft) < 1e-6:\n                        return lv\n                lv = Level.Create(doc, elev_ft)\n                try:\n                    lv.Name = name\n                except:\n                    pass\n                return lv\n\n            levels = []   # (elev_ft, Level)\n            if storeys:\n                for s in storeys:\n                    e_ft = m2ft(s.get(\"elev\", 0))\n                    lv = get_or_create_level(e_ft, s.get(\"name\", \"L\"))\n                    levels.append((e_ft, lv))\n            else:\n                levels.append((0.0, get_or_create_level(0.0, \"L1\")))\n            note(\"Levels ready: {0}\".format(\", \".join(\n                [\"{0}@{1:.2f}m\".format(l[1].Name, l[0]*FT) for l in levels])))\n\n            # ---------- helpers ----------\n            def set_p(inst, name, val):\n                p = inst.LookupParameter(name)\n                if p is not None and not p.IsReadOnly:\n                    try:\n                        p.Set(val)\n                        return True\n                    except:\n                        return False\n                return False\n\n            made = 0\n            for v in volumes:\n                w  = float(v[\"w\"]); d = float(v[\"d\"]); h = float(v[\"h\"])\n                x  = float(v[\"x\"]); z = float(v[\"z\"]); base = float(v.get(\"base\", 0))\n                # axis map: interchange x=East -> Revit +X ; z=South -> Revit -Y ; y=up -> +Z\n                px = m2ft(x + w / 2.0)\n                py = m2ft(-(z + d / 2.0))\n                pz = m2ft(base)\n                pt = XYZ(px, py, pz)\n\n                inst = doc.Create.NewFamilyInstance(pt, symbol, Structure.StructuralType.NonStructural)\n\n                # dimensions (family params drive extents; see recipe for names)\n                set_p(inst, \"Length\", m2ft(w))     # X / East extent\n                set_p(inst, \"Width\",  m2ft(d))     # Y / North extent\n                set_p(inst, \"Height\", m2ft(h))     # Z / up\n                # metadata\n                set_p(inst, \"Glazing_%\", float(v.get(\"glaz\", 0)))\n                mk = inst.LookupParameter(\"Mark\")\n                if mk is not None and not mk.IsReadOnly:\n                    try: mk.Set(str(v.get(\"id\", \"\")))\n                    except: pass\n                cm = inst.LookupParameter(\"Comments\")\n                if cm is not None and not cm.IsReadOnly:\n                    try: cm.Set(\"{0} | glaz {1}%\".format(v.get(\"type\", \"\"), v.get(\"glaz\", 0)))\n                    except: pass\n\n                # ---------- mass floors at every level the mass spans ----------\n                top = base + h\n                for (e_ft, lv) in levels:\n                    e_m = e_ft * FT\n                    if (e_m >= base - 1e-4) and (e_m < top - 1e-4):\n                        try:\n                            MassInstanceUtils.AddMassLevelDataToMassInstance(doc, inst.Id, lv.Id)\n                        except Exception as ex:\n                            note(\"  mass-floor skip on {0}@{1}: {2}\".format(v.get(\"id\"), lv.Name, ex))\n                made += 1\n\n            TransactionManager.Instance.ForceCloseTransaction()\n            note(\"Created {0} mass instances of '{1}'.\".format(made, familyName))\n            note(\"Add a 'Mass Floors (Gross Area)' schedule to read GFA natively; \"\n                 \"cross-check against interchange metrics.dwelling = {0} m2.\".format(\n                     data.get(\"metrics\", {}).get(\"dwelling\", \"?\")))\n            OUT = \"\\n\".join(log)\n",
       "Engine": "CPython3",
-      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "2c0684a2db804a7085adb296dc8c8bac",
       "NodeType": "PythonScriptNode",
@@ -58,17 +57,16 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Massing Studio -> Revit conceptual masses. Runs the embedded engine."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Id": "d121f5315a414f87ba0777f88b9a49e4",
       "NodeType": "StringInputNode",
-      "InputValue": "C:\\\\Users\\\\BHackman\\\\Downloads\\\\nonimuss-massing-B.json",
-      "Id": "566d96bd126c4c4e99770bd63757734d",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "59b04a390b4746bfb59f951176f18601",
+          "Id": "01e348c9753743aa983d7663367347e9",
           "Name": "",
           "Description": "String",
           "UsingDefaultValue": false,
@@ -76,17 +74,19 @@
           "UseLevels": false,
           "KeepListStructure": false
         }
-      ]
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string",
+      "InputValue": "C:\\Users\\BHackman\\OneDrive - DIALOG\\BHackman Drive\\00_AI\\Claude\\Design Process Tool\\_Export-Receivers\\Revit\\nonimuss-massing-B.json"
     },
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Id": "5a0cb8eae1bf4e2b92510447976bf92e",
       "NodeType": "StringInputNode",
-      "InputValue": "MassBox",
-      "Id": "47afc40be247494c82bfce1320413706",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "936f91e3d0f54094989cfcdbb1723f50",
+          "Id": "877af6f9f7204ca6ae2c80479e8db4f6",
           "Name": "",
           "Description": "String",
           "UsingDefaultValue": false,
@@ -94,17 +94,19 @@
           "UseLevels": false,
           "KeepListStructure": false
         }
-      ]
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string",
+      "InputValue": "MassBox"
     },
     {
       "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "Id": "4c21e46cf8eb40cca1b77baea91163c6",
       "NodeType": "BooleanInputNode",
-      "InputValue": false,
-      "Id": "21231a3f9f3c48fa9b0600338dd7d282",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "c6af127bbabd44338dc00d5c3dbc8c46",
+          "Id": "91b1e0d4620a4cefaee3eb1a4a9d0211",
           "Name": "",
           "Description": "Boolean",
           "UsingDefaultValue": false,
@@ -112,39 +114,102 @@
           "UseLevels": false,
           "KeepListStructure": false
         }
-      ]
+      ],
+      "Replication": "Disabled",
+      "Description": "Enables selection between True and False",
+      "InputValue": true
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 420.0,
+      "WatchHeight": 200.0,
+      "Id": "bbf7e965d4df42e68612d3bf030c795a",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        {
+          "Id": "feaff1c0f76a4313ab131842b0690129",
+          "Name": "",
+          "Description": "Node to show output from",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d94a6e49276845d59b1b906725184700",
+          "Name": "",
+          "Description": "Node output",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualizes a node's output"
     }
   ],
   "Connectors": [
     {
-      "Start": "59b04a390b4746bfb59f951176f18601",
+      "Start": "e455cc4a31354b05bee160a26998d4aa",
+      "End": "feaff1c0f76a4313ab131842b0690129",
+      "Id": "8c286b80aadb4423a42e54ae94facf32",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "01e348c9753743aa983d7663367347e9",
       "End": "fec35812384e433f9c561f8c0ea3e29c",
-      "Id": "f2ac95612a724ed8b4d45ca854248961",
+      "Id": "e5ace7c449d543d19427f297be75024f",
       "IsHidden": "False"
     },
     {
-      "Start": "936f91e3d0f54094989cfcdbb1723f50",
+      "Start": "877af6f9f7204ca6ae2c80479e8db4f6",
       "End": "0ac23239607548a3a85d1bbaa339921c",
-      "Id": "8619d6960ee94fca87ac863b6fb41bd7",
+      "Id": "7dcef2ab5c034ec88bdfc77b9b1dfe8f",
       "IsHidden": "False"
     },
     {
-      "Start": "c6af127bbabd44338dc00d5c3dbc8c46",
+      "Start": "91b1e0d4620a4cefaee3eb1a4a9d0211",
       "End": "1344d1abf96241a88df81b5593f98ba6",
-      "Id": "0508e5ff3b9c4ed2aa85c4ae8785238b",
+      "Id": "2ee25666753747818a0eac334110cec0",
       "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "nonimuss-massing-B.json",
+      "ReferenceType": "External",
+      "Nodes": [
+        "d121f5315a414f87ba0777f88b9a49e4"
+      ]
+    }
+  ],
+  "EnableLegacyPolyCurveBehavior": true,
   "Thumbnail": "",
   "GraphDocumentationURL": null,
-  "ExtensionWorkspaceData": [],
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "3.3",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "8.2",
+      "Data": {}
+    }
+  ],
   "Author": "",
-  "Linter": {
-    "Uuid": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
-    "Name": "None",
-    "Version": "1.0.0.0"
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
   },
   "Bindings": [],
   "View": {
@@ -152,7 +217,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": true,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.19.0.5742",
+      "Version": "3.3.0.6316",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -178,42 +243,52 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 420.0,
-        "Y": 80.0
+        "Y": 79.34184255322498
       },
       {
-        "Id": "566d96bd126c4c4e99770bd63757734d",
-        "Name": "massing.json path",
+        "Id": "d121f5315a414f87ba0777f88b9a49e4",
+        "Name": "String",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 40.0,
-        "Y": 40.0
+        "X": 14.290038136719431,
+        "Y": -220.20170269183907
       },
       {
-        "Id": "47afc40be247494c82bfce1320413706",
-        "Name": "family name",
+        "Id": "5a0cb8eae1bf4e2b92510447976bf92e",
+        "Name": "String",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 40.0,
-        "Y": 220.0
+        "X": 113.56574117508103,
+        "Y": 65.09621855419715
       },
       {
-        "Id": "21231a3f9f3c48fa9b0600338dd7d282",
-        "Name": "run",
+        "Id": "4c21e46cf8eb40cca1b77baea91163c6",
+        "Name": "Boolean",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 40.0,
-        "Y": 360.0
+        "X": 73.15341686375893,
+        "Y": 211.45436606006592
+      },
+      {
+        "Id": "bbf7e965d4df42e68612d3bf030c795a",
+        "Name": "Watch",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 679.3382815335883,
+        "Y": 225.6532908180979
       }
     ],
     "Annotations": [],
-    "X": 0.0,
-    "Y": 0.0,
-    "Zoom": 1.0
+    "X": 295.0234904800866,
+    "Y": 323.4003573773531,
+    "Zoom": 0.9155622852812263
   }
 }

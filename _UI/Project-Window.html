@@ -155,8 +155,16 @@
   .conscience .muted-toggle { font-size:var(--fs-meta); color:var(--faint); text-decoration:underline; background:none; border:none; padding:0; align-self:flex-start; }
 
   .viewer { flex:1; overflow:auto; padding:var(--sp-5) var(--sp-6) var(--sp-6); }
-  .viewer-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp-4); }
+  .viewer-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp-4); gap:var(--sp-3); flex-wrap:wrap; }
   .viewer-toolbar .path { font-family:var(--mono); font-size:var(--fs-meta); color:var(--faint); }
+  /* Massing phase's Stage 1 / Stage 2 sub-toggle (2026-09-10) -- two distinct views of the
+     Massing phase, reached from the main phase rail rather than a separate tool Ben has to
+     know to open by hand. */
+  .subtabs { display:flex; gap:var(--sp-1); }
+  .subtab { font-size:var(--fs-label); padding:5px 10px; border-radius:6px; border:1px solid var(--line-strong);
+    background:var(--panel-2); color:var(--dim); }
+  .subtab:hover { color:var(--text); }
+  .subtab.on { background:var(--accent-soft); border-color:var(--accent); color:var(--text); }
   .viewer iframe { width:100%; height:100%; border:1px solid var(--line); }
   .open-studio-btn { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--accent); color:var(--accent); background:transparent; font-size:var(--fs-body); font-weight:600; padding:.4rem .75rem; }
 
@@ -796,40 +804,90 @@ function openPhase(key) {
   renderPhaseRail();
   const viewer = document.getElementById('viewer');
   viewer.innerHTML = '';
-  if (key === 'massing') {
-    const studio = projectFiles.find(f => /^3_Massing\/Massing-Studio\.html$/.test(f.path));
-    if (studio) {
+  // Design-Studio.html (build-design-studio.js's merged Massing+Test-Fit runtime) is
+  // preferred over either standalone Studio when it exists for this project — it's the
+  // only place promotion (Stage 1 siting -> Stage 2 room-shaped) actually works, since
+  // that needs both Studios' live object graphs in one runtime. Falls back to the
+  // standalone Studio (no promotion, but works alone / for projects without a merge,
+  // e.g. Nyando) when Design-Studio.html hasn't been generated for this project.
+  // Added 2026-09-10 — before this, the phase rail could only reach the standalone
+  // Studios, so opening "Massing" or "Space Planning" from the normal workflow never
+  // showed the two-stage badge/legend or the "Reshape to fit" button at all.
+  if (key === 'massing' || key === 'space-planning') {
+    const merged = projectFiles.find(f => /^Design-Studio\.html$/.test(f.path));
+    const testFitStandalone = projectFiles.find(f => f.path === '4_Space-Planning/Test-Fit-Studio.html');
+    const standalonePath = key === 'massing' ? '3_Massing/Massing-Studio.html' : '4_Space-Planning/Test-Fit-Studio.html';
+    const standalone = projectFiles.find(f => f.path === standalonePath);
+    // Massing's own Stage 1 / "Room massing (live)" sub-toggle (2026-09-10, Ben's ask),
+    // reached from the Massing phase itself rather than a separate tool he has to know to
+    // open by hand. "Room massing (live)" opens Massing Studio's OWN integrated mode (see
+    // roomBoxes()/setMassMode() in Massing-Studio.html) -- the real section cut, sun-study
+    // and cap meter working against one 3D box per Test-Fit room, not a second disconnected
+    // viewer (that first attempt -- Test-Fit-Studio.html's own "3D room massing" tab -- is
+    // kept as a standalone-only fallback for a project with no Massing Studio to integrate
+    // with, e.g. Nyando; see showRooms() below). Persists only for this page load (not
+    // saved) -- reopening the phase later starts back on Schematic.
+    if (key === 'massing' && (merged || testFitStandalone)) {
       const toolbar = document.createElement('div'); toolbar.className = 'viewer-toolbar';
-      toolbar.innerHTML = '<span class="path">3_Massing/Massing-Studio.html</span>';
+      const tabs = document.createElement('div'); tabs.className = 'subtabs';
+      const bSchem = document.createElement('button'); bSchem.className = 'subtab on'; bSchem.textContent = 'Schematic (Stage 1)';
+      const bRooms = document.createElement('button'); bRooms.className = 'subtab'; bRooms.textContent = 'Room massing (live)';
+      tabs.appendChild(bSchem); tabs.appendChild(bRooms);
+      const pathSpan = document.createElement('span'); pathSpan.className = 'path';
+      toolbar.appendChild(tabs); toolbar.appendChild(pathSpan);
       const iframe = document.createElement('iframe');
-      iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/3_Massing/Massing-Studio.html';
-      iframe.addEventListener('load', () => {
-        // Best-effort bridge (unverified — no Massing Studio instance exists on this
-        // machine to round-trip against). No-op if the Studio has no listener.
-        try {
-          iframe.contentWindow.postMessage({ type: 'pw:theme', theme: 'dark' }, '*');
-          const changed = (parsed.moved || []).filter(m => m.path.startsWith('3_Massing/')).map(m => m.path);
-          if (changed.length) iframe.contentWindow.postMessage({ type: 'pw:files-changed', paths: changed }, '*');
-        } catch {}
-      });
+      const showSchematic = () => {
+        bSchem.classList.add('on'); bRooms.classList.remove('on');
+        pathSpan.textContent = merged ? 'Design-Studio.html (Massing view — click "Side by side" to also see rooms)' : '3_Massing/Massing-Studio.html';
+        iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/' + (merged ? 'Design-Studio.html?pane=only-ms' : '3_Massing/Massing-Studio.html');
+      };
+      // Re-wired 2026-09-10: this used to open Test-Fit's standalone "3D room massing" tab —
+      // a second, disconnected 3D viewer. Ben, after seeing it: "Still not quite what i meant
+      // - because i wanted it to go back into the massing studio where sections and sun study
+      // etc is visible with the new massing." Now opens Massing Studio's OWN "Room massing
+      // (live)" mode (Massing-Studio.html's roomBoxes()/setMassMode()) — same section cut,
+      // sun-study and cap meter Stage 1 uses, fed one box per Test-Fit room instead. Only
+      // reachable where Massing and Test-Fit share a runtime (Design-Studio.html) — a project
+      // with no merge (no Massing Studio to integrate with at all, e.g. Nyando) falls back to
+      // Test-Fit's own standalone tab, the only room-massing view that can exist there.
+      const showRooms = () => {
+        bRooms.classList.add('on'); bSchem.classList.remove('on');
+        if (merged) {
+          // No pane param (2026-09-10, Ben: "I want to see the plan and the 3D room massing
+          // at the same time") -- only-ms hid Test-Fit's pane entirely, so Room massing mode
+          // (which reads its boxes FROM Test-Fit's rooms) sat right next to a hidden view of
+          // the very thing driving it. Side-by-side keeps Test-Fit's plan visible beside it.
+          pathSpan.textContent = 'Design-Studio.html (Massing pane, left, in "Room massing (live)" mode — one live box per Test-Fit room, right — same section/sun-study/cap-meter as Stage 1)';
+          iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/Design-Studio.html?mode=rooms';
+        } else {
+          pathSpan.textContent = '4_Space-Planning/Test-Fit-Studio.html ("3D room massing" tab — standalone; no Massing Studio in this project to integrate with)';
+          iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/4_Space-Planning/Test-Fit-Studio.html?view=mass';
+        }
+      };
+      bSchem.onclick = showSchematic; bRooms.onclick = showRooms;
+      showSchematic();
       viewer.appendChild(toolbar);
       viewer.appendChild(iframe);
       return;
     }
-  }
-  if (key === 'space-planning') {
-    const studio = projectFiles.find(f => /^4_Space-Planning\/Test-Fit-Studio\.html$/.test(f.path));
-    if (studio) {
+    // Space Planning does NOT default to only-tf: the "Reshape to fit" button and
+    // promotion-preview panel live inside Massing's pane, so hiding it would hide the one
+    // thing this phase's whole feedback loop is about. Side-by-side (no pane param) keeps
+    // both visible.
+    const src = merged ? 'Design-Studio.html' : standalonePath;
+    if (merged || standalone) {
       const toolbar = document.createElement('div'); toolbar.className = 'viewer-toolbar';
-      toolbar.innerHTML = '<span class="path">4_Space-Planning/Test-Fit-Studio.html</span>';
+      const mergedLabel = 'Design-Studio.html (both panes — Massing, left, shows "Reshape to fit" once a room outgrows its box)';
+      toolbar.innerHTML = '<span class="path">' + esc(merged ? mergedLabel : standalonePath) + '</span>';
       const iframe = document.createElement('iframe');
-      iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/4_Space-Planning/Test-Fit-Studio.html';
+      iframe.src = '../Projects/' + encodeURIComponent(projectName) + '/' + src;
+      const watchDir = key === 'massing' ? '3_Massing/' : '4_Space-Planning/';
       iframe.addEventListener('load', () => {
-        // Same best-effort bridge as the Massing Studio iframe below — unverified,
-        // no-op if Test-Fit Studio has no listener for these message types.
+        // Best-effort bridge (unverified — no live round-trip on this machine). No-op
+        // if the loaded page has no listener for these message types.
         try {
           iframe.contentWindow.postMessage({ type: 'pw:theme', theme: 'dark' }, '*');
-          const changed = (parsed.moved || []).filter(m => m.path.startsWith('4_Space-Planning/')).map(m => m.path);
+          const changed = (parsed.moved || []).filter(m => m.path.startsWith(watchDir)).map(m => m.path);
           if (changed.length) iframe.contentWindow.postMessage({ type: 'pw:files-changed', paths: changed }, '*');
         } catch {}
       });
