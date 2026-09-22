@@ -13,6 +13,13 @@ Projects/*/
 !Projects/Nonimuss-Residence/
 !Projects/Nonimuss-Residence/**
 
+# EXCEPTION, 2026-09-22: RAIC400-Youth-Science-Centre is also an academic/hypothetical
+# RAIC 400 studio project, not real client work. Ben chose to git-track it "for now" —
+# treat as a deliberate per-project call like Nonimuss above, not a reversal of the
+# general policy.
+!Projects/RAIC400-Youth-Science-Centre/
+!Projects/RAIC400-Youth-Science-Centre/**
+
 # Per-environment config (vault path, etc.) — differs per machine/user, never shared
 config.local.json
 

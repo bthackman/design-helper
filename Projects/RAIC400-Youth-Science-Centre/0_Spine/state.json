@@ -1,0 +1,17 @@
+{
+  "project": "RAIC400 Youth Science Centre",
+  "status": "active",
+  "dormantReason": null,
+  "currentPhase": "precedents",
+  "driversLocked": false,
+  "driversLockedDate": null,
+  "updated": "2026-09-22",
+  "phases": {
+    "client-discovery": { "status": "complete", "updated": "2026-09-22" },
+    "site": { "status": "deferred", "updated": "2026-09-22" },
+    "precedents": { "status": "board-complete-pending-gate", "updated": "2026-09-22" },
+    "massing": { "status": "not-started", "updated": null },
+    "space-planning": { "status": "not-started", "updated": null },
+    "materiality": { "status": "not-started", "updated": null }
+  }
+}
