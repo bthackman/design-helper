@@ -64,7 +64,7 @@ Glyphs: ● strong · ○ weak/partial · ✗ no evidence found (not "fails" —
 | 49 | **Youth Recreation & Culture Centre (Gersonsvej)**, Hellerup DK — CEBRA + Dorte Mandrup 2008 | C11 | ✗ | ○ | ● | ○ | ● | **Drawings unverified:** ArchDaily gallery (33 images) blocks scraping; Dorte Mandrup, e-architect and CEBRA show photos only | **Anchor if drawings confirmed** |
 | 50 | Sterrenbos Youth Building, Nazareth BE — Atelier Vens Vanbelle 2023 | C11 | ✗ | ○ | ✗ | ○ | ● | Concept diagram, 2 plans, section on [ArchDaily](https://www.archdaily.com/1018743/sterrenbos-atelier-vens-vanbelle) | Lesson (gear-base / covered gallery) |
 | 51 | **Arthur & Yvonne Boyd Education Centre**, Riversdale NSW — Glenn Murcutt, Wendy Lewin, Reg Lark 1996–99 *(Ben's pick: the dorms)* | C11 | ✗ | ○ | ✗ | ○ | ● | **Verified:** setout/site plan 1:200 (bedroom types A/A1/B1), hall sections, elevations, detail, sketches on [area-arch](https://www.area-arch.it/en/arthur-and-yvonne-boyd-education-centre/); site plan and Murcutt eave-sketch letter on [ozetecture](https://www.ozetecture.org/riversdale-boyd-education-centre/) | **Anchor (dorm wing)** |
-| 52 | **IslandWood**, Bainbridge Island WA — Mithun 2002 | C11a | ○ | ● | ✗ | ○ | ● | Learning-centre plan, site plan, air-flow section diagram (archived Solaripedia; Mithun page photos only) | **Anchor — only youth + dorms + STEM match found** |
+| 52 | **IslandWood**, Bainbridge Island WA — Mithun 2002 | C11a | ○ | ● | ✗ | ○ | ● | **Corrected 2026-09-23 (Ben caught it):** the "plan" is a 350×150 px unlabelled thumbnail of one learning studio; the site plan is a coarse property map. No lodge plans, no sections | Bench (programme reference only; drawings unusable) |
 | 53 | Girl Scouts Camp Prairie Schooner, Kansas City — El Dorado 2012 | C11a | ✗ | ✗ | ✗ | ✗ | ● | Plan, 2 site plans, 6 sections, 2 elevations — [ArchDaily](https://www.archdaily.com/281599/camp-prairie-schooner-el-dorado) | Lesson (2 bunk bars + shared middle, 40 + 8 staff) |
 | 54 | Girl Scout Camp Lakota, Frazier Park CA — Perkins&Will 2020 | C11a | ✗ | ✗ | ✗ | ● | ○ | 2 sections only, no plans — [ArchDaily](https://www.archdaily.com/1000284/girl-scout-camp-lakota-perkins-and-will) | Evidence ("safe base from which campers can take risks" = W4 in the client's words) |
 | 55 | The Painted Turtle Camp, Lake Hughes CA — STUDIOpractice 1999–2004 | C11a | ✗ | ○ | ● | ✗ | ● | Site plan, elevation, detail — [studiopractice](https://studiopractice.com/painted-turtle-camp) | Lesson (protected oval yard opening to wild land) |
@@ -76,12 +76,12 @@ Glyphs: ● strong · ○ weak/partial · ✗ no evidence found (not "fails" —
 | 61 | Fraganter Youth Hut, Flattach AT — Imgang 2023 | C11b | ✗ | ○ | ✗ | ○ | ● | Full set: 3 plans, 3 sections, 4 elevations, site — [ArchDaily](https://www.archdaily.com/1013370) | Lesson (cold-climate expedition base) |
 | 62 | Sports Youth Hostel Bayreuth DE — LAVA + Wenzel+Wenzel 2017 | C11b | ✗ | ✗ | ✗ | ✗ | ○ | GF + 1F plans, section — [ArchDaily](https://www.archdaily.com/888028) | Lesson (Y-plan: 3 wings on one hub) |
 | 63 | **Miyun Youth Activity Centre + camp dorm**, Beijing — REDe + Moguang 2020–21 | C11c | ○ | ○ | ✗ | ✗ | ● | Ph.1 site, GF plan, 2 sections; dorm module sections only — [gooood](https://www.gooood.cn/youth-activity-center-renovated-from-old-garment-plant-china-by-rede-architects-moguang-studio.htm) | **Anchor candidate** (dorm clusters by age/theme around shared "family" rooms = our pods) |
-| 64 | **Aranya Ideas (Qixing) Youth Camp**, Qinhuangdao CN — Atelier TeamMinus 2017 | C11c | ✗ | ○ | ○ | ✗ | ● | Masterplan, 1F + 2F plans, section, elevations, axo — [ArchDaily](https://www.archdaily.com/884609) | **Anchor candidate** (camp classrooms below, dorms above, two courts, spiral ramp) |
+| 64 | **Aranya Ideas (Qixing) Youth Camp**, Qinhuangdao CN — Atelier TeamMinus 2017 | C11c | ✗ | ○ | ○ | ✗ | ● | **Opened 2026-09-23 (gooood):** axo, sketch, 1F plan (small, set in the site; legend: classrooms, library, multipurpose, activity, kitchen; no bedrooms), section 1-1, 2 N elevations. 2F dorm plan claimed on [ArchDaily](https://www.archdaily.com/884609), not seen | **Anchor candidate** (camp classrooms below, dorms above, two courts, spiral ramp) |
 | 65 | Momofuku Ando Center of Outdoor Training, Komoro JP — Kengo Kuma 2010 | C11c | ✗ | ○ | ✗ | ✗ | ○ | B1, 1F, 2F plans, site, section — [KKAA](https://kkaa.co.jp/en/project/the-momofuku-ando-center-of-outdoor-training/) | Lesson (2,000 m², our scale; one stepped "street" roof) |
 | 66 | Bundanon Art Museum & Bridge, Illaroo NSW — Kerstin Thompson 2022 | C11c | ✗ | ✗ | ✗ | ✗ | ○ | Site, 3 plans, section — [ArchDaily](https://www.archdaily.com/984969) | Lesson (same estate as Boyd; bedroom bar as bridge) |
 | 67 | Tangjiahe Nature Education Centre, Sichuan — CLAB 2023 | C11c | ✗ | ● | ✗ | ✗ | ○ | Masterplan, 1F + 2F plans — [gooood](https://www.gooood.cn/the-nature-education-center-of-tangjiahe-by-clab-architects.htm) | Evidence (nature-ed + 9 rooms) |
 | 68 | **Cheakamus Centre — BlueShore Environmental Learning Centre**, Squamish BC — McFarland Marceau 2012 | C11d | ✗ | ● | ✗ | ● | ● | GF + 1F plans, long + short sections — [SAB Magazine](https://sabmagazine.com/the-blueshore-financial-environmental-learning-centre/) | **Anchor — best Canadian match** (overnight outdoor school; cabins separate) |
-| 69 | Travis Price Centre, Camp Manitou, Headingley MB — 1x1 architecture 2020 | C11d | ✗ | ✗ | ○ | ✗ | ● | Annotated floor plan, site plan — [1x1](https://www.1x1architecture.ca/Travis-Price-Centre) | Bench (6 dorm rooms round a lounge + 200-seat dining, one foyer/hearth) |
+| 69 | Travis Price Centre, Camp Manitou, Headingley MB — 1x1 architecture 2020 | C11d | ✗ | ✗ | ○ | ✗ | ● | **Opened 2026-09-23:** fully keyed 19-item floor plan at 1500 px + site plan; no section — [1x1](https://www.1x1architecture.ca/Travis-Price-Centre) | **Anchor** (6 dorm rooms round a lounge; foyer hinges dorm/admin wing to 200-seat dining + fireplace; cubbies, first aid, offices) |
 | 70 | Tsawwassen First Nation Youth Centre, Delta BC — Mackin 2021 | C11d | ✗ | ✗ | ○ | ✗ | ● | 1st + 2nd floor plans — [Canadian Architect](https://www.canadianarchitect.com/tsawwassen-first-nation-youth-centre-in-style-with-coast-salish-tradition/) | Bench (counselling + tutoring off a kitchen-centred entry; gym above) |
 | 71 | Camp at Cabot Beach, Malpeque PEI — Studio North 2009 | C11d | ✗ | ✗ | ○ | ✗ | ○ | Floor plan, site plan — [ArchDaily](https://www.archdaily.com/302670/camp-at-cabot-beach-studio-north) | Lesson (building as camp–forest boundary line) |
 | 72 | Inglewood Bird Sanctuary expansion, Calgary — Marc Boutin 2023 | C11d | ✗ | ○ | ✗ | ✗ | ✗ | Floor/site plans per gallery filenames (not opened) — [ArchDaily](https://www.archdaily.com/1035158) | Evidence (local, ring 0; nature-science day building) |
@@ -330,21 +330,22 @@ Glyphs: ● strong · ○ weak/partial · ✗ no evidence found (not "fails" —
 
 Key: `1`–`5` rank · `B` bonus · `Alt` alternate · `Bench` bench · `—` not on the list · `✕` dropped · `?` assessed, not placed.
 
-| Project | v1 | v1.1 | v1.2 | v2 | v2.1 | Net movement |
-|---|---|---|---|---|---|---|
-| Children's Home of the Future, Kerteminde | 1 | 1 | 1 | 5 | B | ↓ 1 → 5 → bonus. Kept as the W3 reference; fails the youth-centre test (a care home). **v2.1 move pending Ben** |
-| SOS Children's Village, Djibouti | 2 | 2 | ✕ | ✕ | ✕ | Off at v1.2: "more like housing" (Ben) |
-| Egely | 3 | 4 | 3 | Bench | Bench | ↓ to bench: a secure institution; kept as the sanctuary-suite reference |
-| Nueva Science & Env. Center | 4 | 5 | ✕ | ✕ | ✕ | Off at v1.2: "more a school than a youth centre" (Ben) |
-| Chewonki Center for Env. Education | 5 | Alt | Alt | — | — | Off at v2: indirect W4 support only |
-| Gary Comer Youth Center | — | 3 | 2 | 3 | 4 | On at v1.1 (Ben's C10 survey); held 2–4 since |
-| Gersonsvej Youth Centre | — | — | ? | ? | ? | Assessed at v1.2; would rank #2 if its drawings are confirmed (Ben to check the ArchDaily gallery) |
-| Sterrenbos Youth Building | — | — | ? | — | — | Assessed at v1.2: too small, day-use, lesson only |
-| Boyd Education Centre | — | — | — | 4 | 5 | On at v2 (Ben's pick: the dorms) |
-| IslandWood | — | — | — | 1 | 1 | On at v2 straight to #1: the only youth + dorms + STEM match (C11a) |
-| Aranya Ideas Youth Camp | — | — | — | 2 | 2 | On at v2 (C11c); could swap with Miyun |
-| Eagle Rock School | B | B | B | B | B | Bonus throughout (architect's POE critique) |
-| Cheakamus Centre (BlueShore ELC) | — | — | — | — | 3 | On at v2.1 (C11d): best Canadian match, with plans + 2 sections |
+| Project | v1 | v1.1 | v1.2 | v2 | v2.1 | v2.2 | Net movement |
+|---|---|---|---|---|---|---|---|
+| Children's Home of the Future, Kerteminde | 1 | 1 | 1 | 5 | B | B | ↓ 1 → 5 → bonus. Kept as the W3 reference; fails the youth-centre test (a care home). **v2.1 move pending Ben** |
+| SOS Children's Village, Djibouti | 2 | 2 | ✕ | ✕ | ✕ | ✕ | Off at v1.2: "more like housing" (Ben) |
+| Egely | 3 | 4 | 3 | Bench | Bench | Bench | ↓ to bench: a secure institution; kept as the sanctuary-suite reference |
+| Nueva Science & Env. Center | 4 | 5 | ✕ | ✕ | ✕ | ✕ | Off at v1.2: "more a school than a youth centre" (Ben) |
+| Chewonki Center for Env. Education | 5 | Alt | Alt | — | — | — | Off at v2: indirect W4 support only |
+| Gary Comer Youth Center | — | 3 | 2 | 3 | 4 | 3 | On at v1.1 (Ben's C10 survey); held 2–4 since |
+| Gersonsvej Youth Centre | — | — | ? | ? | ? | ? | Assessed at v1.2; would rank #2 if its drawings are confirmed (Ben to check the ArchDaily gallery) |
+| Sterrenbos Youth Building | — | — | ? | — | — | — | Assessed at v1.2: too small, day-use, lesson only |
+| Boyd Education Centre | — | — | — | 4 | 5 | 4 | On at v2 (Ben's pick: the dorms) |
+| IslandWood | — | — | — | 1 | 1 | Bench | On at v2 straight to #1 on programme; **off at v2.2**: Ben found no usable plans (a thumbnail + property map only) |
+| Aranya Ideas Youth Camp | — | — | — | 2 | 2 | 5 | On at v2 (C11c); ↓ to 5 at v2.2: dorm plan not actually seen, 1F plan small |
+| Eagle Rock School | B | B | B | B | B | B | Bonus throughout (architect's POE critique) |
+| Cheakamus Centre (BlueShore ELC) | — | — | — | — | 3 | 2 | On at v2.1 (C11d); ↑ to 2 at v2.2, drawings opened and confirmed keyed |
+| Travis Price Centre, Camp Manitou | — | — | — | — | Bench | 1 | ↑ bench → #1 at v2.2 (Ben flagged it; ranking proposed): youth camp + dorms, best keyed plan, prairie climate |
 
 | Version | Date | Trigger | Test applied |
 |---|---|---|---|
@@ -352,6 +353,7 @@ Key: `1`–`5` rank · `B` bonus · `Alt` alternate · `Bench` bench · `—` no
 | v1.1 | 2026-09-23 | Ben's separate-session survey folded in (C10, rows 43–48) | Same |
 | v1.2 | 2026-09-23 | Ben drops Djibouti and Nueva; Gersonsvej and Sterrenbos assessed | + **must be a youth centre** (Ben). Survivors not formally re-ranked; the ranks shown are their order in the survivor table |
 | v2 | 2026-09-23 | Campaign C11 (3 regional passes, rows 52–67) + Boyd added | + ideally **dorms**, ideally **STEM** (Ben). *Proposed, pending Ben* |
+| v2.2 | 2026-09-23 | Ben flags Travis Price and questions IslandWood's plans; Claude opens every top-5 drawing set personally | Same test, **plus drawings must be opened and legible, not just reported by a search agent**. IslandWood fails. *Proposed, pending Ben* |
 | v2.1 | 2026-09-23 | C11d Canada pass (rows 68–72) | Same as v2. Cheakamus enters at #3; Comer and Boyd shift down one; Kerteminde moves to bonus as the W3 reference so the list stays at 5. *Proposed, pending Ben* |
 
 ## Study shortlist v1–v1.2 — superseded by v2 below (kept for the record)
@@ -394,6 +396,8 @@ Key: `1`–`5` rank · `B` bonus · `Alt` alternate · `Bench` bench · `—` no
 - **Camp Prairie Schooner**: two bunk bars around a shared middle, with 6 sections.
 - **Momofuku Ando Center**: 2,000 m², our scale; one stepped roof.
 - **Slunakov**: an ecology centre whose roof is a field-science trail, with full sections.
+
+**v2.2 update (current proposal):** 1 **Travis Price Centre** · 2 **Cheakamus** · 3 **Gary Comer** · 4 **Boyd** · 5 **Aranya** · Bonus: Eagle Rock, Kerteminde. **IslandWood drops to the bench:** it's the right programme, but its only "drawings" are a 350 px thumbnail and a property map. From v2.2 on, every top-5 drawing set has been opened and read directly, not taken from search-agent reports.
 
 **v2.1 update (C11d Canada pass):** **Cheakamus Centre, BlueShore ELC** (McFarland Marceau, 2012, Squamish BC) enters at **#3**. It's an overnight outdoor school with Y ✓ / D ~ / S ✓: GF + 1F plans and two sections, raised above the flood plain so the covered space underneath works as an outdoor classroom, with a mudroom-style student entry. Comer moves to #4, Boyd to #5, and Kerteminde to bonus (the W3 reference). Travis Price Centre (Camp Manitou) and Tsawwassen FN Youth Centre join the bench. See the change log.
 
