@@ -330,9 +330,9 @@ Glyphs: ● strong · ○ weak/partial · ✗ no evidence found (not "fails" —
 
 Key: `1`–`5` rank · `B` bonus · `Alt` alternate · `Bench` bench · `—` not on the list · `✕` dropped · `?` assessed, not placed.
 
-| Project | v1 | v1.1 | v1.2 | v2 | v2.1 | v2.2 | Net movement |
+| Project | v1 | v1.1 | v1.2 | v2 | v2.1 | v2.2 🔒 | Net movement |
 |---|---|---|---|---|---|---|---|
-| Children's Home of the Future, Kerteminde | 1 | 1 | 1 | 5 | B | B | ↓ 1 → 5 → bonus. Kept as the W3 reference; fails the youth-centre test (a care home). **v2.1 move pending Ben** |
+| Children's Home of the Future, Kerteminde | 1 | 1 | 1 | 5 | B | B | ↓ 1 → 5 → bonus. Kept as the W3 reference; fails the youth-centre test (a care home). Bonus confirmed at lock |
 | SOS Children's Village, Djibouti | 2 | 2 | ✕ | ✕ | ✕ | ✕ | Off at v1.2: "more like housing" (Ben) |
 | Egely | 3 | 4 | 3 | Bench | Bench | Bench | ↓ to bench: a secure institution; kept as the sanctuary-suite reference |
 | Nueva Science & Env. Center | 4 | 5 | ✕ | ✕ | ✕ | ✕ | Off at v1.2: "more a school than a youth centre" (Ben) |
@@ -353,7 +353,7 @@ Key: `1`–`5` rank · `B` bonus · `Alt` alternate · `Bench` bench · `—` no
 | v1.1 | 2026-09-23 | Ben's separate-session survey folded in (C10, rows 43–48) | Same |
 | v1.2 | 2026-09-23 | Ben drops Djibouti and Nueva; Gersonsvej and Sterrenbos assessed | + **must be a youth centre** (Ben). Survivors not formally re-ranked; the ranks shown are their order in the survivor table |
 | v2 | 2026-09-23 | Campaign C11 (3 regional passes, rows 52–67) + Boyd added | + ideally **dorms**, ideally **STEM** (Ben). *Proposed, pending Ben* |
-| v2.2 | 2026-09-23 | Ben flags Travis Price and questions IslandWood's plans; Claude opens every top-5 drawing set personally | Same test, **plus drawings must be opened and legible, not just reported by a search agent**. IslandWood fails. *Proposed, pending Ben* |
+| v2.2 | 2026-09-23 | Ben flags Travis Price and questions IslandWood's plans; Claude opens every top-5 drawing set personally | Same test, **plus drawings must be opened and legible, not just reported by a search agent**. IslandWood fails. **🔒 LOCKED by Ben 2026-09-23** ("lets lock this in") |
 | v2.1 | 2026-09-23 | C11d Canada pass (rows 68–72) | Same as v2. Cheakamus enters at #3; Comer and Boyd shift down one; Kerteminde moves to bonus as the W3 reference so the list stays at 5. *Proposed, pending Ben* |
 
 ## Study shortlist v1–v1.2 — superseded by v2 below (kept for the record)
@@ -376,7 +376,21 @@ Key: `1`–`5` rank · `B` bonus · `Alt` alternate · `Bench` bench · `—` no
 
 **Coverage across the 5 (revised 2026-09-23 after adding Comer; Chewonki moved to alternate):** W1 is weak (only Egely), W2 is covered by Nueva and Comer, W3 by Kerteminde, Egely and Comer, W4 indirectly by Comer (flex hall under a teaching roof), and W5 by all five. W4 has no precedent with drawings that addresses it directly. Chewonki is kept as the alternate in case one is wanted.
 
-## Study shortlist v2 — after campaign C11 (proposed 2026-09-23, pending Ben)
+## Study shortlist — LOCKED 2026-09-23 (v2.2)
+
+| # | Precedent | Architect, year, place | Youth / Dorms / STEM | Study for |
+|---|---|---|---|---|
+| 1 | **Travis Price Centre, Camp Manitou** | 1x1 architecture, 2020, Headingley MB | ✓ / ✓ / ✗ | Dorm rooms round a lounge; the foyer as hinge between the dorm/admin wing and dining + hearth. [Plan](https://www.1x1architecture.ca/Travis-Price-Centre) |
+| 2 | **Cheakamus Centre, BlueShore ELC** | McFarland Marceau, 2012, Squamish BC | ✓ / ~ / ✓ | Student mudroom entry, gear/canoe storage, outdoor classroom under a raised bar. [Plans + sections](https://sabmagazine.com/the-blueshore-financial-environmental-learning-centre/) |
+| 3 | **Gary Comer Youth Center** | John Ronan, 2006, Chicago | ✓ / ✗ / ✓ | STEM garden on the gym roof (section); street face. [Full set](https://rudybruneraward.lib.buffalo.edu/files/original/5a1a6dfa05ef8f1e100e6654b090972cb6500e24.pdf) |
+| 4 | **Arthur & Yvonne Boyd Education Centre** | Murcutt, Lewin, Lark, 1999, Riversdale NSW | ✓ / ✓ / ~ | The dorm wing: 4-bed rooms in a line, with breezeways and bathrooms shared between rooms. [Drawings](https://www.area-arch.it/en/arthur-and-yvonne-boyd-education-centre/) |
+| 5 | **Aranya Ideas Youth Camp** | Atelier TeamMinus, 2017, Qinhuangdao | ✓ / ? / ~ | Classrooms round a court, spiral ramp, section. Dorm-floor plan still to be seen on [ArchDaily](https://www.archdaily.com/884609) |
+| Bonus | **Eagle Rock School** | Barrett Studio, 1993–94, Estes Park CO | — | Architect's 30-year POE critique |
+| Bonus | **Children's Home of the Future, Kerteminde** | CEBRA, 2014, DK | — | W3: an institution disguised as a village of houses |
+
+**Bench:** IslandWood (programme reference), Egely (sanctuary suite), Miyun, JBS am Tower, Jomsborg, Camp Prairie Schooner, Momofuku Ando Center, Slunakov, Tsawwassen FN Youth Centre. **Swap rule:** if Aranya's dorm floor can't be confirmed, Miyun or Jomsborg takes #5, logged as v2.3.
+
+### Working history (v2 → v2.2)
 
 **Test (Ben, 2026-09-23):** must be a **youth centre / youth camp**, ideally **with dorms**, ideally **STEM**; must have **published drawings**. C11 ran three regional passes (North America, Europe, Asia-Pacific + Latin America), with 26 candidates verified and board rows 52–67. **Finding:** only IslandWood meets all three criteria. Across all regions, youth camps publish their drawings far less often than schools or museums, and Canada produced no candidate with drawings.
 
