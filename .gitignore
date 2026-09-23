@@ -45,3 +45,6 @@ Thumbs.db
 _Export-Receivers/Revit/*.rvt
 _Export-Receivers/Revit/*.[0-9][0-9][0-9][0-9].rfa
 _Export-Receivers/Revit/*.json
+
+# Local Windows shortcuts (contain absolute user paths)
+*.lnk
