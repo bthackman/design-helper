@@ -1,0 +1,1640 @@
+{
+ "title": "Cairn Youth Centre: Stage 1 zone scan, reframe (city and rural)",
+ "date": "2026-09-29",
+ "reframe": "Year-round residential youth centre for visiting domestic and international students; 32 beds (4 nodes of 8, one node out camping at a time); academics (science, tech) and making; about 1/3 of the program outdoors; summer 2 x 4-week sessions, rest of year 2-week sessions. Transit and low-income reach dropped as criteria (instructor feedback 2026-09-28, Ben 2026-09-29).",
+ "criteria": [
+  {
+   "key": "mountains",
+   "label": "Mountains",
+   "weight": 2,
+   "rule": "Free-flow drive minutes to the nearer of the Hwy 1/Hwy 40 Kananaskis gateway and the West Bragg Creek trailhead: <=20 = 5, <=32 = 4, <=44 = 3, <=56 = 2, else 1 (same minute bands as City)."
+  },
+  {
+   "key": "city",
+   "label": "City & airport",
+   "weight": 2,
+   "rule": "Mean of (drive to YYC) and (mean drive to City Hall, TELUS Spark, the Zoo and U of C): <=20 = 5, <=32 = 4, <=44 = 3, <=56 = 2, else 1 (same minute bands as Mountains)."
+  },
+  {
+   "key": "landscape",
+   "label": "Landscape at the door",
+   "weight": 2,
+   "rule": "Points: natural cover in the 400 m ring >=60% +2, >=30% +1 (farmland at half); trails >=2 km in the ring +1 (tracks at half); a river, stream or lake in the ring +1; natural cover >=40% of the 1 km ring +1. Floor 1, cap 5."
+  },
+  {
+   "key": "room",
+   "label": "Room",
+   "weight": 1,
+   "rule": "Open ground in the 400 m ring (parking, farmland, meadow, grass, vacant; forest at half; parks, water, golf and built land excluded): >=40% = 5, >=25% = 4, >=15% = 3, >=7% = 2, else 1. Ben's fixed lots scored on lot area against the ~1 ha need."
+  },
+  {
+   "key": "access",
+   "label": "Coach & egress",
+   "weight": 1,
+   "rule": "4 if a secondary-or-better road is within 400 m, 3 if tertiary within 400 m or secondary+ within 1 km, else 2; +1 if 3+ distinct major roads within 2 km (routes out), -1 if only 1. Floor 1, cap 5."
+  },
+  {
+   "key": "hazards",
+   "label": "Hazards",
+   "weight": 1,
+   "rule": "Start 5. Flood (Alberta FHIP): floodway at the anchor -3, flood fringe at the anchor -2, else protected fringe or a 1:200/1:500 extent at the anchor, or floodway/fringe within 250 m, -1. Wildfire (forest share of the 1 km ring): >=40% -2, >=15% -1. Sour-gas or heavy industrial works within 5 km -1. Floor 1."
+  },
+  {
+   "key": "services",
+   "label": "Services & community",
+   "weight": 1,
+   "rule": "Servicing: inside Calgary or the Town of Cochrane +3; hamlet with a county water/wastewater utility +2; open county land 0 (well and on-site wastewater). Community: a school within 2 km +1; a town, hamlet or city neighbourhood within 4 km +1. Floor 1, cap 5."
+  }
+ ],
+ "total_max": 50,
+ "tie_break": "sum of Mountains + City + Landscape, then Hazards",
+ "destinations": {
+  "kananaskis_hwy1_hwy40": [
+   51.085,
+   -115.001
+  ],
+  "west_bragg_creek_trailhead": [
+   50.9477565,
+   -114.6924787
+  ],
+  "yyc_airport": [
+   51.1313,
+   -114.0107
+  ],
+  "city_hall_downtown": [
+   51.0453,
+   -114.0581
+  ],
+  "telus_spark": [
+   51.05387,
+   -114.02444
+  ],
+  "calgary_zoo": [
+   51.04543,
+   -114.02318
+  ],
+  "university_of_calgary": [
+   51.07505,
+   -114.13881
+  ]
+ },
+ "destination_notes": "OSM parking 'West Bragg Creek Provincial Recreation Area'",
+ "sources": [
+  "OSRM public demo router, table service (free-flow, off-peak; no traffic, no winter conditions)",
+  "OpenStreetMap via Overpass API (land cover, trails, water, parks, parking, roads, schools, places)",
+  "Alberta Flood Hazard Identification Program, geospatial.alberta.ca FAMA map service (layers 1, 13)",
+  "City of Calgary Open Data parcels 4bsw-nn7w (A, B lot areas)",
+  "Esri World Imagery (visual check of anchors; credit Esri, Maxar, Earthstar Geographics, GIS User Community)"
+ ],
+ "caveats": [
+  "Drive times are free-flow; add 20-40% for peak or winter.",
+  "OSM land cover is incomplete, especially rural; 'untagged' share is reported per site.",
+  "FHIP covers studied reaches only; 'no hit' on an unstudied creek is unverified.",
+  "Wildfire uses forest share as a proxy; no provincial wildfire hazard layer was queried.",
+  "Servicing for rural zones is assumed from jurisdiction, not confirmed with the county or utility.",
+  "Zone anchors are dots + 400 m rings, not parcels; land ownership and land use are unverified."
+ ],
+ "shortlist": [
+  {
+   "letter": "L",
+   "role": "rural lead",
+   "why": "Ties F at 38 and wins the tie-break; West Bragg Creek trails 16 min away, forest and the Elbow at the door, a hamlet next door."
+  },
+  {
+   "letter": "F",
+   "role": "city lead",
+   "why": "38; reservoir shore and pathway at the door, surface parking to build on, 24 min average to the city and YYC."
+  },
+  {
+   "letter": "D",
+   "role": "city alternate",
+   "why": "37; Fish Creek PP at the door; 52 min to West Bragg Creek ties F for the best city mountain time. Chosen over G (little landscape)."
+  },
+  {
+   "letter": "M",
+   "role": "edge alternate",
+   "why": "36; town servicing and neighbours with the Jumping Pound Creek valley at the door."
+  }
+ ],
+ "sensitivity_note": "Mountains x3 puts L first (43), F second (40); City x3 puts F and G joint first (42), D third (41). Equal weights (/35): F and G 28, D 27, L and M 26. L and F are top-two at the base weights and under Mountains x3; under City x3 the city sites lead.",
+ "sites": [
+  {
+   "letter": "L",
+   "name": "Bragg Creek, hamlet east edge across Hwy 22",
+   "lat": 50.9493,
+   "lon": -114.5594,
+   "setting": "edge",
+   "scores": {
+    "mountains": 5,
+    "city": 2,
+    "landscape": 5,
+    "room": 2,
+    "access": 5,
+    "hazards": 3,
+    "services": 4
+   },
+   "formula_scores": {
+    "mountains": 5,
+    "city": 2,
+    "landscape": 5,
+    "room": 2,
+    "access": 5,
+    "hazards": 3,
+    "services": 4
+   },
+   "overrides": {},
+   "total_weighted": 38,
+   "total_max": 50,
+   "total_unweighted_of_35": 26,
+   "sensitivity": {
+    "mountains_x3": 43,
+    "city_x3": 40,
+    "equal_weights_of_35": 26
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 16,
+     "min_to_hwy1_hwy40": 50,
+     "min_to_west_bragg_creek": 16
+    },
+    "city": {
+     "min_to_yyc": 53,
+     "mean_min_to_city_cluster": 45.8,
+     "combined_min": 49.4,
+     "min_to_city_hall_downtown": 42,
+     "min_to_telus_spark": 48,
+     "min_to_calgary_zoo": 52,
+     "min_to_university_of_calgary": 41
+    },
+    "landscape": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 11% tagged in the 400 m ring",
+     "note": "Elbow River ~400 m W, forest E, trails to Bragg Creek PP; open ground is a ~100 m meadow strip beside Hwy 22, the rest is forest to clear",
+     "trail_m_400m": 1271,
+     "waterways_400m": []
+    },
+    "room": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 11% tagged in the 400 m ring",
+     "note": "Elbow River ~400 m W, forest E, trails to Bragg Creek PP; open ground is a ~100 m meadow strip beside Hwy 22, the rest is forest to clear",
+     "trail_m_400m": 1271,
+     "waterways_400m": []
+    },
+    "access": {
+     "best_road_within_400m": [
+      "primary",
+      "22"
+     ],
+     "nearest_major_road": {
+      "class": "primary",
+      "name": "22",
+      "m": 99
+     },
+     "distinct_major_roads_within_2km": 7,
+     "major_roads_within_2km": [
+      "22",
+      "758",
+      "Balsam Avenue",
+      "Burnside Drive",
+      "Centre Avenue",
+      "Township Road 232",
+      "Wintergreen Road"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [
+       "1:200 Flood",
+       "1:500 Flood",
+       "Protected Flood Fringe"
+      ],
+      "rivers": [
+       "Elbow River"
+      ]
+     },
+     "forest_fraction_1km": 0.6,
+     "industry_within_5km": [
+      "Bragg Creek Wastewater Treatment Plant"
+     ],
+     "deductions": [
+      "forest >=40% of 1 km ring (wildland-urban interface)"
+     ]
+    },
+    "services": {
+     "servicing_points": 2,
+     "servicing_note": "Bragg Creek hamlet: Rocky View County water and wastewater utility serves the hamlet core; capacity and reach east of Hwy 22 unverified",
+     "schools_within_2km": [
+      "Banded Peak School"
+     ],
+     "places_within_4km": [
+      "Bragg Creek (hamlet)"
+     ]
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Rocky View County",
+     "boundary": "administrative",
+     "admin_level": "6"
+    },
+    {
+     "name": "Tsúùtʼínà / Tsuut'ina Nation",
+     "boundary": "aboriginal_lands"
+    },
+    {
+     "name": "Tsuut'ina Nation 145",
+     "boundary": "aboriginal_lands"
+    }
+   ],
+   "osm_status": "ok, land cover from imagery (OSM too sparse)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@50.9493,-114.5594,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Top rural: 16 min to West Bragg Creek trails, forest and the Elbow at the door, a hamlet next door; 49 min to the city.",
+   "flags": [
+    "Open ground is a narrow meadow beside Hwy 22; the rest is forest to clear (FireSmart defensible space)",
+    "Bragg Creek has limited road routes out (Hwy 22 N, Hwy 22/758 S) in a wildfire",
+    "Rocky View County water/wastewater capacity east of Hwy 22 unverified",
+    "Tsuut'ina Nation 145 lies to the east; anchor believed outside it, unverified"
+   ],
+   "rank": 1
+  },
+  {
+   "letter": "F",
+   "name": "Glenmore Landing, Glenmore Reservoir edge",
+   "lat": 50.9737,
+   "lon": -114.097874,
+   "setting": "city",
+   "scores": {
+    "mountains": 2,
+    "city": 4,
+    "landscape": 4,
+    "room": 4,
+    "access": 5,
+    "hazards": 4,
+    "services": 5
+   },
+   "formula_scores": {
+    "mountains": 2,
+    "city": 4,
+    "landscape": 4,
+    "room": 4,
+    "access": 5,
+    "hazards": 4,
+    "services": 5
+   },
+   "overrides": {},
+   "total_weighted": 38,
+   "total_max": 50,
+   "total_unweighted_of_35": 28,
+   "sensitivity": {
+    "mountains_x3": 40,
+    "city_x3": 42,
+    "equal_weights_of_35": 28
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 52,
+     "min_to_hwy1_hwy40": 66,
+     "min_to_west_bragg_creek": 52
+    },
+    "city": {
+     "min_to_yyc": 28,
+     "mean_min_to_city_cluster": 19.5,
+     "combined_min": 23.8,
+     "min_to_city_hall_downtown": 15,
+     "min_to_telus_spark": 20,
+     "min_to_calgary_zoo": 24,
+     "min_to_university_of_calgary": 19
+    },
+    "landscape": {
+     "source": "imagery judgment (Esri World Imagery) - UNVERIFIED, OSM/Overpass unavailable",
+     "osm_error": "Overpass failed: 504 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n    \"http://www.w3.org/T",
+     "note": "Glenmore Reservoir shore and pathway, Weaselhead ~2 km; large surface parking in ring"
+    },
+    "room": {
+     "source": "imagery judgment (Esri World Imagery) - UNVERIFIED, OSM/Overpass unavailable",
+     "osm_error": "Overpass failed: 504 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n    \"http://www.w3.org/T",
+     "note": "Glenmore Reservoir shore and pathway, Weaselhead ~2 km; large surface parking in ring"
+    },
+    "access": {
+     "source": "imagery judgment (Esri World Imagery) - UNVERIFIED, OSM/Overpass unavailable",
+     "osm_error": "Overpass failed: 504 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n    \"http://www.w3.org/T",
+     "note": "Glenmore Reservoir shore and pathway, Weaselhead ~2 km; large surface parking in ring"
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [
+       "1:200 Flood",
+       "1:500 Flood",
+       "Floodway"
+      ],
+      "rivers": [
+       "Elbow River"
+      ]
+     },
+     "forest_fraction_1km": 0.1,
+     "industry_within_5km": [],
+     "deductions": [
+      "protected fringe or 1:200/1:500 extent at anchor, or floodway/fringe within 250 m: 1:200 Flood, 1:500 Flood, Floodway"
+     ]
+    },
+    "services": {
+     "servicing_points": 3,
+     "servicing_note": "City of Calgary municipal water and sanitary (inside city limits)",
+     "schools_within_2km": [
+      "(imagery/map judgment)"
+     ],
+     "places_within_4km": [
+      "(imagery/map judgment)"
+     ]
+    }
+   },
+   "is_in": null,
+   "osm_status": "unavailable - imagery judgments used (unverified)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@50.9737,-114.097874,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Ties L for first: reservoir shore and pathway at the door, surface parking to build on, 24 min average to city and YYC.",
+   "flags": [
+    "Glenmore Landing redevelopment proposal unverified; anchor is on surface parking, not an outlined parcel",
+    "Glenmore Reservoir is a drinking-water reservoir: water-contact program limits unverified"
+   ],
+   "rank": 2
+  },
+  {
+   "letter": "D",
+   "name": "Fish Creek Park edge at Fish Creek-Lacombe CTrain",
+   "lat": 50.923014,
+   "lon": -114.07307,
+   "setting": "city",
+   "scores": {
+    "mountains": 2,
+    "city": 4,
+    "landscape": 4,
+    "room": 3,
+    "access": 5,
+    "hazards": 4,
+    "services": 5
+   },
+   "formula_scores": {
+    "mountains": 2,
+    "city": 4,
+    "landscape": 4,
+    "room": 3,
+    "access": 5,
+    "hazards": 4,
+    "services": 5
+   },
+   "overrides": {},
+   "total_weighted": 37,
+   "total_max": 50,
+   "total_unweighted_of_35": 27,
+   "sensitivity": {
+    "mountains_x3": 39,
+    "city_x3": 41,
+    "equal_weights_of_35": 27
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 52,
+     "min_to_hwy1_hwy40": 71,
+     "min_to_west_bragg_creek": 52
+    },
+    "city": {
+     "min_to_yyc": 31,
+     "mean_min_to_city_cluster": 24.5,
+     "combined_min": 27.8,
+     "min_to_city_hall_downtown": 20,
+     "min_to_telus_spark": 23,
+     "min_to_calgary_zoo": 27,
+     "min_to_university_of_calgary": 28
+    },
+    "landscape": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 44% tagged in the 400 m ring",
+     "note": "Fish Creek PP valley at the door; station-area parking and open land",
+     "trail_m_400m": 2816,
+     "waterways_400m": []
+    },
+    "room": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 44% tagged in the 400 m ring",
+     "note": "Fish Creek PP valley at the door; station-area parking and open land",
+     "trail_m_400m": 2816,
+     "waterways_400m": []
+    },
+    "access": {
+     "best_road_within_400m": [
+      "secondary",
+      "James McKevitt Road SW"
+     ],
+     "nearest_major_road": {
+      "class": "motorway",
+      "name": "Macleod Trail S",
+      "m": 80
+     },
+     "distinct_major_roads_within_2km": 20,
+     "major_roads_within_2km": [
+      "149 Avenue SE",
+      "Acadia Drive SE",
+      "Bannister Road SE",
+      "Bonaventure Drive SE",
+      "Canyon Meadows Drive SE",
+      "Canyon Meadows Drive SW",
+      "Elbow Drive SW",
+      "Fish Creek Boulevard SW",
+      "James McKevitt Road SW",
+      "Macleod Trail S",
+      "Macleod Trail SE",
+      "Midlake Boulevard SE"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [],
+      "rivers": []
+     },
+     "forest_fraction_1km": 0.15,
+     "industry_within_5km": [
+      "City of Calgary Parks - Chinook Depot",
+      "City of Calgary Parks — Midnapore Depot",
+      "City of Calgary Roads District 6",
+      "Fish Creek Provincial Park Workshop",
+      "Fish Creek Wastewater Treatment Plant",
+      "Southland Transportation",
+      "wastewater_plant"
+     ],
+     "deductions": [
+      "forest >=15% of 1 km ring"
+     ]
+    },
+    "services": {
+     "servicing_points": 3,
+     "servicing_note": "City of Calgary municipal water and sanitary (inside city limits)",
+     "schools_within_2km": [
+      "Father Doucet School",
+      "Janet Johnstone School",
+      "Midnapore School",
+      "Nickle School",
+      "Our Lady of Peace School",
+      "Samuel W. Shaw School"
+     ],
+     "places_within_4km": [
+      "Bonavista Downs (suburb)",
+      "Bridlewood (suburb)",
+      "Canyon Meadows (suburb)",
+      "Deer Ridge (suburb)",
+      "Evergreen (suburb)",
+      "Lake Bonavista (suburb)"
+     ]
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Calgary",
+     "boundary": "administrative",
+     "admin_level": "6"
+    },
+    {
+     "name": "Shawnee Slopes",
+     "boundary": "administrative",
+     "admin_level": "10"
+    }
+   ],
+   "osm_status": "ok, land cover from imagery (OSM too sparse)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@50.923014,-114.07307,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Fish Creek PP at the door and fast road access; 52 min to West Bragg Creek ties F for the best city mountain time.",
+   "flags": [
+    "City use of station-area land unverified",
+    "Macleod Trail and LRT noise"
+   ],
+   "rank": 3
+  },
+  {
+   "letter": "G",
+   "name": "Brentwood, Nose Hill / U of C side",
+   "lat": 51.0883561,
+   "lon": -114.1308072,
+   "setting": "city",
+   "scores": {
+    "mountains": 2,
+    "city": 5,
+    "landscape": 2,
+    "room": 4,
+    "access": 5,
+    "hazards": 5,
+    "services": 5
+   },
+   "formula_scores": {
+    "mountains": 2,
+    "city": 5,
+    "landscape": 2,
+    "room": 4,
+    "access": 5,
+    "hazards": 5,
+    "services": 5
+   },
+   "overrides": {},
+   "total_weighted": 37,
+   "total_max": 50,
+   "total_unweighted_of_35": 28,
+   "sensitivity": {
+    "mountains_x3": 39,
+    "city_x3": 42,
+    "equal_weights_of_35": 28
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 56,
+     "min_to_hwy1_hwy40": 58,
+     "min_to_west_bragg_creek": 56
+    },
+    "city": {
+     "min_to_yyc": 21,
+     "mean_min_to_city_cluster": 15.2,
+     "combined_min": 18.1,
+     "min_to_city_hall_downtown": 14,
+     "min_to_telus_spark": 18,
+     "min_to_calgary_zoo": 22,
+     "min_to_university_of_calgary": 7
+    },
+    "landscape": {
+     "source": "imagery judgment (Esri World Imagery) - UNVERIFIED, OSM/Overpass unavailable",
+     "osm_error": "Overpass failed: 504 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n    \"http://www.w3.org/T",
+     "note": "Nose Hill ~1 km across John Laurie Blvd; big surface parking in ring"
+    },
+    "room": {
+     "source": "imagery judgment (Esri World Imagery) - UNVERIFIED, OSM/Overpass unavailable",
+     "osm_error": "Overpass failed: 504 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n    \"http://www.w3.org/T",
+     "note": "Nose Hill ~1 km across John Laurie Blvd; big surface parking in ring"
+    },
+    "access": {
+     "source": "imagery judgment (Esri World Imagery) - UNVERIFIED, OSM/Overpass unavailable",
+     "osm_error": "Overpass failed: 504 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n    \"http://www.w3.org/T",
+     "note": "Nose Hill ~1 km across John Laurie Blvd; big surface parking in ring"
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [],
+      "rivers": []
+     },
+     "forest_fraction_1km": 0.0,
+     "industry_within_5km": [],
+     "deductions": []
+    },
+    "services": {
+     "servicing_points": 3,
+     "servicing_note": "City of Calgary municipal water and sanitary (inside city limits)",
+     "schools_within_2km": [
+      "(imagery/map judgment)"
+     ],
+     "places_within_4km": [
+      "(imagery/map judgment)"
+     ]
+    }
+   },
+   "is_in": null,
+   "osm_status": "unavailable - imagery judgments used (unverified)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@51.0883561,-114.1308072,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Fast to U of C, YYC and downtown with plenty of parking land, but little landscape at the door.",
+   "flags": [
+    "Nose Hill access across John Laurie Blvd unverified"
+   ],
+   "rank": 4
+  },
+  {
+   "letter": "M",
+   "name": "Cochrane SW edge, Jumping Pound Creek valley rim",
+   "lat": 51.1817,
+   "lon": -114.5107,
+   "setting": "edge",
+   "scores": {
+    "mountains": 3,
+    "city": 2,
+    "landscape": 5,
+    "room": 4,
+    "access": 4,
+    "hazards": 3,
+    "services": 5
+   },
+   "formula_scores": {
+    "mountains": 3,
+    "city": 2,
+    "landscape": 5,
+    "room": 4,
+    "access": 4,
+    "hazards": 3,
+    "services": 5
+   },
+   "overrides": {},
+   "total_weighted": 36,
+   "total_max": 50,
+   "total_unweighted_of_35": 26,
+   "sensitivity": {
+    "mountains_x3": 39,
+    "city_x3": 38,
+    "equal_weights_of_35": 26
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 43,
+     "min_to_hwy1_hwy40": 46,
+     "min_to_west_bragg_creek": 43
+    },
+    "city": {
+     "min_to_yyc": 44,
+     "mean_min_to_city_cluster": 44.2,
+     "combined_min": 44.1,
+     "min_to_city_hall_downtown": 43,
+     "min_to_telus_spark": 47,
+     "min_to_calgary_zoo": 51,
+     "min_to_university_of_calgary": 36
+    },
+    "landscape": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 12% tagged in the 400 m ring",
+     "note": "Jumping Pound Creek valley and escarpment in the ring; open grass terrace next to the subdivision",
+     "trail_m_400m": 1822,
+     "waterways_400m": [
+      "Jumping Pound Creek"
+     ]
+    },
+    "room": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 12% tagged in the 400 m ring",
+     "note": "Jumping Pound Creek valley and escarpment in the ring; open grass terrace next to the subdivision",
+     "trail_m_400m": 1822,
+     "waterways_400m": [
+      "Jumping Pound Creek"
+     ]
+    },
+    "access": {
+     "best_road_within_400m": [
+      "tertiary",
+      "Star Ranch Road"
+     ],
+     "nearest_major_road": {
+      "class": "tertiary",
+      "name": "George Fox Trail",
+      "m": 176
+     },
+     "distinct_major_roads_within_2km": 7,
+     "major_roads_within_2km": [
+      "22",
+      "George Fox Trail",
+      "Griffin Road West",
+      "Horse Creek Road",
+      "Quigley Drive",
+      "Simpson Bridge",
+      "Star Ranch Road"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [
+       "1:200 Flood",
+       "1:500 Flood",
+       "Flood Fringe",
+       "Floodway"
+      ],
+      "rivers": [
+       "Jumpingpound Creek"
+      ]
+     },
+     "forest_fraction_1km": 0.15,
+     "industry_within_5km": [
+      "Spray Lakes Sawmills",
+      "wastewater_plant"
+     ],
+     "deductions": [
+      "protected fringe or 1:200/1:500 extent at anchor, or floodway/fringe within 250 m: 1:200 Flood, 1:500 Flood, Flood Fringe, Floodway",
+      "forest >=15% of 1 km ring"
+     ]
+    },
+    "services": {
+     "servicing_points": 3,
+     "servicing_note": "Town of Cochrane municipal servicing at the adjacent subdivision; extension to the rim land unverified",
+     "schools_within_2km": [
+      "Mitford Middle School",
+      "École Notre-Dame des Vallées"
+     ],
+     "places_within_4km": [
+      "Bow Meadows (neighbourhood)",
+      "Bow Ridge (neighbourhood)",
+      "Cochrane (town)",
+      "Cochrane Heights (neighbourhood)",
+      "East End (neighbourhood)",
+      "Fireside (neighbourhood)"
+     ]
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Rocky View County",
+     "boundary": "administrative",
+     "admin_level": "6"
+    }
+   ],
+   "osm_status": "ok, land cover from imagery (OSM too sparse)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@51.1817,-114.5107,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Town servicing and neighbours plus a creek valley at the door; mid-way on both the city and the mountain drive.",
+   "flags": [
+    "Valley-rim land may be environmental or municipal reserve; ownership and developability unverified",
+    "Jumping Pound Creek flood mapping near the anchor (FHIP within 250 m)",
+    "OSRM snapped the rim anchor to a local road; mountain times may be a few minutes long"
+   ],
+   "rank": 5
+  },
+  {
+   "letter": "I",
+   "name": "Loch McKinnon north shore, Bowness / Bow River",
+   "lat": 51.1009,
+   "lon": -114.2384,
+   "setting": "city",
+   "scores": {
+    "mountains": 2,
+    "city": 4,
+    "landscape": 4,
+    "room": 3,
+    "access": 4,
+    "hazards": 3,
+    "services": 5
+   },
+   "formula_scores": {
+    "mountains": 2,
+    "city": 4,
+    "landscape": 4,
+    "room": 3,
+    "access": 4,
+    "hazards": 3,
+    "services": 5
+   },
+   "overrides": {},
+   "total_weighted": 35,
+   "total_max": 50,
+   "total_unweighted_of_35": 25,
+   "sensitivity": {
+    "mountains_x3": 37,
+    "city_x3": 39,
+    "equal_weights_of_35": 25
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 54,
+     "min_to_hwy1_hwy40": 56,
+     "min_to_west_bragg_creek": 54
+    },
+    "city": {
+     "min_to_yyc": 30,
+     "mean_min_to_city_cluster": 27.5,
+     "combined_min": 28.8,
+     "min_to_city_hall_downtown": 25,
+     "min_to_telus_spark": 31,
+     "min_to_calgary_zoo": 34,
+     "min_to_university_of_calgary": 20
+    },
+    "landscape": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 34% tagged in the 400 m ring",
+     "note": "Bow River and lagoon edge, riverbank pathway; shoreline residential around it",
+     "trail_m_400m": 17,
+     "waterways_400m": [
+      "Bow River",
+      "unnamed stream"
+     ]
+    },
+    "room": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 34% tagged in the 400 m ring",
+     "note": "Bow River and lagoon edge, riverbank pathway; shoreline residential around it",
+     "trail_m_400m": 17,
+     "waterways_400m": [
+      "Bow River",
+      "unnamed stream"
+     ]
+    },
+    "access": {
+     "best_road_within_400m": null,
+     "nearest_major_road": {
+      "class": "motorway",
+      "name": "201",
+      "m": 496
+     },
+     "distinct_major_roads_within_2km": 18,
+     "major_roads_within_2km": [
+      "1",
+      "109 Street SW",
+      "201",
+      "85 Street NW",
+      "87 Street NW",
+      "Bearspaw Dam Road NW",
+      "Crestmont Boulevard SW",
+      "Greenbriar Boulevard NW",
+      "Nose Hill Drive NW",
+      "Scenic Acres Drive NW",
+      "Scenic Acres Link NW",
+      "Tuscany Boulevard NW"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [
+       "1:200 Flood",
+       "1:500 Flood",
+       "Flood Fringe",
+       "High Hazard Flood Fringe"
+      ],
+      "rivers": [
+       "Bow River"
+      ]
+     },
+     "forest_fraction_1km": 0.15,
+     "industry_within_5km": [
+      "Bearspaw Water Treatment Plant",
+      "City of Calgary Bearspaw Operations Workplace Centre",
+      "City of Calgary Parks Crowfoot Depot"
+     ],
+     "deductions": [
+      "protected fringe or 1:200/1:500 extent at anchor, or floodway/fringe within 250 m: 1:200 Flood, 1:500 Flood, Flood Fringe, High Hazard Flood Fringe",
+      "forest >=15% of 1 km ring"
+     ]
+    },
+    "services": {
+     "servicing_points": 3,
+     "servicing_note": "City of Calgary municipal water and sanitary (inside city limits)",
+     "schools_within_2km": [
+      "Belvedere Parkway School",
+      "Tuscany School",
+      "École du Nouveau-Monde"
+     ],
+     "places_within_4km": [
+      "Artists View (neighbourhood)",
+      "Artists View Park West (village)",
+      "Bowness (suburb)",
+      "Cougar Ridge (suburb)",
+      "Crestmont (suburb)",
+      "Crimson Ridge (neighbourhood)"
+     ]
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Calgary",
+     "boundary": "administrative",
+     "admin_level": "6"
+    }
+   ],
+   "osm_status": "ok, land cover from imagery (OSM too sparse)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@51.1009,-114.2384,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Best city time to the Kananaskis gateway (56 min) and a river edge, but slower to YYC and the land's availability is unknown.",
+   "flags": [
+    "Loch McKinnon is Shriners' land, availability unverified",
+    "Bow River flood mapping nearby"
+   ],
+   "rank": 6
+  },
+  {
+   "letter": "P",
+   "name": "Hwy 1 corridor at Jumping Pound Creek (west of Hwy 22)",
+   "lat": 51.08,
+   "lon": -114.5486,
+   "setting": "rural",
+   "scores": {
+    "mountains": 3,
+    "city": 3,
+    "landscape": 4,
+    "room": 5,
+    "access": 2,
+    "hazards": 5,
+    "services": 1
+   },
+   "formula_scores": {
+    "mountains": 3,
+    "city": 3,
+    "landscape": 4,
+    "room": 5,
+    "access": 2,
+    "hazards": 5,
+    "services": 1
+   },
+   "overrides": {},
+   "total_weighted": 33,
+   "total_max": 50,
+   "total_unweighted_of_35": 23,
+   "sensitivity": {
+    "mountains_x3": 36,
+    "city_x3": 36,
+    "equal_weights_of_35": 23
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 33,
+     "min_to_hwy1_hwy40": 33,
+     "min_to_west_bragg_creek": 39
+    },
+    "city": {
+     "min_to_yyc": 46,
+     "mean_min_to_city_cluster": 40.8,
+     "combined_min": 43.4,
+     "min_to_city_hall_downtown": 38,
+     "min_to_telus_spark": 44,
+     "min_to_calgary_zoo": 48,
+     "min_to_university_of_calgary": 33
+    },
+    "landscape": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 0% tagged in the 400 m ring",
+     "note": "rolling ranchland; Jumping Pound Creek's wooded valley ~300 m W",
+     "trail_m_400m": 0,
+     "waterways_400m": []
+    },
+    "room": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 0% tagged in the 400 m ring",
+     "note": "rolling ranchland; Jumping Pound Creek's wooded valley ~300 m W",
+     "trail_m_400m": 0,
+     "waterways_400m": []
+    },
+    "access": {
+     "best_road_within_400m": null,
+     "nearest_major_road": {
+      "class": "tertiary",
+      "name": "Jumping Pound Road",
+      "m": 1172
+     },
+     "distinct_major_roads_within_2km": 2,
+     "major_roads_within_2km": [
+      "1",
+      "Jumping Pound Road"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [],
+      "rivers": []
+     },
+     "forest_fraction_1km": 0.1,
+     "industry_within_5km": [],
+     "deductions": []
+    },
+    "services": {
+     "servicing_points": 0,
+     "servicing_note": "open county land: well and on-site wastewater assumed",
+     "schools_within_2km": [],
+     "places_within_4km": []
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Rocky View County",
+     "boundary": "administrative",
+     "admin_level": "6"
+    }
+   ],
+   "osm_status": "ok, land cover from imagery (OSM too sparse)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@51.08,-114.5486,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Fastest to the Hwy 40 gateway (33 min) with open land and a creek valley, but no services or neighbours.",
+   "flags": [
+    "No services, no neighbours: well, on-site wastewater, and a weak community interface",
+    "Jumping Pound sour-gas field and plant in the area: AER setback check needed, unverified",
+    "Hwy 1 noise"
+   ],
+   "rank": 7
+  },
+  {
+   "letter": "Q",
+   "name": "Hwy 22 north of Bragg Creek, foothill forest meadow",
+   "lat": 50.9744,
+   "lon": -114.5638,
+   "setting": "rural",
+   "scores": {
+    "mountains": 5,
+    "city": 2,
+    "landscape": 4,
+    "room": 2,
+    "access": 4,
+    "hazards": 3,
+    "services": 1
+   },
+   "formula_scores": {
+    "mountains": 5,
+    "city": 2,
+    "landscape": 4,
+    "room": 2,
+    "access": 4,
+    "hazards": 3,
+    "services": 1
+   },
+   "overrides": {},
+   "total_weighted": 32,
+   "total_max": 50,
+   "total_unweighted_of_35": 21,
+   "sensitivity": {
+    "mountains_x3": 37,
+    "city_x3": 34,
+    "equal_weights_of_35": 21
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 19,
+     "min_to_hwy1_hwy40": 55,
+     "min_to_west_bragg_creek": 19
+    },
+    "city": {
+     "min_to_yyc": 58,
+     "mean_min_to_city_cluster": 50.8,
+     "combined_min": 54.4,
+     "min_to_city_hall_downtown": 47,
+     "min_to_telus_spark": 53,
+     "min_to_calgary_zoo": 57,
+     "min_to_university_of_calgary": 46
+    },
+    "landscape": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 1% tagged in the 400 m ring",
+     "note": "continuous foothill forest with one ranch meadow; Bragg Creek hamlet ~2.5 km S",
+     "trail_m_400m": 0,
+     "waterways_400m": []
+    },
+    "room": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 1% tagged in the 400 m ring",
+     "note": "continuous foothill forest with one ranch meadow; Bragg Creek hamlet ~2.5 km S",
+     "trail_m_400m": 0,
+     "waterways_400m": []
+    },
+    "access": {
+     "best_road_within_400m": [
+      "tertiary",
+      "Wintergreen Road"
+     ],
+     "nearest_major_road": {
+      "class": "tertiary",
+      "name": "Wintergreen Road",
+      "m": 273
+     },
+     "distinct_major_roads_within_2km": 3,
+     "major_roads_within_2km": [
+      "22",
+      "Range Road 50",
+      "Wintergreen Road"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [],
+      "rivers": []
+     },
+     "forest_fraction_1km": 0.7,
+     "industry_within_5km": [
+      "Bragg Creek Wastewater Treatment Plant"
+     ],
+     "deductions": [
+      "forest >=40% of 1 km ring (wildland-urban interface)"
+     ]
+    },
+    "services": {
+     "servicing_points": 0,
+     "servicing_note": "open county land: well and on-site wastewater assumed",
+     "schools_within_2km": [],
+     "places_within_4km": [
+      "Bragg Creek (hamlet)"
+     ]
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Rocky View County",
+     "boundary": "administrative",
+     "admin_level": "6"
+    }
+   ],
+   "osm_status": "ok, land cover from imagery (OSM too sparse)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@50.9744,-114.5638,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Fast to Bragg Creek, but forest all round, little open ground and no services.",
+   "flags": [
+    "Continuous conifer forest: highest wildfire exposure of the set",
+    "One road (Hwy 22) at the door",
+    "Existing ranch/acreage buildings in the ring: the anchor is on the meadow, not the homestead"
+   ],
+   "rank": 8
+  },
+  {
+   "letter": "C",
+   "name": "Inglewood, Bird Sanctuary / Bow River edge",
+   "lat": 51.027895,
+   "lon": -114.006957,
+   "setting": "city",
+   "scores": {
+    "mountains": 1,
+    "city": 5,
+    "landscape": 4,
+    "room": 1,
+    "access": 4,
+    "hazards": 2,
+    "services": 5
+   },
+   "formula_scores": {
+    "mountains": 1,
+    "city": 5,
+    "landscape": 4,
+    "room": 1,
+    "access": 4,
+    "hazards": 2,
+    "services": 5
+   },
+   "overrides": {},
+   "total_weighted": 32,
+   "total_max": 50,
+   "total_unweighted_of_35": 22,
+   "sensitivity": {
+    "mountains_x3": 33,
+    "city_x3": 37,
+    "equal_weights_of_35": 22
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 61,
+     "min_to_hwy1_hwy40": 73,
+     "min_to_west_bragg_creek": 61
+    },
+    "city": {
+     "min_to_yyc": 19,
+     "mean_min_to_city_cluster": 13.5,
+     "combined_min": 16.2,
+     "min_to_city_hall_downtown": 9,
+     "min_to_telus_spark": 10,
+     "min_to_calgary_zoo": 14,
+     "min_to_university_of_calgary": 21
+    },
+    "landscape": {
+     "natural_fraction_400m": 0.755,
+     "natural_fraction_1km": 0.346,
+     "trail_m_400m": 3861,
+     "track_m_400m": 108,
+     "waterways_400m": [
+      "Bow River",
+      "unnamed stream"
+     ],
+     "water_polygon_in_ring": true,
+     "named_parks_within_1km_ha": {
+      "Inglewood Bird Sanctuary and Nature Centre": 42.9,
+      "Inglewood Wildland Park": 30.4,
+      "Slater Park": 13.4,
+      "Valleyview Park": 10.7
+     }
+    },
+    "room": {
+     "open_room_fraction_400m": 0.004,
+     "untagged_fraction_400m": 0.182,
+     "cover_400m": {
+      "built": 0.03,
+      "golf": 0.035,
+      "natural_open": 0.248,
+      "park": 0.75,
+      "parking": 0.005,
+      "untagged": 0.182,
+      "water": 0.003,
+      "wood": 0.32
+     }
+    },
+    "access": {
+     "best_road_within_400m": null,
+     "nearest_major_road": {
+      "class": "motorway",
+      "name": "2",
+      "m": 543
+     },
+     "distinct_major_roads_within_2km": 20,
+     "major_roads_within_2km": [
+      "15 Street SE",
+      "17 Avenue SE",
+      "19 Street SE",
+      "2",
+      "25 Street SE",
+      "26 Avenue SE",
+      "26 Street SE",
+      "28 Street SE",
+      "34 Avenue SE",
+      "36 Street SE",
+      "42 Avenue SE",
+      "9 Avenue SE"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [
+       "Floodway"
+      ],
+      "within_250m": [
+       "1:200 Flood",
+       "1:500 Flood",
+       "Flood Fringe",
+       "Floodway",
+       "High Hazard Flood Fringe"
+      ],
+      "rivers": [
+       "Bow River"
+      ]
+     },
+     "forest_fraction_1km": 0.063,
+     "industry_within_5km": [
+      "AB Auto Parts",
+      "AB Mauri Fleishmann's Yeast",
+      "ABC Waste Management",
+      "ALCOP Resource Recycling",
+      "Airstate Business Park",
+      "Alberta Distillers Limited",
+      "Alpha Autoparts",
+      "Alyth TFR"
+     ],
+     "deductions": [
+      "floodway at anchor"
+     ]
+    },
+    "services": {
+     "servicing_points": 3,
+     "servicing_note": "City of Calgary municipal water and sanitary (inside city limits)",
+     "schools_within_2km": [
+      "Almadina Language Charter Academy",
+      "Bishop Kidd School",
+      "Colonel Walker School",
+      "Holy Cross School",
+      "Ian Bazalgette School",
+      "Piitoayis Family School"
+     ],
+     "places_within_4km": [
+      "Albert Park/Radisson Heights (suburb)",
+      "Alyth/Bonnybrook (suburb)",
+      "Bridgeland/Riverside (suburb)",
+      "Burns Industrial (suburb)",
+      "Dover (suburb)",
+      "Downtown East Village (suburb)"
+     ]
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Calgary",
+     "boundary": "administrative",
+     "admin_level": "6"
+    },
+    {
+     "name": "Inglewood",
+     "boundary": "administrative",
+     "admin_level": "10"
+    },
+    {
+     "name": "Inglewood Migratory Bird Sanctuary",
+     "boundary": "protected_area"
+    }
+   ],
+   "osm_status": "ok",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@51.027895,-114.006957,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Best urban ecology, but the anchor is in the floodway and no dry lot has been found.",
+   "flags": [
+    "Anchor is in the Bow floodway (FHIP); a buildable lot must sit on the 9 Ave SE edge, none identified"
+   ],
+   "rank": 9
+  },
+  {
+   "letter": "N",
+   "name": "Glenbow Ranch gateway, Hwy 1A (Bow valley, Cochrane-Calgary)",
+   "lat": 51.175,
+   "lon": -114.365,
+   "setting": "rural",
+   "scores": {
+    "mountains": 1,
+    "city": 3,
+    "landscape": 5,
+    "room": 5,
+    "access": 3,
+    "hazards": 5,
+    "services": 1
+   },
+   "formula_scores": {
+    "mountains": 1,
+    "city": 3,
+    "landscape": 5,
+    "room": 5,
+    "access": 3,
+    "hazards": 5,
+    "services": 1
+   },
+   "overrides": {},
+   "total_weighted": 32,
+   "total_max": 50,
+   "total_unweighted_of_35": 23,
+   "sensitivity": {
+    "mountains_x3": 33,
+    "city_x3": 35,
+    "equal_weights_of_35": 23
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 57,
+     "min_to_hwy1_hwy40": 58,
+     "min_to_west_bragg_creek": 57
+    },
+    "city": {
+     "min_to_yyc": 33,
+     "mean_min_to_city_cluster": 33.2,
+     "combined_min": 33.1,
+     "min_to_city_hall_downtown": 32,
+     "min_to_telus_spark": 36,
+     "min_to_calgary_zoo": 40,
+     "min_to_university_of_calgary": 25
+    },
+    "landscape": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 0% tagged in the 400 m ring",
+     "note": "hay field on Hwy 1A beside the Glenbow Ranch PP access road; Bow valley below",
+     "trail_m_400m": 0,
+     "waterways_400m": []
+    },
+    "room": {
+     "source": "imagery judgment - UNVERIFIED; OSM land cover only 0% tagged in the 400 m ring",
+     "note": "hay field on Hwy 1A beside the Glenbow Ranch PP access road; Bow valley below",
+     "trail_m_400m": 0,
+     "waterways_400m": []
+    },
+    "access": {
+     "best_road_within_400m": null,
+     "nearest_major_road": {
+      "class": "primary",
+      "name": "1A",
+      "m": 628
+     },
+     "distinct_major_roads_within_2km": 2,
+     "major_roads_within_2km": [
+      "1A",
+      "Glendale Road"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [],
+      "rivers": []
+     },
+     "forest_fraction_1km": 0.1,
+     "industry_within_5km": [
+      "Rogers",
+      "Telus"
+     ],
+     "deductions": []
+    },
+    "services": {
+     "servicing_points": 0,
+     "servicing_note": "open county land: well and on-site wastewater assumed",
+     "schools_within_2km": [],
+     "places_within_4km": []
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Rocky View County",
+     "boundary": "administrative",
+     "admin_level": "6"
+    }
+   ],
+   "osm_status": "ok, land cover from imagery (OSM too sparse)",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@51.175,-114.365,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Glenbow Ranch and the Bow valley next door with open land, but no services or community and a slow mountain drive.",
+   "flags": [
+    "Whether the hay field is inside Glenbow Ranch Provincial Park is UNVERIFIED (OSM is_in unavailable); if it is, the zone moves to private land north of Hwy 1A",
+    "No services, no neighbours within 4 km: the course's community interface is weakest here",
+    "OSRM time to Hwy 40 (58 min) looks long for Hwy 1A; check routing"
+   ],
+   "rank": 10
+  },
+  {
+   "letter": "O",
+   "name": "Springbank hub, Range Rd 33 / Springbank schools",
+   "lat": 51.0782,
+   "lon": -114.3449,
+   "setting": "rural",
+   "scores": {
+    "mountains": 3,
+    "city": 3,
+    "landscape": 1,
+    "room": 5,
+    "access": 4,
+    "hazards": 5,
+    "services": 2
+   },
+   "formula_scores": {
+    "mountains": 3,
+    "city": 3,
+    "landscape": 1,
+    "room": 5,
+    "access": 4,
+    "hazards": 5,
+    "services": 2
+   },
+   "overrides": {},
+   "total_weighted": 30,
+   "total_max": 50,
+   "total_unweighted_of_35": 23,
+   "sensitivity": {
+    "mountains_x3": 33,
+    "city_x3": 33,
+    "equal_weights_of_35": 23
+   },
+   "metrics": {
+    "mountains": {
+     "min_to_nearer_gateway": 40,
+     "min_to_hwy1_hwy40": 44,
+     "min_to_west_bragg_creek": 40
+    },
+    "city": {
+     "min_to_yyc": 36,
+     "mean_min_to_city_cluster": 31.8,
+     "combined_min": 33.9,
+     "min_to_city_hall_downtown": 29,
+     "min_to_telus_spark": 35,
+     "min_to_calgary_zoo": 39,
+     "min_to_university_of_calgary": 24
+    },
+    "landscape": {
+     "natural_fraction_400m": 0.408,
+     "natural_fraction_1km": 0.321,
+     "trail_m_400m": 0,
+     "track_m_400m": 0,
+     "waterways_400m": [],
+     "water_polygon_in_ring": false,
+     "named_parks_within_1km_ha": {}
+    },
+    "room": {
+     "open_room_fraction_400m": 0.816,
+     "untagged_fraction_400m": 0.029,
+     "cover_400m": {
+      "built": 0.156,
+      "farmland": 0.816,
+      "untagged": 0.029
+     }
+    },
+    "access": {
+     "best_road_within_400m": [
+      "tertiary",
+      "Range Road 33"
+     ],
+     "nearest_major_road": {
+      "class": "tertiary",
+      "name": "Range Road 33",
+      "m": 395
+     },
+     "distinct_major_roads_within_2km": 6,
+     "major_roads_within_2km": [
+      "1",
+      "Range Road 32",
+      "Range Road 33",
+      "Springbank Road",
+      "Township Road 245",
+      "Township Road 250"
+     ]
+    },
+    "hazards": {
+     "flood_fhip": {
+      "at_point": [],
+      "within_250m": [],
+      "rivers": []
+     },
+     "forest_fraction_1km": 0.0,
+     "industry_within_5km": [],
+     "deductions": []
+    },
+    "services": {
+     "servicing_points": 0,
+     "servicing_note": "open county land: well and on-site wastewater assumed",
+     "schools_within_2km": [
+      "Edge School",
+      "unnamed school"
+     ],
+     "places_within_4km": [
+      "Springbank (village)"
+     ]
+    }
+   },
+   "is_in": [
+    {
+     "name": "Alberta",
+     "boundary": "administrative",
+     "admin_level": "4"
+    },
+    {
+     "name": "Canada",
+     "boundary": "administrative",
+     "admin_level": "2"
+    },
+    {
+     "name": "Rocky View County",
+     "boundary": "administrative",
+     "admin_level": "6"
+    }
+   ],
+   "osm_status": "ok",
+   "parcel": null,
+   "ring_m": 400,
+   "google_maps": "https://www.google.com/maps/@51.0782,-114.3449,1200m/data=!3m1!1e3",
+   "why_it_ranks": "Room and schools, but flat farmland with no landscape at the door.",
+   "flags": [
+    "Flat cultivated field: no landscape at the door",
+    "Near Calaway Park and Springbank Airport (noise)"
+   ],
+   "rank": 11
+  }
+ ]
+}

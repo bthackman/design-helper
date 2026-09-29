@@ -5,16 +5,17 @@
   "currentPhase": "site",
   "driversLocked": false,
   "driversLockedDate": null,
-  "updated": "2026-09-25",
+  "updated": "2026-09-29",
   "phases": {
     "client-discovery": {
       "status": "complete",
-      "updated": "2026-09-22"
+      "updated": "2026-09-29",
+      "note": "reframed after instructor feedback 2026-09-28 (brief v0.7)"
     },
     "site": {
       "status": "in-progress",
-      "stage": "stage-1-zone-scan-drafted",
-      "updated": "2026-09-25"
+      "stage": "stage-1-rescan-after-reframe",
+      "updated": "2026-09-29"
     },
     "precedents": {
       "status": "complete",
