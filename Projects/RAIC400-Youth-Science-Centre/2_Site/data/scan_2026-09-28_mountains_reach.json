@@ -1,0 +1,17 @@
+{
+ "note": "High-level scan, 2026-09-28. Drive times: OSRM public router (router.project-osrm.org), free-flow, no traffic. Reach: straight-line km from five lower-income origin communities (a proxy set, not census-derived) plus a judgment on rapid-transit links. Revisit in detail for the final 1-2 sites.",
+ "destinations": {"kananaskis_hwy1_hwy40": [51.0850, -115.0010], "bragg_creek": [50.9486, -114.5710]},
+ "origins_lower_income_proxy": {"Forest Lawn": [51.0375, -113.9670], "Marlborough": [51.0580, -113.9790], "East Village": [51.0460, -114.0520], "Bowness": [51.0880, -114.1880], "Ogden": [50.9960, -114.0080]},
+ "sites": {
+  "A": {"drive_min": [64, 43], "reach_avg_km": 6.6},
+  "B": {"drive_min": [63, 43], "reach_avg_km": 6.6},
+  "C": {"drive_min": [73, 48], "reach_avg_km": 5.7},
+  "D": {"drive_min": [71, 39], "reach_avg_km": 14.8},
+  "E": {"drive_min": [90, 68], "reach_avg_km": 7.7},
+  "F": {"drive_min": [66, 39], "reach_avg_km": 10.7},
+  "G": {"drive_min": [58, 43], "reach_avg_km": 9.7, "anchor": "Brentwood Co-op"},
+  "I": {"drive_min": [56, 42], "reach_avg_km": 15.4, "anchor": "Loch McKinnon north shore"},
+  "J": {"drive_min": [71, 49], "reach_avg_km": 5.6, "anchor": "819 32 St SE school reserve (S-SPR, 5.2 ha), Franklin CTrain 0.23 km, Ward 9 24.7%"},
+  "K": {"drive_min": [72, 51], "reach_avg_km": 6.2, "anchor": "636 Marlborough Wy NE school reserve (S-SPR, 3.6 ha), Marlborough CTrain 0.5 km, Ward 10 18.5%"}
+ }
+}

@@ -23,6 +23,18 @@ the final argument. Cut zones and parcels also get a row in `Library/Parked-Idea
 tags, reconsider-if) — the search plan's own file already records the reasoning; the register is what
 makes it findable from a different project's site search.
 
+**Stage 1 as a visual scorecard board — learned 2026-09-28, RAIC400 (10 sites).** Useful when the user wants a ranked "contender" package rather than a markdown table:
+- **Scoring:** 1–5 per criterion, equal weight, a total, and a tie-break on the brief's high-weight criteria. Write each score's one-line reason on the site sheet. Note any double counting (e.g. reach and transit overlap).
+- **Criteria that actually discriminated:** *reach* (distance and rapid-transit link from the communities the client serves — not the ward income of the site itself), transit, outdoors/ecology, kid- or user-friendliness from imagery, room, and **route drive time** to the program's key off-site destination. Straight-line distance had hidden a 30-minute gap (Kananaskis: 56 min vs. 90 min). Drop a criterion only after checking *route* values, not straight-line ones.
+- **Look at the imagery before finalizing scores.** It changed three sites: one "41 ha" parcel was a thin strip between a rail line and a river; one retail lot turned out to border forest and a beach.
+- **Map clips:** each site gets a dot plus a 400 m (five-minute walk) ring **until the user has picked the actual lot**. Never outline an existing shopping centre, club or school parcel as "the site"; projects are assumed to be new builds on parking, open ground or a demolished building (Ben, 2026-09-28). Outline only lots the user chose.
+- **Map sources:**
+  - Site clips use Esri World Imagery tiles, credited "Esri, Maxar, Earthstar Geographics, and the GIS User Community", plus an "Open in Google Maps" link per sheet. Google's terms don't allow automated screenshots.
+  - The overview uses Esri World Light Gray Canvas. CARTO basemaps now need an API key.
+  - Drive times use the public OSRM router: free-flow, so label them off-peak.
+  - Reference script: `Projects/RAIC400-Youth-Science-Centre/2_Site/data/make_maps.py`.
+- **Wildcard pass:** search school-reserve land (Calgary `S-SPR`) within about 700 m of rapid-transit stations. It turns up large, kid-zoned parcels in communities a park-edge search misses. Surplus status is always unverified.
+
 **Stage 2 — parcel scorecard.** Score every candidate parcel the same way, against the same motive
 columns, plus one more that zone-level scoring can't yet compute: **envelope-utilization** — target GSF
 (brief) ÷ buildable envelope GFA, the same setback/height/FAR math as "Compute the envelope" below, run

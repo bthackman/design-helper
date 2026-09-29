@@ -1,0 +1,91 @@
+{
+ "type": "Feature",
+ "properties": {
+  "roll_year": "2026",
+  "roll_number": "202353181",
+  "address": "633 15 AV SW",
+  "assessed_value": "2360000.0",
+  "assessment_class": "RE",
+  "assessment_class_description": "Residential",
+  "re_assessed_value": "2360000.0",
+  "nr_assessed_value": "0.0",
+  "fl_assessed_value": "0.0",
+  "comm_code": "BLN",
+  "comm_name": "BELTLINE",
+  "land_use_designation": "CC-MH",
+  "property_type": "LO",
+  "land_size_sm": "999.7",
+  "land_size_sf": "10761.0",
+  "land_size_ac": "0.25",
+  "mod_date": "2026-01-14T00:00:00.000Z",
+  "sub_property_use": "A006",
+  "short_legal": "A1;108;1-4",
+  "cpid": "960631228",
+  "unique_key": "2026202353181960631228"
+ },
+ "geometry": {
+  "type": "MultiPolygon",
+  "coordinates": [
+   [
+    [
+     [
+      -114.0762529,
+      51.0388596
+     ],
+     [
+      -114.0763614,
+      51.0388627
+     ],
+     [
+      -114.0764699,
+      51.0388658
+     ],
+     [
+      -114.0765245,
+      51.0388674
+     ],
+     [
+      -114.0765784,
+      51.0388689
+     ],
+     [
+      -114.0766869,
+      51.038872
+     ],
+     [
+      -114.0767008,
+      51.0386801
+     ],
+     [
+      -114.0767071,
+      51.038598
+     ],
+     [
+      -114.0765983,
+      51.0385949
+     ],
+     [
+      -114.0764898,
+      51.0385918
+     ],
+     [
+      -114.0763814,
+      51.0385887
+     ],
+     [
+      -114.0763872,
+      51.0385066
+     ],
+     [
+      -114.0762786,
+      51.0385035
+     ],
+     [
+      -114.0762529,
+      51.0388596
+     ]
+    ]
+   ]
+  ]
+ }
+}

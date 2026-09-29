@@ -15,6 +15,16 @@ Work down the tiers; the lower ones produce the better drivers.
 
 The client-profile matrix (evidence → reading → position → implication) is the machine that produces tiers 2–4. If a candidate driver traces only to tier 1, be suspicious.
 
+### 1a. Realism and consistency review (hypothetical clients) — learned 2026-09-28, RAIC400
+An invented client drifts as decisions pile up. Once client discovery settles, and again before drivers lock, run a **fresh-context review** (a subagent that reads only the spine files and the course brief; a Fable-class model worked well). Ask it to check, read-only:
+- **Would a real board or funder sign off?** Who is awake at night, who teaches, who cooks. Does the staff roster actually cover the operating calendar? Does the funding cover year-round operations, not just the capital build?
+- **Does any program element quietly trigger licensing?** A "crisis bed", out-of-school care, a residential unit. Mark regulations unverified unless cited.
+- **Program vs. operating model:** rooms missing for what the calendar says happens, and rooms nothing uses.
+- **Contradictions across files:** exact wording, file by file.
+- **Brief alignment in spirit:** hierarchy, circulation classes, long-span vs. short-span, systems, stated minimums.
+
+**Fix the story before growing the building.** The RAIC400 review turned a crisis bed into a step-away room and wrote a funding model where the school year pays for the summer. That made the client realistic without adding area. **After any restated decision, grep the spine *and every board* for stale phrases** (old names, old cadences, retired rooms). One change ripples into drivers, open questions and board copy, and a driver can lose its premise (W1 "never fully off" died with the crisis bed and had to be restated).
+
 ## 2. Forces beyond the client (always consulted, client silent or not)
 
 - **Constraint arithmetic.** Identify the binding constraint (area cap, FAR, budget/m², height) and *compute where it bites*. A driver earns its place when the math shows the constraint is real at this scale (corridor % of a plan is noise at 400 m², a whole room at 120 m²). Never lock a compactness/efficiency driver without the arithmetic.

@@ -1,0 +1,167 @@
+[
+ {
+  "zone": "A",
+  "name": "Beltline infill (Ben idea 1)",
+  "anchor": "633 15 AV SW",
+  "parcel_area_m2": 999.7,
+  "assessed_land_use": "CC-MH",
+  "lat": 51.038723,
+  "lon": -114.076476,
+  "land_use_at_point": [
+   "CC-MH (Centre City Multi-Residential High Rise District)"
+  ],
+  "flood_at_point": [],
+  "flood_within_250m": [
+   "Overland Flow"
+  ],
+  "nearest_ctrain": [
+   {
+    "station": "6th Street SW Station",
+    "km": 0.9
+   },
+   {
+    "station": "7th Street SW Station",
+    "km": 0.92
+   }
+  ],
+  "stops_within_400m": 13,
+  "stops_within_800m": 47,
+  "nearest_stop_m": 105,
+  "ward": "WARD 8",
+  "ward_pct_households_under_40k_2016": 22.1,
+  "km_to_city_hall": 1.5,
+  "km_to_kananaskis_gateway": 66.9
+ },
+ {
+  "zone": "B",
+  "name": "Eau Claire, Prince's Island edge (Ben idea 2)",
+  "anchor": "708 1 AV SW",
+  "parcel_area_m2": 3028.4,
+  "assessed_land_use": "DC",
+  "lat": 51.052571,
+  "lon": -114.076107,
+  "land_use_at_point": [
+   "DC (Direct Control)"
+  ],
+  "flood_at_point": [],
+  "flood_within_250m": [
+   "Floodplain",
+   "Floodway",
+   "Normal River Channel"
+  ],
+  "nearest_ctrain": [
+   {
+    "station": "7th Street SW Station",
+    "km": 0.63
+   },
+   {
+    "station": "6th Street SW Station",
+    "km": 0.65
+   }
+  ],
+  "stops_within_400m": 3,
+  "stops_within_800m": 75,
+  "nearest_stop_m": 123,
+  "ward": "WARD 7",
+  "ward_pct_households_under_40k_2016": 25.8,
+  "km_to_city_hall": 1.5,
+  "km_to_kananaskis_gateway": 67.0
+ },
+ {
+  "zone": "C",
+  "name": "Inglewood, Bow River / Bird Sanctuary edge",
+  "anchor": "Inglewood Bird Sanctuary and Nature Centre, 2425, Inglewood, Calgary, Alberta, Canada",
+  "lat": 51.027895,
+  "lon": -114.006957,
+  "land_use_at_point": [
+   "S-UN (Special Purpose - Urban Nature)"
+  ],
+  "flood_at_point": [
+   "Floodway"
+  ],
+  "flood_within_250m": [
+   "Flood Fringe",
+   "Floodway",
+   "Normal River Channel"
+  ],
+  "nearest_ctrain": [
+   {
+    "station": "Barlow/Max Bell Station",
+    "km": 1.96
+   },
+   {
+    "station": "Franklin Station",
+    "km": 2.37
+   }
+  ],
+  "stops_within_400m": 0,
+  "stops_within_800m": 0,
+  "nearest_stop_m": null,
+  "ward": "WARD 9",
+  "ward_pct_households_under_40k_2016": 24.7,
+  "km_to_city_hall": 4.1,
+  "km_to_kananaskis_gateway": 71.8
+ },
+ {
+  "zone": "D",
+  "name": "Fish Creek Park edge at Fish Creek-Lacombe CTrain",
+  "anchor": "Fish Creek\u2013Lacombe, Macleod Trail S, Shawnee Slopes, Calgary, Alberta, T2Y 1M6, Canada",
+  "lat": 50.923014,
+  "lon": -114.07307,
+  "land_use_at_point": [
+   "S-CRI (Special Purpose - City and Regional Infrastructure)"
+  ],
+  "flood_at_point": [],
+  "flood_within_250m": [],
+  "nearest_ctrain": [
+   {
+    "station": "Fish Creek - Lacombe Station",
+    "km": 0.02
+   },
+   {
+    "station": "Shawnessy Station",
+    "km": 1.39
+   }
+  ],
+  "stops_within_400m": 11,
+  "stops_within_800m": 21,
+  "nearest_stop_m": 77,
+  "ward": "WARD 13",
+  "ward_pct_households_under_40k_2016": 11.0,
+  "km_to_city_hall": 13.6,
+  "km_to_kananaskis_gateway": 68.2
+ },
+ {
+  "zone": "E",
+  "name": "Forest Lawn, Elliston Park edge (International Ave)",
+  "anchor": "Elliston Park, Calgary, Alberta, Canada",
+  "lat": 51.033572,
+  "lon": -113.939943,
+  "land_use_at_point": [
+   "S-CRI (Special Purpose - City and Regional Infrastructure)"
+  ],
+  "flood_at_point": [
+   "Normal River Channel"
+  ],
+  "flood_within_250m": [
+   "Normal River Channel"
+  ],
+  "nearest_ctrain": [
+   {
+    "station": "Marlborough Station",
+    "km": 4.02
+   },
+   {
+    "station": "Franklin Station",
+    "km": 4.08
+   }
+  ],
+  "stops_within_400m": 0,
+  "stops_within_800m": 11,
+  "nearest_stop_m": 488,
+  "ward": "WARD 9",
+  "ward_pct_households_under_40k_2016": 24.7,
+  "km_to_city_hall": 8.4,
+  "km_to_kananaskis_gateway": 76.4
+ }
+]
