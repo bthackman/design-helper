@@ -48,3 +48,14 @@ _Export-Receivers/Revit/*.json
 
 # Local Windows shortcuts (contain absolute user paths)
 *.lnk
+
+# RAIC400 site-selection deck, 2026-10-02: map-tile cache, proof renders and the built PDFs stay local.
+# The template-filled PDF carries Ben's student ID and signature stamp (public repo); both PDFs are
+# rebuilt from the tracked scripts (make_slide_maps.py, make_terrain.py, build_*.py).
+Projects/*/2_Site/presentation/_tiles/
+Projects/*/2_Site/presentation/_check/
+Projects/*/2_Site/presentation/_check_tpl/
+Projects/*/2_Site/presentation/*.pdf
+# Board shortcuts (private artifact links) and raw API caches
+Projects/*/*.url
+Projects/*/2_Site/data/_cache_*.json

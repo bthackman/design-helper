@@ -1,0 +1,54 @@
+{
+ "destinations": {
+  "wildhorn": [
+   50.806,
+   -114.818
+  ],
+  "kananaskis_village": [
+   50.9174,
+   -115.1471
+  ]
+ },
+ "osrm_table": {
+  "F": {
+   "wildhorn": {
+    "min": 63,
+    "km": 72.3
+   },
+   "kananaskis_village": {
+    "min": 88,
+    "km": 106.9
+   }
+  },
+  "C": {
+   "wildhorn": {
+    "min": 73,
+    "km": 78.1
+   },
+   "kananaskis_village": {
+    "min": 94,
+    "km": 105.5
+   }
+  },
+  "I": {
+   "wildhorn": {
+    "min": 67,
+    "km": 71.8
+   },
+   "kananaskis_village": {
+    "min": 78,
+    "km": 92.3
+   }
+  },
+  "N": {
+   "wildhorn": {
+    "min": 70,
+    "km": 69.5
+   },
+   "kananaskis_village": {
+    "min": 80,
+    "km": 82.1
+   }
+  }
+ }
+}

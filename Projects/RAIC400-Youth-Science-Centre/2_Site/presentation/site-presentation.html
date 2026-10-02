@@ -1,0 +1,284 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Site Selection Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9E5DB;--chrome:#1B1B1B;--chrome-2:#5C574E;--paper:#F5F2EA;--ink:#1B1B1B;--red:#A63A26;--panel:#E8E3D6;--rule:#8D877C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141414;--chrome:#EDEAE2;--chrome-2:#A9A397}}
+:root[data-theme="dark"]{--bg:#141414;--chrome:#EDEAE2;--chrome-2:#A9A397}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--chrome);font-family:"Source Serif 4",Georgia,serif}
+.top{max-width:1240px;margin:0 auto;padding:28px 16px 8px}
+.top h2{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:30px;margin:0 0 4px;text-transform:uppercase;letter-spacing:.02em}
+.top p{margin:0;color:var(--chrome-2);font-size:15px;line-height:1.5}
+.deck{max-width:1240px;margin:0 auto;padding:12px 16px 60px;display:flex;flex-direction:column;gap:22px}
+.frame-label{font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--chrome-2);margin-bottom:6px}
+.wrap{width:100%;aspect-ratio:17/11;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.sheet{position:absolute;left:0;top:0;width:1700px;height:1100px;transform-origin:0 0;background:var(--paper);color:var(--ink);
+  padding:44px 62px 30px;display:flex;flex-direction:column;gap:22px;font-family:"Source Serif 4",Georgia,serif}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;border-bottom:2px solid var(--ink);padding-bottom:16px}
+.head-l{display:flex;gap:22px;align-items:flex-end}
+.badge{width:92px;height:92px;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font:700 64px/1 "Barlow Condensed",sans-serif;flex-shrink:0}
+.eyebrow,.label{font:600 15px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+h1{margin:4px 0 2px;font:700 60px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.01em}
+.sub{font-size:18px;line-height:1.35}
+.score{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.score-n{display:flex;align-items:baseline;gap:6px;font-family:"Barlow Condensed",sans-serif;font-weight:700}
+.score-n span{font-size:76px;line-height:.9;color:var(--red)}.score-n small{font-size:26px}
+.tag{background:var(--ink);color:var(--paper);font:600 15px/1 "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px}
+.body{flex:1;display:grid;gap:36px;min-height:0}
+.cover{grid-template-columns:1160px 1fr}
+.zone{grid-template-columns:1180px 1fr}
+.site{grid-template-columns:1000px 1fr}
+.terrain{grid-template-columns:1220px 1fr}
+.terrain figure img{max-height:800px;width:auto;max-width:100%}
+.summary{grid-template-columns:780px 1fr}
+figure{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+figure img{width:100%;display:block}
+figcaption{font-style:italic;font-size:13px;line-height:1.4}
+.mapbox{position:relative}.mapbox img{border:1px solid var(--rule)}
+.pin{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center}
+.pin-dot{width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;
+  font:700 21px/1 "Barlow Condensed",sans-serif;box-shadow:0 0 0 1px var(--red);flex-shrink:0}
+.pin-dot.sm{width:28px;height:28px;font-size:17px;border-width:2px}
+.pin-lab{position:absolute;left:44px;white-space:nowrap;font:700 20px/1 "Barlow Condensed",sans-serif;color:var(--red);
+  text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 3px #fff,0 0 2px #fff}
+.pin-lab.left{left:auto;right:44px}
+.side,.stats{display:flex;flex-direction:column;font-size:16px;line-height:1.4;min-width:0}
+.stats{flex-direction:row;gap:30px}.stats.one{flex-direction:column;gap:0}
+.col{flex:1;display:flex;flex-direction:column;min-width:0}
+.label{border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
+.label.gap{margin-top:16px}
+.kv{display:flex;justify-content:space-between;gap:14px;padding:4px 0;border-bottom:1px solid var(--rule);font-size:16px}
+.kv b{font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:19px;text-align:right}
+.kv.adj{justify-content:flex-start}.kv.adj span{font:600 17px/1.3 "Barlow Condensed",sans-serif;width:22px;flex-shrink:0}
+.legend-row{display:flex;gap:14px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);font-size:16px}
+.legend-row b{font:700 22px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase}
+.small{font-size:14px;line-height:1.4}
+ul{margin:4px 0 0;padding-left:18px}li{padding:3px 0}
+p{margin:6px 0 0;font-size:17px;line-height:1.45}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{font:600 14px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:left;padding:6px 4px;border-bottom:1px solid var(--ink)}
+td{padding:4px 4px;border-bottom:1px solid var(--rule)}
+td.b,tfoot td.c{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:20px}
+td.note{font-size:14px}
+tfoot td{border-bottom:2px solid var(--ink);font-weight:600}
+.nw{white-space:nowrap}.c{text-align:center}.r{text-align:right}
+table.sum td{font-size:15px}table.sum td.r{font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:18px}
+tr.lead td{background:var(--panel)}
+.defs{display:flex;flex-direction:column}
+.def{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:4px 0;border-bottom:1px solid var(--rule);font-size:14.5px;line-height:1.35}
+.def b{font:600 17px/1.3 "Barlow Condensed",sans-serif}
+.foot{display:flex;justify-content:space-between;gap:30px;font-size:13px;line-height:1.4;border-top:1px solid var(--rule);padding-top:10px}
+.foot-note{flex:1;text-align:center}.sheetno{font:600 14px/1.4 "Barlow Condensed",sans-serif;letter-spacing:.1em}
+</style></head><body>
+<header class="top"><h2>Site selection deck: layout preview</h2>
+<p>Cairn Youth Centre, RAIC 400. 14 sheets at 11x17: the city plan, then context, site and terrain for each site (urban to rural), then a summary. Kept general on purpose for early site analysis. Once the layout's approved, it moves into the PDF template.</p></header>
+<main class="deck"><div><div class="frame-label">Sheet 01 · City plan</div><div class="wrap"><section class="sheet" data-label="City plan">
+<div class="head"><div class="head-l"><div><div class="eyebrow">RAIC 400 · Assignment · Site selection</div><h1>Four candidate sites</h1><div class="sub">Cairn Youth Centre: a year-round residential centre for visiting students aged 12 to 15. Calgary and the western foothills.</div></div></div></div>
+<div class="body cover">
+  <figure class="map city"><div class="mapbox"><img src="img/city_plan.png" alt="Plan of Calgary west to Kananaskis Village with the four candidate sites numbered"><div class="pin" style="left:93.85%;top:43.46%"><span class="pin-dot">1</span><span class="pin-lab left">A · Inglewood</span></div><div class="pin" style="left:87.25%;top:55.06%"><span class="pin-dot">2</span><span class="pin-lab left">B · Glenmore Landing</span></div><div class="pin" style="left:76.38%;top:28.31%"><span class="pin-dot">3</span><span class="pin-lab ">C · Loch McKinnon</span></div><div class="pin" style="left:64.66%;top:14.41%"><span class="pin-dot">4</span><span class="pin-lab ">D · Glenbow Ranch</span></div></div>
+    <figcaption>Fig. 1. The four sites, numbered urban to rural, with reference destinations (black squares). Basemap: Esri World Light Gray Canvas, darkened, with hill shading from AWS Terrain Tiles.</figcaption></figure>
+  <aside class="side">
+    <div class="label">The sites</div><div class="legend-row"><span class="pin-dot">1</span><div><b>A · Inglewood</b><div class="small">Inner city · riverside grassland</div></div></div><div class="legend-row"><span class="pin-dot">2</span><div><b>B · Glenmore Landing</b><div class="small">Suburban edge · wooded, reservoir shore</div></div></div><div class="legend-row"><span class="pin-dot">3</span><div><b>C · Loch McKinnon</b><div class="small">City&#x27;s western gate · lakeside field</div></div></div><div class="legend-row"><span class="pin-dot">4</span><div><b>D · Glenbow Ranch</b><div class="small">Rural, provincial park · native prairie</div></div></div>
+    <div class="label gap">Why these four</div>
+    <p>A range from inner city to provincial park, narrowed from 11 zones for spread, talking points and the chance to visit each one.</p>
+    <div class="label gap">Programme</div>
+    <div class="kv"><span>Beds</span><b>32, in 4 nodes of 8, pods of 4</b></div>
+    <div class="kv"><span>Building</span><b>about 2,500 m²</b></div>
+    <div class="kv"><span>Land needed</span><b>about 1 ha</b></div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Early site analysis: values are approximate and for comparison only.</div><div class="sheetno">SHEET 01/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 02 · 1 C context</div><div class="wrap"><section class="sheet" data-label="1 C context">
+<div class="head"><div class="head-l"><div class="badge">1</div><div><div class="eyebrow">Site 1 of 4 · Context · Inner city</div><h1>A · Inglewood</h1><div class="sub">Bird Sanctuary entrance, Nature Centre lot</div></div></div></div>
+<div class="body zone">
+  <figure class="map"><img src="img/zone_C.jpg" alt="Aerial view of the area around site A with the site dot and 400 m ring">
+    <figcaption>Fig. 2.1. Neighbourhood context, about 10 km across. Yellow dot: site. Dashed ring: 400 m. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Next to the site</div><div class="kv adj"><span>N</span><div>9 Ave SE and the Inglewood townhouses across it (residential)</div></div><div class="kv adj"><span>E</span><div>Nature Centre building and the sanctuary gate</div></div><div class="kv adj"><span>S</span><div>Sanctuary lawn and cottonwoods, then the lagoon</div></div><div class="kv adj"><span>W</span><div>CN rail line (~65 m), then Inglewood Wildland Park</div></div>
+    <div class="label gap">Within reach</div><ul><li>Inglewood Bird Sanctuary and Nature Centre (door)</li><li>Inglewood Wildland Park 300 m</li><li>Inglewood Community Hall and rink 650-730 m</li><li>Colonel Walker and Piitoayis schools ~760 m</li><li>Bow River pathway at the door</li></ul>
+    <div class="label gap">Nuisances</div><ul><li>CN line 65 m</li><li>Deerfoot 785 m</li><li>YYC 35L approach</li><li>Bonnybrook WWTP 890 m</li></ul>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Context from OpenStreetMap and City of Calgary open data, checked against aerial imagery.</div><div class="sheetno">SHEET 02/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 03 · 1 C site</div><div class="wrap"><section class="sheet" data-label="1 C site">
+<div class="head"><div class="head-l"><div class="badge">1</div><div><div class="eyebrow">Site 1 of 4 · Site · Inner city</div><h1>A · Inglewood</h1><div class="sub">Bird Sanctuary entrance, Nature Centre lot</div></div></div><div class="score"><div class="score-n"><span>28</span><small>/ 35</small></div><div class="tag">Rank 1 of 4</div></div></div>
+<div class="body site">
+  <figure class="map"><img src="img/site_C.jpg" alt="Aerial view of site A with the site outline, 400 m ring, sun path and prevailing wind">
+    <figcaption>Fig. 3.1. The site, about 2.4 km across. Cyan: the site chosen. Arcs: sunrise to sunset at the summer and winter solstices (schematic). Arrow: prevailing wind. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="stats">
+    <div class="col">
+      <div class="label">Scores (1 to 5)</div>
+      <table><tbody><tr><td>Mountains</td><td class="c b">3</td><td class="note">Furthest from Wildhorn</td></tr><tr><td>City &amp; airport</td><td class="c b">5</td><td class="note">Closest of the four</td></tr><tr><td>Landscape</td><td class="c b">4</td><td class="note">Sanctuary and river</td></tr><tr><td>Room &amp; flexibility</td><td class="c b">4</td><td class="note">Lot plus the lawn around it</td></tr><tr><td>Coach &amp; egress</td><td class="c b">4</td><td class="note">Local road, many routes</td></tr><tr><td>Hazards</td><td class="c b">3</td><td class="note">Flood edge; rail next door</td></tr><tr><td>Services</td><td class="c b">5</td><td class="note">City serviced</td></tr></tbody><tfoot><tr><td>Total</td><td class="c">28</td><td class="note">out of 35</td></tr></tfoot></table>
+      <div class="label gap">The site</div>
+      <div class="kv"><span>Character</span><b>Riverside grassland</b></div><div class="kv"><span>Land</span><b>City park</b></div><div class="kv"><span>Room</span><b>Ample (lot plus lawn)</b></div><div class="kv"><span>Flexibility</span><b>Some limits (rail W, flood edge E)</b></div>
+      <div class="kv"><span>Transit</span><b>Bus within walking distance</b></div><div class="kv"><span>Flood risk</span><b>Medium</b></div><div class="kv"><span>Busy edge</span><b>Rail line next door</b></div>
+      <div class="label gap">Drive times (off-peak)</div><div class="kv"><span>YYC airport</span><b>~20 min</b></div><div class="kv"><span>Downtown</span><b>~10 min</b></div><div class="kv"><span>U of C</span><b>~20 min</b></div><div class="kv"><span>Wildhorn (Forgetmenot Ridge)</span><b>~75 min</b></div><div class="kv"><span>Kananaskis Village</span><b>~95 min</b></div>
+    </div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Drive times rounded to 5 min, off-peak; allow more at rush hour or in winter. Flood risk from the Alberta flood hazard maps.</div><div class="sheetno">SHEET 03/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 04 · 1 C terrain</div><div class="wrap"><section class="sheet" data-label="1 C terrain">
+<div class="head"><div class="head-l"><div class="badge">1</div><div><div class="eyebrow">Site 1 of 4 · Terrain · Inner city</div><h1>A · Inglewood</h1><div class="sub">Flat river terrace; the ground barely changes around the lot</div></div></div></div>
+<div class="body terrain">
+  <figure class="map"><img src="img/terrain_C.jpg" alt="Oblique 3D view of the terrain around site A, looking north, height exaggerated four times">
+    <figcaption>Fig. 4.1. Looking north over the site, about 2.4 km across, heights exaggerated ×5. Yellow pin: site. Elevation: AWS Terrain Tiles (CDEM-derived). Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Where it sits</div>
+    <p>Flat river terrace; the ground barely changes around the lot.</p>
+    <div class="label gap">Within 500 m</div>
+    <div class="kv"><span>Above the lowest ground</span><b>about 5 m</b></div>
+    <div class="kv"><span>Below the highest ground</span><b>about 5 m</b></div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Elevation model is about 20–30 m resolution: reads the landform, not the fine grading. A site survey comes later.</div><div class="sheetno">SHEET 04/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 05 · 2 F context</div><div class="wrap"><section class="sheet" data-label="2 F context">
+<div class="head"><div class="head-l"><div class="badge">2</div><div><div class="eyebrow">Site 2 of 4 · Context · Suburban edge</div><h1>B · Glenmore Landing</h1><div class="sub">Forest north of the retail, South Glenmore Park</div></div></div></div>
+<div class="body zone">
+  <figure class="map"><img src="img/zone_F.jpg" alt="Aerial view of the area around site B with the site dot and 400 m ring">
+    <figcaption>Fig. 5.1. Neighbourhood context, about 10 km across. Yellow dot: site. Dashed ring: 400 m. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Next to the site</div><div class="kv adj"><span>S</span><div>Glenmore Landing shopping centre (Safeway, cafes, clinic)</div></div><div class="kv adj"><span>E</span><div>14 St SW, Haysboro houses beyond</div></div><div class="kv adj"><span>W</span><div>Reservoir pathway and shore</div></div><div class="kv adj"><span>N</span><div>Gravel boat-storage lots, Heritage Park lots and entrance</div></div>
+    <div class="label gap">Within reach</div><ul><li>MAX Yellow bus rapid transit on 14 St SW, beside the site</li><li>Glenmore Reservoir and pathway (door)</li><li>Safeway and shops 230 m</li><li>Haysboro School 570 m</li><li>Heritage Park (living-history village) 750 m</li></ul>
+    <div class="label gap">Nuisances</div><ul><li>14 St SW 140 m</li><li>retail loading and parking to the S</li><li>power line 234 m</li><li>Heritage Park event traffic in summer</li></ul>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Context from OpenStreetMap and City of Calgary open data, checked against aerial imagery.</div><div class="sheetno">SHEET 05/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 06 · 2 F site</div><div class="wrap"><section class="sheet" data-label="2 F site">
+<div class="head"><div class="head-l"><div class="badge">2</div><div><div class="eyebrow">Site 2 of 4 · Site · Suburban edge</div><h1>B · Glenmore Landing</h1><div class="sub">Forest north of the retail, South Glenmore Park</div></div></div><div class="score"><div class="score-n"><span>27</span><small>/ 35</small></div><div class="tag">Rank 2= of 4</div></div></div>
+<div class="body site">
+  <figure class="map"><img src="img/site_F.jpg" alt="Aerial view of site B with the site outline, 400 m ring, sun path and prevailing wind">
+    <figcaption>Fig. 6.1. The site, about 2.4 km across. Cyan: the site chosen. Arcs: sunrise to sunset at the summer and winter solstices (schematic). Arrow: prevailing wind. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="stats">
+    <div class="col">
+      <div class="label">Scores (1 to 5)</div>
+      <table><tbody><tr><td>Mountains</td><td class="c b">3</td><td class="note">Nearest to Wildhorn</td></tr><tr><td>City &amp; airport</td><td class="c b">4</td><td class="note">Close</td></tr><tr><td>Landscape</td><td class="c b">3</td><td class="note">Forest and reservoir</td></tr><tr><td>Room &amp; flexibility</td><td class="c b">4</td><td class="note">Ample; boxed in by parking and retail</td></tr><tr><td>Coach &amp; egress</td><td class="c b">5</td><td class="note">Arterial, many routes</td></tr><tr><td>Hazards</td><td class="c b">3</td><td class="note">Arterial road next door</td></tr><tr><td>Services</td><td class="c b">5</td><td class="note">City serviced, shops</td></tr></tbody><tfoot><tr><td>Total</td><td class="c">27</td><td class="note">out of 35</td></tr></tfoot></table>
+      <div class="label gap">The site</div>
+      <div class="kv"><span>Character</span><b>Wooded, reservoir shore</b></div><div class="kv"><span>Land</span><b>City park</b></div><div class="kv"><span>Room</span><b>Ample</b></div><div class="kv"><span>Flexibility</span><b>Some limits (boxed in by parking and commercial area)</b></div>
+      <div class="kv"><span>Transit</span><b>MAX Yellow BRT on 14 St SW</b></div><div class="kv"><span>Flood risk</span><b>Low</b></div><div class="kv"><span>Busy edge</span><b>Arterial road next door</b></div>
+      <div class="label gap">Drive times (off-peak)</div><div class="kv"><span>YYC airport</span><b>~30 min</b></div><div class="kv"><span>Downtown</span><b>~15 min</b></div><div class="kv"><span>U of C</span><b>~20 min</b></div><div class="kv"><span>Wildhorn (Forgetmenot Ridge)</span><b>~65 min</b></div><div class="kv"><span>Kananaskis Village</span><b>~90 min</b></div>
+    </div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Drive times rounded to 5 min, off-peak; allow more at rush hour or in winter. Flood risk from the Alberta flood hazard maps.</div><div class="sheetno">SHEET 06/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 07 · 2 F terrain</div><div class="wrap"><section class="sheet" data-label="2 F terrain">
+<div class="head"><div class="head-l"><div class="badge">2</div><div><div class="eyebrow">Site 2 of 4 · Terrain · Suburban edge</div><h1>B · Glenmore Landing</h1><div class="sub">Nearly level, with a gentle fall west to the reservoir shore</div></div></div></div>
+<div class="body terrain">
+  <figure class="map"><img src="img/terrain_F.jpg" alt="Oblique 3D view of the terrain around site B, looking north, height exaggerated four times">
+    <figcaption>Fig. 7.1. Looking north over the site, about 2.4 km across, heights exaggerated ×5. Yellow pin: site. Elevation: AWS Terrain Tiles (CDEM-derived). Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Where it sits</div>
+    <p>Nearly level, with a gentle fall west to the reservoir shore.</p>
+    <div class="label gap">Within 500 m</div>
+    <div class="kv"><span>Above the lowest ground</span><b>about 10 m</b></div>
+    <div class="kv"><span>Below the highest ground</span><b>about 5 m</b></div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Elevation model is about 20–30 m resolution: reads the landform, not the fine grading. A site survey comes later.</div><div class="sheetno">SHEET 07/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 08 · 3 I context</div><div class="wrap"><section class="sheet" data-label="3 I context">
+<div class="head"><div class="head-l"><div class="badge">3</div><div><div class="eyebrow">Site 3 of 4 · Context · City&#x27;s western gate</div><h1>C · Loch McKinnon</h1><div class="sub">Shriners&#x27; field, NW of the Shrine Centre</div></div></div></div>
+<div class="body zone">
+  <figure class="map"><img src="img/zone_I.jpg" alt="Aerial view of the area around site C with the site dot and 400 m ring">
+    <figcaption>Fig. 8.1. Neighbourhood context, about 10 km across. Yellow dot: site. Dashed ring: 400 m. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Next to the site</div><div class="kv adj"><span>N</span><div>Service road, then the CPKC siding and yard (~140 m)</div></div><div class="kv adj"><span>E</span><div>The Shrine Centre building and parking</div></div><div class="kv adj"><span>S</span><div>The lakeshore lodge/RV strip and Loch McKinnon</div></div><div class="kv adj"><span>W</span><div>More mown Shriners&#x27; field and the lake&#x27;s west end</div></div>
+    <div class="label gap">Within reach</div><ul><li>Loch McKinnon (door)</li><li>Calgary Shrine Stables and Mounted Patrol 370-440 m</li><li>Calgary West Soccer Centre 650 m</li><li>Tuscany retail (Petro-Canada, Home Depot, food) ~650 m</li><li>Valley Ridge golf club 1.2 km</li></ul>
+    <div class="label gap">Nuisances</div><ul><li>CPKC siding 140 m and main line 375 m</li><li>Stoney Trail 610 m</li><li>substation 550 m</li><li>Bearspaw water treatment plant 700 m</li></ul>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Context from OpenStreetMap and City of Calgary open data, checked against aerial imagery.</div><div class="sheetno">SHEET 08/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 09 · 3 I site</div><div class="wrap"><section class="sheet" data-label="3 I site">
+<div class="head"><div class="head-l"><div class="badge">3</div><div><div class="eyebrow">Site 3 of 4 · Site · City&#x27;s western gate</div><h1>C · Loch McKinnon</h1><div class="sub">Shriners&#x27; field, NW of the Shrine Centre</div></div></div><div class="score"><div class="score-n"><span>27</span><small>/ 35</small></div><div class="tag">Rank 2= of 4</div></div></div>
+<div class="body site">
+  <figure class="map"><img src="img/site_I.jpg" alt="Aerial view of site C with the site outline, 400 m ring, sun path and prevailing wind">
+    <figcaption>Fig. 9.1. The site, about 2.4 km across. Cyan: the site chosen. Arcs: sunrise to sunset at the summer and winter solstices (schematic). Arrow: prevailing wind. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="stats">
+    <div class="col">
+      <div class="label">Scores (1 to 5)</div>
+      <table><tbody><tr><td>Mountains</td><td class="c b">3</td><td class="note">About an hour</td></tr><tr><td>City &amp; airport</td><td class="c b">4</td><td class="note">Moderate</td></tr><tr><td>Landscape</td><td class="c b">3</td><td class="note">Lake and river</td></tr><tr><td>Room &amp; flexibility</td><td class="c b">5</td><td class="note">Large open field</td></tr><tr><td>Coach &amp; egress</td><td class="c b">4</td><td class="note">Highway close by</td></tr><tr><td>Hazards</td><td class="c b">3</td><td class="note">Rail next door; level crossing</td></tr><tr><td>Services</td><td class="c b">5</td><td class="note">City; servicing to extend</td></tr></tbody><tfoot><tr><td>Total</td><td class="c">27</td><td class="note">out of 35</td></tr></tfoot></table>
+      <div class="label gap">The site</div>
+      <div class="kv"><span>Character</span><b>Lakeside field</b></div><div class="kv"><span>Land</span><b>Private, future development</b></div><div class="kv"><span>Room</span><b>Ample</b></div><div class="kv"><span>Flexibility</span><b>Open</b></div>
+      <div class="kv"><span>Transit</span><b>Bus within walking distance</b></div><div class="kv"><span>Flood risk</span><b>Low</b></div><div class="kv"><span>Busy edge</span><b>Rail siding next door</b></div>
+      <div class="label gap">Drive times (off-peak)</div><div class="kv"><span>YYC airport</span><b>~30 min</b></div><div class="kv"><span>Downtown</span><b>~25 min</b></div><div class="kv"><span>U of C</span><b>~20 min</b></div><div class="kv"><span>Wildhorn (Forgetmenot Ridge)</span><b>~65 min</b></div><div class="kv"><span>Kananaskis Village</span><b>~80 min</b></div>
+    </div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Drive times rounded to 5 min, off-peak; allow more at rush hour or in winter. Flood risk from the Alberta flood hazard maps.</div><div class="sheetno">SHEET 09/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 10 · 3 I terrain</div><div class="wrap"><section class="sheet" data-label="3 I terrain">
+<div class="head"><div class="head-l"><div class="badge">3</div><div><div class="eyebrow">Site 3 of 4 · Terrain · City&#x27;s western gate</div><h1>C · Loch McKinnon</h1><div class="sub">Level terrace above the lake, with gentle slopes nearby</div></div></div></div>
+<div class="body terrain">
+  <figure class="map"><img src="img/terrain_I.jpg" alt="Oblique 3D view of the terrain around site C, looking north, height exaggerated four times">
+    <figcaption>Fig. 10.1. Looking north over the site, about 2.4 km across, heights exaggerated ×5. Yellow pin: site. Elevation: AWS Terrain Tiles (CDEM-derived). Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Where it sits</div>
+    <p>Level terrace above the lake, with gentle slopes nearby.</p>
+    <div class="label gap">Within 500 m</div>
+    <div class="kv"><span>Above the lowest ground</span><b>about 10 m</b></div>
+    <div class="kv"><span>Below the highest ground</span><b>about 10 m</b></div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Elevation model is about 20–30 m resolution: reads the landform, not the fine grading. A site survey comes later.</div><div class="sheetno">SHEET 10/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 11 · 4 N context</div><div class="wrap"><section class="sheet" data-label="4 N context">
+<div class="head"><div class="head-l"><div class="badge">4</div><div><div class="eyebrow">Site 4 of 4 · Context · Rural, provincial park</div><h1>D · Glenbow Ranch</h1><div class="sub">Ranch house at the end of Glenbow Road</div></div></div></div>
+<div class="body zone">
+  <figure class="map"><img src="img/zone_N.jpg" alt="Aerial view of the area around site D with the site dot and 400 m ring">
+    <figcaption>Fig. 11.1. Neighbourhood context, about 10 km across. Yellow dot: site. Dashed ring: 400 m. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Next to the site</div><div class="kv adj"><span>N</span><div>The ~100-stall public lot and the end of Glenbow Road</div></div><div class="kv adj"><span>E</span><div>Spruce shelterbelt, corrals, then grassland</div></div><div class="kv adj"><span>S</span><div>Picnic area, paved pathway, grassland sloping to the Bow</div></div><div class="kv adj"><span>W</span><div>Aspen groves and the Tiger Lily / Badger Bowl trails</div></div>
+    <div class="label gap">Within reach</div><ul><li>Glenbow Ranch Provincial Park trails (door)</li><li>Foundation education building (~120 m)</li><li>Haskayne Legacy Park (City), east edge of the park (outside the 2 km ring)</li><li>Cochrane (shops, schools) 4-7 km W</li></ul>
+    <div class="label gap">Nuisances</div><ul><li>CPKC line 670 m</li><li>visitor traffic on Glenbow Road</li><li>grass-fire season</li><li>no services</li></ul>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Context from OpenStreetMap and City of Calgary open data, checked against aerial imagery.</div><div class="sheetno">SHEET 11/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 12 · 4 N site</div><div class="wrap"><section class="sheet" data-label="4 N site">
+<div class="head"><div class="head-l"><div class="badge">4</div><div><div class="eyebrow">Site 4 of 4 · Site · Rural, provincial park</div><h1>D · Glenbow Ranch</h1><div class="sub">Ranch house at the end of Glenbow Road</div></div></div><div class="score"><div class="score-n"><span>23</span><small>/ 35</small></div><div class="tag">Rank 4 of 4</div></div></div>
+<div class="body site">
+  <figure class="map"><img src="img/site_N.jpg" alt="Aerial view of site D with the site outline, 400 m ring, sun path and prevailing wind">
+    <figcaption>Fig. 12.1. The site, about 2.4 km across. Cyan: the site chosen. Arcs: sunrise to sunset at the summer and winter solstices (schematic). Arrow: prevailing wind. Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="stats">
+    <div class="col">
+      <div class="label">Scores (1 to 5)</div>
+      <table><tbody><tr><td>Mountains</td><td class="c b">3</td><td class="note">About 70 min</td></tr><tr><td>City &amp; airport</td><td class="c b">3</td><td class="note">Furthest</td></tr><tr><td>Landscape</td><td class="c b">4</td><td class="note">Native prairie park</td></tr><tr><td>Room &amp; flexibility</td><td class="c b">5</td><td class="note">Open bench</td></tr><tr><td>Coach &amp; egress</td><td class="c b">2</td><td class="note">One road in</td></tr><tr><td>Hazards</td><td class="c b">5</td><td class="note">Low (grass fire not scored)</td></tr><tr><td>Services</td><td class="c b">1</td><td class="note">Well and septic</td></tr></tbody><tfoot><tr><td>Total</td><td class="c">23</td><td class="note">out of 35</td></tr></tfoot></table>
+      <div class="label gap">The site</div>
+      <div class="kv"><span>Character</span><b>Native prairie</b></div><div class="kv"><span>Land</span><b>Provincial park</b></div><div class="kv"><span>Room</span><b>Ample</b></div><div class="kv"><span>Flexibility</span><b>Open</b></div>
+      <div class="kv"><span>Transit</span><b>None</b></div><div class="kv"><span>Flood risk</span><b>Low</b></div><div class="kv"><span>Busy edge</span><b>None</b></div>
+      <div class="label gap">Drive times (off-peak)</div><div class="kv"><span>YYC airport</span><b>~40 min</b></div><div class="kv"><span>Downtown</span><b>~40 min</b></div><div class="kv"><span>U of C</span><b>~30 min</b></div><div class="kv"><span>Wildhorn (Forgetmenot Ridge)</span><b>~70 min</b></div><div class="kv"><span>Kananaskis Village</span><b>~80 min</b></div>
+    </div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Drive times rounded to 5 min, off-peak; allow more at rush hour or in winter. Flood risk from the Alberta flood hazard maps.</div><div class="sheetno">SHEET 12/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 13 · 4 N terrain</div><div class="wrap"><section class="sheet" data-label="4 N terrain">
+<div class="head"><div class="head-l"><div class="badge">4</div><div><div class="eyebrow">Site 4 of 4 · Terrain · Rural, provincial park</div><h1>D · Glenbow Ranch</h1><div class="sub">Sloping bench that falls south toward the Bow</div></div></div></div>
+<div class="body terrain">
+  <figure class="map"><img src="img/terrain_N.jpg" alt="Oblique 3D view of the terrain around site D, looking north, height exaggerated four times">
+    <figcaption>Fig. 13.1. Looking north over the site, about 2.4 km across, heights exaggerated ×5. Yellow pin: site. Elevation: AWS Terrain Tiles (CDEM-derived). Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community.</figcaption></figure>
+  <aside class="side">
+    <div class="label">Where it sits</div>
+    <p>Sloping bench that falls south toward the Bow.</p>
+    <div class="label gap">Within 500 m</div>
+    <div class="kv"><span>Above the lowest ground</span><b>about 60 m</b></div>
+    <div class="kv"><span>Below the highest ground</span><b>about 20 m</b></div>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Elevation model is about 20–30 m resolution: reads the landform, not the fine grading. A site survey comes later.</div><div class="sheetno">SHEET 13/14</div></div>
+</section></div></div><div><div class="frame-label">Sheet 14 · Summary</div><div class="wrap"><section class="sheet" data-label="Summary">
+<div class="head"><div class="head-l"><div><div class="eyebrow">RAIC 400 · Site selection · Summary</div><h1>Four sites compared</h1><div class="sub">Seven criteria, each scored 1 to 5, out of 35.</div></div></div></div>
+<div class="body summary">
+  <figure class="map city"><div class="mapbox"><img src="img/city_plan.png" alt="Plan with the four sites numbered"><div class="pin" style="left:93.85%;top:43.46%"><span class="pin-dot">1</span><span class="pin-lab left">A · Inglewood</span></div><div class="pin" style="left:87.25%;top:55.06%"><span class="pin-dot">2</span><span class="pin-lab left">B · Glenmore Landing</span></div><div class="pin" style="left:76.38%;top:28.31%"><span class="pin-dot">3</span><span class="pin-lab ">C · Loch McKinnon</span></div><div class="pin" style="left:64.66%;top:14.41%"><span class="pin-dot">4</span><span class="pin-lab ">D · Glenbow Ranch</span></div></div>
+    <figcaption>Fig. 14.1. The four sites. Basemap: Esri World Light Gray Canvas, darkened, with hill shading from AWS Terrain Tiles.</figcaption></figure>
+  <aside class="stats one">
+    <div class="label">Overall</div>
+    <table class="sum"><thead><tr><th></th><th>Site</th><th class="r">/35</th><th>Character</th><th class="r">City</th><th class="r">Mountains</th><th>Room</th><th>Flood</th><th>Land</th></tr></thead>
+    <tbody><tr class="lead"><td><span class="pin-dot sm">1</span></td><td class="nw"><b>A · Inglewood</b></td><td class="r b">28</td><td>Riverside grassland</td><td class="r nw">~15 min</td><td class="r nw">~75 min</td><td>Ample (lot plus lawn)</td><td>Medium</td><td>City park</td></tr><tr class=""><td><span class="pin-dot sm">2</span></td><td class="nw"><b>B · Glenmore Landing</b></td><td class="r b">27</td><td>Wooded, reservoir shore</td><td class="r nw">~25 min</td><td class="r nw">~65 min</td><td>Ample</td><td>Low</td><td>City park</td></tr><tr class=""><td><span class="pin-dot sm">3</span></td><td class="nw"><b>C · Loch McKinnon</b></td><td class="r b">27</td><td>Lakeside field</td><td class="r nw">~30 min</td><td class="r nw">~65 min</td><td>Ample</td><td>Low</td><td>Private, future development</td></tr><tr class=""><td><span class="pin-dot sm">4</span></td><td class="nw"><b>D · Glenbow Ranch</b></td><td class="r b">23</td><td>Native prairie</td><td class="r nw">~40 min</td><td class="r nw">~70 min</td><td>Ample</td><td>Low</td><td>Provincial park</td></tr></tbody></table>
+    <div class="label gap">How the sites were scored</div>
+    <div class="defs"><div class="def"><b>Mountains</b><span>Distance to the mountains</span></div><div class="def"><b>City &amp; airport</b><span>Distance to city amenities and the airport</span></div><div class="def"><b>Landscape</b><span>Nature at the door</span></div><div class="def"><b>Room &amp; flexibility</b><span>Space to build, and freedom to place it</span></div><div class="def"><b>Coach &amp; egress</b><span>Coach access and ways out</span></div><div class="def"><b>Hazards</b><span>Flood, fire, industry and busy roads</span></div><div class="def"><b>Services</b><span>Water, sewer, schools and neighbours</span></div></div>
+    <div class="label gap">Where it lands</div>
+    <p><b>A · Inglewood</b> leads by a point: the closest to the city, with room on the lawn beside the lot, but a medium flood risk and rail next door. <b>B · Glenmore Landing</b> and <b>C · Loch McKinnon</b> tie just behind: B keeps the city close; C has the most room and is private land rather than park. <b>D · Glenbow Ranch</b> trails on services and access.</p>
+  </aside>
+</div>
+<div class="foot"><div>Ben Hackman · RAIC 400 · October 2026</div><div class="foot-note">Early site analysis: scores are judgments for comparison, not measurements.</div><div class="sheetno">SHEET 14/14</div></div>
+</section></div></div></main><script>
+function fit(){document.querySelectorAll('.wrap').forEach(w=>{const s=w.clientWidth/1700;w.firstElementChild.style.transform='scale('+s+')'})}
+new ResizeObserver(fit).observe(document.body);window.addEventListener('load',fit);fit();
+</script></body></html>
