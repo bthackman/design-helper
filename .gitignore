@@ -59,3 +59,8 @@ Projects/*/2_Site/presentation/*.pdf
 # Board shortcuts (private artifact links) and raw API caches
 Projects/*/*.url
 Projects/*/2_Site/data/_cache_*.json
+# Site base pipeline (2026-10-05): tile cache and verification screenshots stay local
+Projects/*/2_Site/data/_tiles/
+Projects/*/2_Site/site-base-test/_shot*
+Projects/*/2_Site/site-base-test/_pf*
+Projects/*/2_Site/cad/_check_*
