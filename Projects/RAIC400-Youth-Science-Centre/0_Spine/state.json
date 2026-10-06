@@ -5,7 +5,7 @@
   "currentPhase": "site",
   "driversLocked": false,
   "driversLockedDate": null,
-  "updated": "2026-09-29",
+  "updated": "2026-10-05",
   "phases": {
     "client-discovery": {
       "status": "complete",
@@ -14,8 +14,8 @@
     },
     "site": {
       "status": "in-progress",
-      "stage": "stage-1-rescan-after-reframe",
-      "updated": "2026-09-29"
+      "stage": "test-fit sites B Glenmore Landing + A Inglewood chosen 2026-10-05; site bases awaiting go-ahead",
+      "updated": "2026-10-05"
     },
     "precedents": {
       "status": "complete",

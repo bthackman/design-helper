@@ -2,6 +2,8 @@
 
 *Cairn Youth Centre, RAIC 400. Drafted 2026-09-29 on Ben's four picks. Method: `_skill-source/references/phase-2-site.md` (Stage 2 parcel scorecard with envelope utilization, facts before moves, the assessment battery, the two-ring scan). Every number comes from `data/stage2_scan.py` → `data/stage2_2026-09-29.json` (self-contained per site; narrative in `data/stage2_narrative.py`). This is coursework on a fictional client: "verified" means checked against a public dataset, not a survey, title search or City conversation.*
 
+> **2026-10-05 instructor crit:** the criteria below read as generic site scoring. They're being restated as client needs (OQ 23), water is being added as a hazard (OQ 24), and test fits on two sites come next (OQ 25). The presentation's A–D /35 rescore isn't written back here yet. **Update, same day:** test-fit sites are B Glenmore Landing (F) and A Inglewood (C); at Inglewood the building goes beside the parking lot in the field areas, with no stall replacement. See `0_Spine/02_Decision-Log.md`.
+
 ## Summary
 
 ### Ranking: Stage 1 criteria and weights, plus the Stage 2 envelope column
